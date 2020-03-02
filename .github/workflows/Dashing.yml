@@ -1,0 +1,40 @@
+name: Dashing
+
+on: [push, pull_request]
+
+jobs:
+    job1:
+        name: Build
+        runs-on: ubuntu-18.04
+        steps:
+            - name: Setup ROS environment
+              uses: ros-tooling/setup-ros@0.0.14
+              with:
+                required-ros-distributions: dashing
+            - run: "source /opt/ros/dashing/setup.bash"
+            - uses: actions/checkout@v2
+            - name: Copy repository
+              run: |
+                  mkdir -p ~/ros2_ws/src/raspimouse_ros2_examples
+                  cp -rf . ~/ros2_ws/src/raspimouse_ros2_examples
+            - name: Install dependencies
+              run: |
+                  source /opt/ros/dashing/setup.bash
+                  sudo apt install -y python-rosdep
+                  sudo rosdep init
+                  rosdep update
+                  cd ~/ros2_ws/src
+                  rosdep install -r -y --from-paths . --ignore-src
+            - name: Build packages
+              run: |
+                  source /opt/ros/dashing/setup.bash
+                  cd ~/ros2_ws
+                  colcon build --symlink-install
+                  source ~/ros2_ws/install/setup.bash
+            - name: Test packages
+              run: |
+                  source /opt/ros/dashing/setup.bash
+                  source ~/ros2_ws/install/setup.bash
+                  cd ~/ros2_ws
+                  colcon test
+                  colcon test-result --verbose
