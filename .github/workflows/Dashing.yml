@@ -11,7 +11,6 @@ jobs:
               uses: ros-tooling/setup-ros@0.0.14
               with:
                 required-ros-distributions: dashing
-            - run: "source /opt/ros/dashing/setup.bash"
             - uses: actions/checkout@v2
             - name: Copy repository
               run: |
@@ -21,6 +20,7 @@ jobs:
               run: |
                   source /opt/ros/dashing/setup.bash
                   cd ~/ros2_ws/src
+                  rosdep update
                   rosdep install -r -y --from-paths . --ignore-src
             - name: Build packages
               run: |
