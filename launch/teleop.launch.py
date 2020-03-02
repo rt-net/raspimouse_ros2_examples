@@ -35,7 +35,7 @@ def generate_launch_description():
 
     joystick_control_node = Node(
         package='raspimouse_ros2_examples',
-        node_executable='joystick_control',
+        node_executable='joystick_control.py',
     )
 
     ld = LaunchDescription()
