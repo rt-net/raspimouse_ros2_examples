@@ -39,7 +39,7 @@ def generate_launch_description():
         package='raspimouse_ros2_examples',
         node_executable='joystick_control.py',
         parameters=[os.path.join(get_package_share_directory(
-            'raspimouse_ros2_examples'), 'config', 'joy_dualshock3.yml')]
+            'raspimouse_ros2_examples'), 'config', 'joyconfig.yml')]
     )
 
     ld = LaunchDescription()
