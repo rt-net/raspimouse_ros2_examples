@@ -17,11 +17,14 @@
 
 
 import rclpy
+import math
 from time import sleep
 from rclpy.node import Node
 
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Int16
+from geometry_msgs.msg import Twist
+from std_srvs.srv import SetBool
 
 
 class JoyWrapper(Node):
@@ -32,6 +35,11 @@ class JoyWrapper(Node):
         parameters = [
             ('button_shutdown_1', 8),
             ('button_shutdown_2', 9),
+            ('button_motor_off', 8),
+            ('button_motor_on', 9),
+            ('button_cmd_enable', 4),
+            ('axis_cmd_linear_x', 1),
+            ('axis_cmd_angular_z', 3),
             ('analog_d_pad', False),
             ('d_pad_up', 13),
             ('d_pad_down', 14),
@@ -48,11 +56,20 @@ class JoyWrapper(Node):
             ('button_buzzer5', 1),
             ('button_buzzer6', 0),
             ('button_buzzer7', 3),
+            ('button_sensor_sound_en', 7),
+            ('button_config_enable', 6),
         ]
         self.declare_parameters('', parameters)
 
         self._BUTTON_SHUTDOWN_1 = self.get_parameter('button_shutdown_1').value
         self._BUTTON_SHUTDOWN_2 = self.get_parameter('button_shutdown_2').value
+
+        self._BUTTON_MOTOR_ON = self.get_parameter('button_motor_on').value
+        self._BUTTON_MOTOR_OFF = self.get_parameter('button_motor_off').value
+
+        self._BUTTON_CMD_ENABLE = self.get_parameter('button_cmd_enable').value
+        self._AXIS_CMD_LINEAR_X = self.get_parameter('axis_cmd_linear_x').value
+        self._AXIS_CMD_ANGULAR_Z = self.get_parameter('axis_cmd_angular_z').value
 
         self._ANALOG_D_PAD = self.get_parameter('analog_d_pad').value
         self._D_PAD_UP = self.get_parameter('d_pad_up').value
@@ -72,11 +89,24 @@ class JoyWrapper(Node):
         self._BUTTON_BUZZER6 = self.get_parameter('button_buzzer6').value
         self._BUTTON_BUZZER7 = self.get_parameter('button_buzzer7').value
 
+        self._BUTTON_SENSOR_SOUND_EN = self.get_parameter('button_sensor_sound_en').value
+        self._BUTTON_CONFIG_ENABLE = self.get_parameter('button_config_enable').value
+
+        # for _joy_velocity_config()
+        self._MAX_VEL_LINEAR_X = 2.0 # m/s
+        self._MAX_VEL_ANGULAR_Z = 2.0 * math.pi # rad/s
+        self._DEFAULT_VEL_LINEAR_X = 0.5 # m/s
+        self._DEFAULT_VEL_ANGULAR_Z = 1.0 * math.pi # rad/s
+
         self._joy_msg = None
+        self._cmdvel_has_value = False
         self._buzzer_has_value = False
+        self._vel_linear_x = self._DEFAULT_VEL_LINEAR_X
+        self._vel_angular_z = self._DEFAULT_VEL_ANGULAR_Z
 
         self._node_logger = self.get_logger()
 
+        self._pub_cmdvel = self.create_publisher(Twist, 'cmd_vel', 10)
         self._pub_buzzer = self.create_publisher(Int16, 'buzzer', 10)
         self._sub_joy = self.create_subscription(
             Joy,
@@ -85,8 +115,28 @@ class JoyWrapper(Node):
             10)
         self._sub_joy  # prevent unused variable warning
 
+        self._cli = self.create_client(SetBool, 'motor_power')
+        while not self._cli.wait_for_service(timeout_sec=1.0):
+            self._node_logger.info('service not available')
+            self.destroy_node()
+        self._motor_on()
+
         timer_period = 0.01   # seconds
         self.timer = self.create_timer(timer_period, self._callback_timer)
+    
+    def __del__(self):
+        self._motor_off()
+    
+    def _motor_request(self, request_data=False):
+        request = SetBool.Request()
+        request.data = request_data
+        future = self._cli.call_async(request)
+
+    def _motor_on(self):
+        self._motor_request(True)
+
+    def _motor_off(self):
+        self._motor_request(False)
 
     def _callback_joy(self, msg):
         self._joy_msg = msg
@@ -95,6 +145,7 @@ class JoyWrapper(Node):
         if self._joy_msg is None:
             return
 
+        self._joy_cmdvel(self._joy_msg)
         self._joy_buzzer_freq(self._joy_msg)
 
     def _joy_dpad(self, joy_msg, target_pad, positive_on):
@@ -173,6 +224,21 @@ class JoyWrapper(Node):
                 self._pub_buzzer.publish(freq)
                 self._buzzer_has_value = False
 
+    def _joy_cmdvel(self, joy_msg):
+        cmdvel = Twist()
+        if joy_msg.buttons[self._BUTTON_CMD_ENABLE]:
+            cmdvel.linear.x = self._vel_linear_x * joy_msg.axes[self._AXIS_CMD_LINEAR_X]
+            cmdvel.angular.z = self._vel_angular_z * joy_msg.axes[self._AXIS_CMD_ANGULAR_Z]
+            self._node_logger.info(
+                "linear_x:" + str(cmdvel.linear.x) +\
+                ", angular_z:" + str(cmdvel.angular.z))
+            self._pub_cmdvel.publish(cmdvel)
+
+            self._cmdvel_has_value = True
+        else:
+            if self._cmdvel_has_value:
+                self._pub_cmdvel.publish(cmdvel)
+                self._cmdvel_has_value = False
 
 def main(args=None):
     rclpy.init(args=args)
