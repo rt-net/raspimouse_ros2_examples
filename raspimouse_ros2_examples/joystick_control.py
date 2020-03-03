@@ -145,8 +145,39 @@ class JoyWrapper(Node):
         if self._joy_msg is None:
             return
 
+        self._joy_motor_onoff(self._joy_msg)
         self._joy_cmdvel(self._joy_msg)
         self._joy_buzzer_freq(self._joy_msg)
+        self._joy_shutdown(self._joy_msg)
+
+    def _joy_shutdown(self, joy_msg):
+        if joy_msg.buttons[self._BUTTON_SHUTDOWN_1] and\
+                joy_msg.buttons[self._BUTTON_SHUTDOWN_2]:
+            self._motor_off()
+            self.destroy_node()
+
+    def _joy_motor_onoff(self, joy_msg):
+        if joy_msg.buttons[self._BUTTON_MOTOR_ON]:
+            self._motor_on()
+
+        if joy_msg.buttons[self._BUTTON_MOTOR_OFF]:
+            self._motor_off()
+
+    def _joy_cmdvel(self, joy_msg):
+        cmdvel = Twist()
+        if joy_msg.buttons[self._BUTTON_CMD_ENABLE]:
+            cmdvel.linear.x = self._vel_linear_x * joy_msg.axes[self._AXIS_CMD_LINEAR_X]
+            cmdvel.angular.z = self._vel_angular_z * joy_msg.axes[self._AXIS_CMD_ANGULAR_Z]
+            self._node_logger.info(
+                "linear_x:" + str(cmdvel.linear.x) +\
+                ", angular_z:" + str(cmdvel.angular.z))
+            self._pub_cmdvel.publish(cmdvel)
+
+            self._cmdvel_has_value = True
+        else:
+            if self._cmdvel_has_value:
+                self._pub_cmdvel.publish(cmdvel)
+                self._cmdvel_has_value = False
 
     def _joy_dpad(self, joy_msg, target_pad, positive_on):
         # d pad inputs of f710 controller are analog
@@ -224,21 +255,6 @@ class JoyWrapper(Node):
                 self._pub_buzzer.publish(freq)
                 self._buzzer_has_value = False
 
-    def _joy_cmdvel(self, joy_msg):
-        cmdvel = Twist()
-        if joy_msg.buttons[self._BUTTON_CMD_ENABLE]:
-            cmdvel.linear.x = self._vel_linear_x * joy_msg.axes[self._AXIS_CMD_LINEAR_X]
-            cmdvel.angular.z = self._vel_angular_z * joy_msg.axes[self._AXIS_CMD_ANGULAR_Z]
-            self._node_logger.info(
-                "linear_x:" + str(cmdvel.linear.x) +\
-                ", angular_z:" + str(cmdvel.angular.z))
-            self._pub_cmdvel.publish(cmdvel)
-
-            self._cmdvel_has_value = True
-        else:
-            if self._cmdvel_has_value:
-                self._pub_cmdvel.publish(cmdvel)
-                self._cmdvel_has_value = False
 
 def main(args=None):
     rclpy.init(args=args)
@@ -248,6 +264,7 @@ def main(args=None):
     rclpy.spin(joy_wrapper)
 
     joy_wrapper.destroy_node()
+
     rclpy.shutdown()
 
 
