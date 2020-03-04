@@ -100,7 +100,6 @@ class JoyWrapper(Node):
         self._DEFAULT_VEL_LINEAR_X = 0.5  # m/s
         self._DEFAULT_VEL_ANGULAR_Z = 1.0 * math.pi  # rad/s
 
-        self._joy_msg = None
         self._lightsensors = LightSensors()
         self._mouse_switches = Switches()
         self._cmdvel_has_value = False
@@ -128,9 +127,6 @@ class JoyWrapper(Node):
             self.destroy_node()
         self._motor_on()
 
-        # timer_period = 0.01   # seconds
-        # self.timer = self.create_timer(timer_period, self._callback_timer)
-
     def __del__(self):
         self._motor_off()
 
@@ -146,35 +142,18 @@ class JoyWrapper(Node):
         self._motor_request(False)
 
     def _callback_joy(self, msg):
-        self._joy_msg = msg
-        self._node_logger.info("callback joy")
-
-        self._joy_motor_onoff(self._joy_msg)
-        self._joy_cmdvel(self._joy_msg)
-        self._joy_buzzer_freq(self._joy_msg)
-        self._joy_lightsensor_sound(self._joy_msg)
-        self._joy_velocity_config(self._joy_msg)
-        self._joy_shutdown(self._joy_msg)
+        self._joy_motor_onoff(msg)
+        self._joy_cmdvel(msg)
+        self._joy_buzzer_freq(msg)
+        self._joy_lightsensor_sound(msg)
+        self._joy_velocity_config(msg)
+        self._joy_shutdown(msg)
 
     def _callback_lightsensors(self, msg):
         self._lightsensors = msg
 
     def _callback_switches(self, msg):
         self._mouse_switches = msg
-
-    def _callback_timer(self):
-        self._node_logger.info("callback timer")
-        if self._joy_msg is None:
-            return
-
-        self._joy_motor_onoff(self._joy_msg)
-        self._joy_cmdvel(self._joy_msg)
-        self._joy_buzzer_freq(self._joy_msg)
-        self._joy_lightsensor_sound(self._joy_msg)
-        self._joy_velocity_config(self._joy_msg)
-        self._joy_shutdown(self._joy_msg)
-
-        self._joy_msg = None
 
     def _joy_shutdown(self, joy_msg):
         if joy_msg.buttons[self._BUTTON_SHUTDOWN_1] and\
