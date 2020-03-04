@@ -25,6 +25,8 @@ from sensor_msgs.msg import Joy
 from std_msgs.msg import Int16
 from geometry_msgs.msg import Twist
 from std_srvs.srv import SetBool
+from raspimouse_msgs.msg import LightSensors
+from raspimouse_msgs.msg import Switches
 
 
 class JoyWrapper(Node):
@@ -93,27 +95,32 @@ class JoyWrapper(Node):
         self._BUTTON_CONFIG_ENABLE = self.get_parameter('button_config_enable').value
 
         # for _joy_velocity_config()
-        self._MAX_VEL_LINEAR_X = 2.0 # m/s
-        self._MAX_VEL_ANGULAR_Z = 2.0 * math.pi # rad/s
-        self._DEFAULT_VEL_LINEAR_X = 0.5 # m/s
-        self._DEFAULT_VEL_ANGULAR_Z = 1.0 * math.pi # rad/s
+        self._MAX_VEL_LINEAR_X = 2.0  # m/s
+        self._MAX_VEL_ANGULAR_Z = 2.0 * math.pi  # rad/s
+        self._DEFAULT_VEL_LINEAR_X = 0.5  # m/s
+        self._DEFAULT_VEL_ANGULAR_Z = 1.0 * math.pi  # rad/s
 
         self._joy_msg = None
+        self._lightsensors = LightSensors()
+        self._mouse_switches = Switches()
         self._cmdvel_has_value = False
         self._buzzer_has_value = False
+        self._switch_has_been_pressed = False
+        self._sensor_sound_has_value = False
         self._vel_linear_x = self._DEFAULT_VEL_LINEAR_X
         self._vel_angular_z = self._DEFAULT_VEL_ANGULAR_Z
 
         self._node_logger = self.get_logger()
 
-        self._pub_cmdvel = self.create_publisher(Twist, 'cmd_vel', 10)
-        self._pub_buzzer = self.create_publisher(Int16, 'buzzer', 10)
+        self._pub_cmdvel = self.create_publisher(Twist, 'cmd_vel', 1)
+        self._pub_buzzer = self.create_publisher(Int16, 'buzzer', 1)
+
         self._sub_joy = self.create_subscription(
-            Joy,
-            'joy',
-            self._callback_joy,
-            10)
-        self._sub_joy  # prevent unused variable warning
+            Joy, 'joy', self._callback_joy, 1)
+        self._sub_lightsensor = self.create_subscription(
+            LightSensors, 'light_sensors', self._callback_lightsensors, 1)
+        self._sub_switches = self.create_subscription(
+            Switches, 'switches', self._callback_switches, 1)
 
         self._cli = self.create_client(SetBool, 'motor_power')
         while not self._cli.wait_for_service(timeout_sec=1.0):
@@ -121,16 +128,16 @@ class JoyWrapper(Node):
             self.destroy_node()
         self._motor_on()
 
-        timer_period = 0.01   # seconds
-        self.timer = self.create_timer(timer_period, self._callback_timer)
-    
+        # timer_period = 0.01   # seconds
+        # self.timer = self.create_timer(timer_period, self._callback_timer)
+
     def __del__(self):
         self._motor_off()
-    
+
     def _motor_request(self, request_data=False):
         request = SetBool.Request()
         request.data = request_data
-        future = self._cli.call_async(request)
+        self._cli.call_async(request)
 
     def _motor_on(self):
         self._motor_request(True)
@@ -140,15 +147,34 @@ class JoyWrapper(Node):
 
     def _callback_joy(self, msg):
         self._joy_msg = msg
+        self._node_logger.info("callback joy")
+
+        self._joy_motor_onoff(self._joy_msg)
+        self._joy_cmdvel(self._joy_msg)
+        self._joy_buzzer_freq(self._joy_msg)
+        self._joy_lightsensor_sound(self._joy_msg)
+        self._joy_velocity_config(self._joy_msg)
+        self._joy_shutdown(self._joy_msg)
+
+    def _callback_lightsensors(self, msg):
+        self._lightsensors = msg
+
+    def _callback_switches(self, msg):
+        self._mouse_switches = msg
 
     def _callback_timer(self):
+        self._node_logger.info("callback timer")
         if self._joy_msg is None:
             return
 
         self._joy_motor_onoff(self._joy_msg)
         self._joy_cmdvel(self._joy_msg)
         self._joy_buzzer_freq(self._joy_msg)
+        self._joy_lightsensor_sound(self._joy_msg)
+        self._joy_velocity_config(self._joy_msg)
         self._joy_shutdown(self._joy_msg)
+
+        self._joy_msg = None
 
     def _joy_shutdown(self, joy_msg):
         if joy_msg.buttons[self._BUTTON_SHUTDOWN_1] and\
@@ -169,7 +195,7 @@ class JoyWrapper(Node):
             cmdvel.linear.x = self._vel_linear_x * joy_msg.axes[self._AXIS_CMD_LINEAR_X]
             cmdvel.angular.z = self._vel_angular_z * joy_msg.axes[self._AXIS_CMD_ANGULAR_Z]
             self._node_logger.info(
-                "linear_x:" + str(cmdvel.linear.x) +\
+                "linear_x:" + str(cmdvel.linear.x) +
                 ", angular_z:" + str(cmdvel.angular.z))
             self._pub_cmdvel.publish(cmdvel)
 
@@ -218,10 +244,13 @@ class JoyWrapper(Node):
         else:
             return False
 
-    def _beep_buzzer(self, freq, beep_time=0):
+    def _beep_buzzer(self, freq_data, beep_time=0):
+        freq = Int16()
+        freq.data = freq_data
         self._pub_buzzer.publish(freq)
         sleep(beep_time)
-        self._pub_buzzer.publish(0)
+        freq.data = 0
+        self._pub_buzzer.publish(freq)
 
     def _joy_buzzer_freq(self, joy_msg):
         freq = Int16()
@@ -254,6 +283,83 @@ class JoyWrapper(Node):
             if self._buzzer_has_value:
                 self._pub_buzzer.publish(freq)
                 self._buzzer_has_value = False
+
+    def _joy_lightsensor_sound(self, joy_msg):
+        freq = Int16()
+        if joy_msg.buttons[self._BUTTON_SENSOR_SOUND_EN]:
+            self._node_logger.info(str(self._lightsensors))
+            freq.data += self._positive(self._lightsensors.left)
+            freq.data += self._positive(self._lightsensors.forward_l)
+            freq.data += self._positive(self._lightsensors.forward_r)
+            freq.data += self._positive(self._lightsensors.right)
+
+            self._pub_buzzer.publish(freq)
+            self._sensor_sound_has_value = True
+        else:
+            if self._sensor_sound_has_value:
+                self._pub_buzzer.publish(freq)
+                self._sensor_sound_has_value = False
+
+    def _positive(self, value):
+        if value < 0:
+            return 0
+        else:
+            return value
+
+    def _joy_velocity_config(self, joy_msg):
+        ADD_VEL_LINEAR_X = 0.1  # m/s
+        ADD_VEL_ANGULAR_Z = 0.1 * math.pi  # m/s
+        BUZZER_FREQ_ADD = 880  # Hz
+        BUZZER_FREQ_SUB = 440  # Hz
+        BUZZER_FREQ_RESET = 660  # Hz
+        BUZZER_BEEP_TIME = 0.2  # sec
+
+        if joy_msg.buttons[self._BUTTON_CONFIG_ENABLE]:
+            any_switch_pressed = False
+            if any([self._mouse_switches.switch0,
+                    self._mouse_switches.switch1,
+                    self._mouse_switches.switch2]):
+                any_switch_pressed = True
+
+            if not self._switch_has_been_pressed:
+                if self._mouse_switches.switch0:
+                    self._vel_linear_x = self._config_velocity(
+                            self._vel_linear_x, ADD_VEL_LINEAR_X,
+                            0, self._MAX_VEL_LINEAR_X)
+                    self._vel_angular_z = self._config_velocity(
+                            self._vel_angular_z, ADD_VEL_ANGULAR_Z,
+                            0, self._MAX_VEL_ANGULAR_Z)
+                    self._beep_buzzer(BUZZER_FREQ_ADD, BUZZER_BEEP_TIME)
+
+                elif self._mouse_switches.switch2:
+                    self._vel_linear_x = self._config_velocity(
+                            self._vel_linear_x, -ADD_VEL_LINEAR_X,
+                            0, self._MAX_VEL_LINEAR_X)
+                    self._vel_angular_z = self._config_velocity(
+                            self._vel_angular_z, -ADD_VEL_ANGULAR_Z,
+                            0, self._MAX_VEL_ANGULAR_Z)
+                    self._beep_buzzer(BUZZER_FREQ_SUB, BUZZER_BEEP_TIME)
+
+                elif self._mouse_switches.switch1:
+                    self._vel_linear_x = self._DEFAULT_VEL_LINEAR_X
+                    self._vel_angular_z = self._DEFAULT_VEL_ANGULAR_Z
+                    self._beep_buzzer(BUZZER_FREQ_RESET, BUZZER_BEEP_TIME)
+
+            self._switch_has_been_pressed = any_switch_pressed
+            self._node_logger.info(
+                    "linear_x:" + str(self._vel_linear_x) +
+                    ", angular_z:" + str(self._vel_angular_z)
+                    )
+
+    def _config_velocity(self, current, add, lowerlimit, upperlimit):
+        output = current + add
+
+        if output < lowerlimit:
+            output = lowerlimit
+        if output > upperlimit:
+            output = upperlimit
+
+        return output
 
 
 def main(args=None):
