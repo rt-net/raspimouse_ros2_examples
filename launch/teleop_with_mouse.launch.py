@@ -45,7 +45,10 @@ def generate_launch_description(argv=sys.argv[1:]):
 
     mouse_node = LifecycleNode(
         node_name='raspimouse',
-        package='raspimouse', node_executable='raspimouse', output='screen')
+        package='raspimouse', node_executable='raspimouse', output='screen',
+        parameters=[os.path.join(get_package_share_directory(
+            'raspimouse_ros2_examples'), 'config', 'mouse.yml')]
+    )
 
     register_event_handler_for_inactive_state = RegisterEventHandler(
         OnStateTransition(
