@@ -2,12 +2,11 @@
 
 # raspimouse_ros2_examples
 
-![Dashing](https://github.com/rt-net/raspimouse_ros2_examples/workflows/Dashing/badge.svg?branch=master)
-![industrial_ci](https://github.com/rt-net/raspimouse_ros2_examples/workflows/industrial_ci/badge.svg?branch=master)
+![Dashing](https://github.com/rt-net/raspimouse_ros2_examples/workflows/Dashing/badge.svg)
 
-Raspberry Pi MouseのROS 2サンプルコード集です。
+ROS 2 examples for Raspberry Pi Mouse.
 
-ROS1のサンプルコード集は[こちら](https://github.com/rt-net/raspimouse_ros_examples)。
+ROS1 examples is [here](https://github.com/rt-net/raspimouse_ros_examples).
 
 <img src="https://github.com/rt-net/raspimouse_ros_examples/blob/images/raspberry_pi_mouse.JPG" width="500" />
 
@@ -49,8 +48,7 @@ $ source ~/ros2_ws/install/setup.bash
 
 ## License
 
-このリポジトリはApache 2.0ライセンスの元、公開されています。 
-ライセンスについては[LICENSE](./LICENSE)を参照ください。
+This repository is licensed under the Apache 2.0, see [LICENSE](./LICENSE) for details.
 
 ## How To Use Examples
 
@@ -60,7 +58,7 @@ $ source ~/ros2_ws/install/setup.bash
 
 ### joystick_control
 
-ジョイスティックコントローラでRaspberryPiMouseを動かすコード例です。
+This is an example to use joystick controller to control a Raspberry Pi Mouse.
 
 #### Requirements 
 
@@ -70,19 +68,19 @@ $ source ~/ros2_ws/install/setup.bash
 
 #### How to use
 
-次のコマンドでノードを起動します。
+Launch nodes with the following command:
 
 ```sh
 $ ros2 launch raspimouse_ros2_examples teleop_with_mouse.launch.py joydev:="/dev/input/js0"
 ```
 
-デフォルトのキー割り当てはこちらです。
+This picture shows the default key configuration.
 
 ![joystick_control_keyconfig](https://github.com/rt-net/raspimouse_ros_exapmles/blob/images/joystick_control_keyconfig.png)
 
 #### Configure
 
-[./launch/teleop.launch.py](./launch/teleop.launch.py)を編集してコンフィグファイルを切り替えます。
+Edit [./launch/teleop.launch.py](./launch/teleop.launch.py) to switch key config files.
 
 ```python
 def generate_launch_description():
@@ -90,8 +88,8 @@ def generate_launch_description():
     # config_file_name = 'joy_f710.yml'
 ```
 
-[./config/joy_f710.yml](./config/joy_f710.yml)、[./config/joy_dualshock3.yml](./config/joy_dualshock3.yml)
-のキー番号を編集することで、キー割り当てを変更できます。
+Key assignments can be edited with key numbers in [./config/joy_f710.yml](./config/joy_f710.yml) or
+[./config/joy_dualshock3.yml](./config/joy_dualshock3.yml).
 
 ```yaml
 button_shutdown_1       : 8

@@ -12,19 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
 import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchIntrospector
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import Node
+from launch.actions import DeclareLaunchArgument
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.actions import LifecycleNode
 
 
-def generate_launch_description():
-    config_file_name = 'joy_dualshock3.yml'
-    # config_file_name = 'joy_f710.yml'
+def generate_launch_description(argv=sys.argv[1:]):
+
     joydev = LaunchConfiguration('joydev')
 
     declare_joydev = DeclareLaunchArgument(
@@ -32,25 +34,30 @@ def generate_launch_description():
         description='Device file for JoyStick Controller'
     )
 
-    joy_node = Node(
-        package='joy',
-        node_executable='joy_node',
-        parameters=[{'dev': joydev}]
+    teleop_launch_description = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(get_package_share_directory('raspimouse_ros2_examples'), 'launch'),
+            '/teleop.launch.py'
+            ]),
+        launch_arguments={'joydev': joydev}.items(),
     )
 
-    joystick_control_node = Node(
-        package='raspimouse_ros2_examples',
-        node_executable='joystick_control.py',
+    mouse_node = LifecycleNode(
+        node_name='raspimouse',
+        package='raspimouse', node_executable='raspimouse', output='screen',
         parameters=[os.path.join(get_package_share_directory(
-            'raspimouse_ros2_examples'), 'config', config_file_name)],
+            'raspimouse_ros2_examples'), 'config', 'mouse.yml')]
     )
 
     ld = LaunchDescription()
-
     ld.add_action(declare_joydev)
-    ld.add_action(joy_node)
-    ld.add_action(joystick_control_node)
+    ld.add_action(teleop_launch_description)
+    ld.add_action(mouse_node)
 
     print(LaunchIntrospector().format_launch_description(ld))
 
     return ld
+
+
+if __name__ == '__main__':
+    generate_launch_description()
