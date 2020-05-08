@@ -1,0 +1,33 @@
+joystick_control:
+  ros__parameters:
+    button_shutdown_1       : 8
+    button_shutdown_2       : 9
+
+    button_motor_off        : 8
+    button_motor_on         : 9
+
+    button_cmd_enable       : 4
+    axis_cmd_linear_x       : 1
+    axis_cmd_angular_z      : 2
+
+    analog_d_pad            : true
+    d_pad_up                : 5
+    d_pad_down              : 5
+    d_pad_left              : 4
+    d_pad_right             : 4
+    # for analog_d_pad 
+    d_pad_up_is_positive    : true
+    d_pad_right_is_positive : false
+
+    button_buzzer_enable    : 5
+    dpad_buzzer0            : "up"
+    dpad_buzzer1            : "right"
+    dpad_buzzer2            : "down"
+    dpad_buzzer3            : "left"
+    button_buzzer4          : 3
+    button_buzzer5          : 2
+    button_buzzer6          : 1
+    button_buzzer7          : 0
+
+    button_sensor_sound_en  : 7
+    button_config_enable    : 6

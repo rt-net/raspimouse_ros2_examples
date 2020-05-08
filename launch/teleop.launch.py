@@ -24,6 +24,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     config_file_name = 'joy_dualshock3.yml'
+    # config_file_name = 'joy_f710.yml'
     joydev = LaunchConfiguration('joydev')
 
     declare_joydev = DeclareLaunchArgument(
