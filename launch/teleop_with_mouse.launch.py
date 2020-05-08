@@ -39,7 +39,6 @@ def generate_launch_description(argv=sys.argv[1:]):
             os.path.join(get_package_share_directory('raspimouse_ros2_examples'), 'launch'),
             '/teleop.launch.py'
             ]),
-        # launch_arguments={'joydev': '/dev/input/js0'}.items(),
         launch_arguments={'joydev': joydev}.items(),
     )
 
