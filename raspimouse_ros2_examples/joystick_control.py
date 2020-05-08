@@ -25,6 +25,9 @@ from sensor_msgs.msg import Joy
 from std_msgs.msg import Int16
 from geometry_msgs.msg import Twist
 from std_srvs.srv import SetBool
+from lifecycle_msgs.srv import ChangeState
+from lifecycle_msgs.srv import GetState
+from lifecycle_msgs.msg import Transition
 from raspimouse_msgs.msg import LightSensors
 from raspimouse_msgs.msg import Switches
 
@@ -121,19 +124,54 @@ class JoyWrapper(Node):
         self._sub_switches = self.create_subscription(
             Switches, 'switches', self._callback_switches, 1)
 
+        self._client_get_state = self.create_client(GetState, 'raspimouse/get_state')
+        while not self._client_get_state.wait_for_service(timeout_sec=1.0):
+            self._node_logger.info('get_state service not available')
+            self.destroy_node()
+
+        self._client_change_state = self.create_client(ChangeState, 'raspimouse/change_state')
+        while not self._client_get_state.wait_for_service(timeout_sec=1.0):
+            self._node_logger.info('cahnge_state service not available')
+            self.destroy_node()
+        self._activate_raspimouse()
+
         self._cli = self.create_client(SetBool, 'motor_power')
         while not self._cli.wait_for_service(timeout_sec=1.0):
-            self._node_logger.info('service not available')
+            self._node_logger.info('motor_power service not available')
+            rclpy.shutdown()
             self.destroy_node()
         self._motor_on()
 
     def __del__(self):
         self._motor_off()
 
+    def _activate_raspimouse(self):
+        self._set_mouse_lifecycle_state(Transition.TRANSITION_CONFIGURE)
+        self._set_mouse_lifecycle_state(Transition.TRANSITION_ACTIVATE)
+        self._node_logger.info("Mouse state is " 
+            + self._get_mouse_lifecycle_state())
+
+    def _set_mouse_lifecycle_state(self, transition_id):
+        request = ChangeState.Request()
+        request.transition.id = transition_id
+        future = self._client_change_state.call_async(request)
+        executor = rclpy.executors.SingleThreadedExecutor(context=self.context)
+        rclpy.spin_until_future_complete(self, future, executor=executor)
+        return future.result().success
+
+    def _get_mouse_lifecycle_state(self):
+        future = self._client_get_state.call_async(GetState.Request())
+        executor = rclpy.executors.SingleThreadedExecutor(context=self.context)
+        rclpy.spin_until_future_complete(self, future, executor=executor)
+        return future.result().current_state.label
+
     def _motor_request(self, request_data=False):
         request = SetBool.Request()
         request.data = request_data
-        self._cli.call_async(request)
+        future = self._cli.call_async(request)
+        # executor = rclpy.executors.SingleThreadedExecutor(context=self.context)
+        # rclpy.spin_until_future_complete(self, future, executor=executor)
+        # return future.result().success
 
     def _motor_on(self):
         self._motor_request(True)
@@ -159,6 +197,7 @@ class JoyWrapper(Node):
         if joy_msg.buttons[self._BUTTON_SHUTDOWN_1] and\
                 joy_msg.buttons[self._BUTTON_SHUTDOWN_2]:
             self._motor_off()
+            self._set_mouse_lifecycle_state(Transition.TRANSITION_DEACTIVATE)
             self.destroy_node()
 
     def _joy_motor_onoff(self, joy_msg):

@@ -14,6 +14,8 @@
 
 import os
 from ament_index_python.packages import get_package_share_directory
+
+from launch import LaunchIntrospector
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
@@ -39,7 +41,7 @@ def generate_launch_description():
         package='raspimouse_ros2_examples',
         node_executable='joystick_control.py',
         parameters=[os.path.join(get_package_share_directory(
-            'raspimouse_ros2_examples'), 'config', 'joyconfig.yml')]
+            'raspimouse_ros2_examples'), 'config', 'joyconfig.yml')],
     )
 
     ld = LaunchDescription()
@@ -47,5 +49,7 @@ def generate_launch_description():
     ld.add_action(declare_joydev)
     ld.add_action(joy_node)
     ld.add_action(joystick_control_node)
+
+    print(LaunchIntrospector().format_launch_description(ld))
 
     return ld
