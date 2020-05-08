@@ -135,7 +135,6 @@ class JoyWrapper(Node):
         self._check_service(self._client_motor_power)
         self._motor_on()
 
-
     def _check_service(self, client, timeout=1.0):
         while not client.wait_for_service(timeout_sec=timeout):
             self._node_logger.info(client.srv_name + ' service not available')
@@ -144,8 +143,8 @@ class JoyWrapper(Node):
     def _activate_raspimouse(self):
         self._set_mouse_lifecycle_state(Transition.TRANSITION_CONFIGURE)
         self._set_mouse_lifecycle_state(Transition.TRANSITION_ACTIVATE)
-        self._node_logger.info("Mouse state is " 
-            + self._get_mouse_lifecycle_state())
+        self._node_logger.info("Mouse state is "
+                               + self._get_mouse_lifecycle_state())
 
     def _set_mouse_lifecycle_state(self, transition_id):
         request = ChangeState.Request()
@@ -164,7 +163,7 @@ class JoyWrapper(Node):
     def _motor_request(self, request_data=False):
         request = SetBool.Request()
         request.data = request_data
-        future = self._client_motor_power.call_async(request)
+        self._client_motor_power.call_async(request)
 
     def _motor_on(self):
         self._motor_request(True)
