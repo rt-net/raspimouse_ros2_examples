@@ -125,25 +125,21 @@ class JoyWrapper(Node):
             Switches, 'switches', self._callback_switches, 1)
 
         self._client_get_state = self.create_client(GetState, 'raspimouse/get_state')
-        while not self._client_get_state.wait_for_service(timeout_sec=1.0):
-            self._node_logger.info('get_state service not available')
-            self.destroy_node()
+        self._check_service(self._client_get_state)
 
         self._client_change_state = self.create_client(ChangeState, 'raspimouse/change_state')
-        while not self._client_get_state.wait_for_service(timeout_sec=1.0):
-            self._node_logger.info('cahnge_state service not available')
-            self.destroy_node()
+        self._check_service(self._client_change_state)
         self._activate_raspimouse()
 
-        self._cli = self.create_client(SetBool, 'motor_power')
-        while not self._cli.wait_for_service(timeout_sec=1.0):
-            self._node_logger.info('motor_power service not available')
-            rclpy.shutdown()
-            self.destroy_node()
+        self._client_motor_power = self.create_client(SetBool, 'motor_power')
+        self._check_service(self._client_motor_power)
         self._motor_on()
 
-    def __del__(self):
-        self._motor_off()
+
+    def _check_service(self, client, timeout=1.0):
+        while not client.wait_for_service(timeout_sec=timeout):
+            self._node_logger.info(client.srv_name + ' service not available')
+            self.destroy_node()
 
     def _activate_raspimouse(self):
         self._set_mouse_lifecycle_state(Transition.TRANSITION_CONFIGURE)
@@ -168,10 +164,7 @@ class JoyWrapper(Node):
     def _motor_request(self, request_data=False):
         request = SetBool.Request()
         request.data = request_data
-        future = self._cli.call_async(request)
-        # executor = rclpy.executors.SingleThreadedExecutor(context=self.context)
-        # rclpy.spin_until_future_complete(self, future, executor=executor)
-        # return future.result().success
+        future = self._client_motor_power.call_async(request)
 
     def _motor_on(self):
         self._motor_request(True)
