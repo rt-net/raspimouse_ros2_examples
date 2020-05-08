@@ -2,8 +2,7 @@
 
 # raspimouse_ros2_examples
 
-![Dashing](https://github.com/rt-net/raspimouse_ros2_examples/workflows/Dashing/badge.svg?branch=master)
-![industrial_ci](https://github.com/rt-net/raspimouse_ros2_examples/workflows/industrial_ci/badge.svg?branch=master)
+[![industrial_ci](https://github.com/rt-net/raspimouse_ros2_examples/workflows/industrial_ci/badge.svg?branch=master)](https://github.com/rt-net/raspimouse_ros2_examples/actions?query=workflow%3Aindustrial_ci+branch%3Amaster)
 
 Raspberry Pi MouseのROS 2サンプルコード集です。
 
