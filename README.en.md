@@ -71,13 +71,13 @@ This is an example to use joystick controller to control a Raspberry Pi Mouse.
 Launch nodes with the following command:
 
 ```sh
-$ ros2 launch raspimouse_ros2_examples teleop_with_mouse.launch.py joydev:="/dev/input/js0"
+$ ros2 launch raspimouse_ros2_examples teleop_joy_with_mouse.launch.py joydev:="/dev/input/js0"
 
 # Control from remote computer
 ## on RaspberryPiMouse
 $ ros2 run raspimouse raspimouse
 ## on remote computer
-$ ros2 launch raspimouse_ros2_examples teleop.launch.py
+$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py
 ```
 
 This picture shows the default key configuration.
@@ -86,7 +86,7 @@ This picture shows the default key configuration.
 
 #### Configure
 
-Edit [./launch/teleop.launch.py](./launch/teleop.launch.py) to switch key config files.
+Edit [./launch/teleop_joy.launch.py](./launch/teleop_joy.launch.py) to switch key config files.
 
 ```python
 def generate_launch_description():

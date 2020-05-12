@@ -37,7 +37,7 @@ def generate_launch_description(argv=sys.argv[1:]):
     teleop_launch_description = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             os.path.join(get_package_share_directory('raspimouse_ros2_examples'), 'launch'),
-            '/teleop.launch.py'
+            '/teleop_joy.launch.py'
             ]),
         launch_arguments={'joydev': joydev}.items(),
     )
