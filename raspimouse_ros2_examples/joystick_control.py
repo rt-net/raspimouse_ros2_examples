@@ -138,7 +138,6 @@ class JoyWrapper(Node):
             self._node_logger.warn(self._client_motor_power.srv_name + ' service not available')
         self._motor_on()
 
-
     def _activate_raspimouse(self):
         self._set_mouse_lifecycle_state(Transition.TRANSITION_CONFIGURE)
         self._set_mouse_lifecycle_state(Transition.TRANSITION_ACTIVATE)
