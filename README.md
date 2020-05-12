@@ -73,6 +73,12 @@ $ source ~/ros2_ws/install/setup.bash
 
 ```sh
 $ ros2 launch raspimouse_ros2_examples teleop_with_mouse.launch.py joydev:="/dev/input/js0"
+
+# Control from remote computer
+## on RaspberryPiMouse
+$ ros2 run raspimouse raspimouse
+## on remote computer
+$ ros2 launch raspimouse_ros2_examples teleop.launch.py
 ```
 
 デフォルトのキー割り当てはこちらです。
