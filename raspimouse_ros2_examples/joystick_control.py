@@ -16,20 +16,21 @@
 # limitations under the License.
 
 
-import rclpy
 import math
 from time import sleep
-from rclpy.node import Node
 
-from sensor_msgs.msg import Joy
-from std_msgs.msg import Int16
 from geometry_msgs.msg import Twist
-from std_srvs.srv import SetBool
+from lifecycle_msgs.msg import Transition
 from lifecycle_msgs.srv import ChangeState
 from lifecycle_msgs.srv import GetState
-from lifecycle_msgs.msg import Transition
 from raspimouse_msgs.msg import LightSensors
 from raspimouse_msgs.msg import Switches
+
+import rclpy
+from rclpy.node import Node
+from sensor_msgs.msg import Joy
+from std_msgs.msg import Int16
+from std_srvs.srv import SetBool
 
 
 class JoyWrapper(Node):
@@ -53,10 +54,10 @@ class JoyWrapper(Node):
             ('d_pad_up_is_positive', True),
             ('d_pad_right_is_positive', False),
             ('button_buzzer_enable', 5),
-            ('dpad_buzzer0', "up"),
-            ('dpad_buzzer1', "right"),
-            ('dpad_buzzer2', "down"),
-            ('dpad_buzzer3', "left"),
+            ('dpad_buzzer0', 'up'),
+            ('dpad_buzzer1', 'right'),
+            ('dpad_buzzer2', 'down'),
+            ('dpad_buzzer3', 'left'),
             ('button_buzzer4', 2),
             ('button_buzzer5', 1),
             ('button_buzzer6', 0),
@@ -141,7 +142,7 @@ class JoyWrapper(Node):
     def _activate_raspimouse(self):
         self._set_mouse_lifecycle_state(Transition.TRANSITION_CONFIGURE)
         self._set_mouse_lifecycle_state(Transition.TRANSITION_ACTIVATE)
-        self._node_logger.info("Mouse state is "
+        self._node_logger.info('Mouse state is '
                                + self._get_mouse_lifecycle_state())
 
     def _set_mouse_lifecycle_state(self, transition_id):
@@ -203,8 +204,8 @@ class JoyWrapper(Node):
             cmdvel.linear.x = self._vel_linear_x * joy_msg.axes[self._AXIS_CMD_LINEAR_X]
             cmdvel.angular.z = self._vel_angular_z * joy_msg.axes[self._AXIS_CMD_ANGULAR_Z]
             self._node_logger.info(
-                "linear_x:" + str(cmdvel.linear.x) +
-                ", angular_z:" + str(cmdvel.angular.z))
+                'linear_x:' + str(cmdvel.linear.x) +
+                ', angular_z:' + str(cmdvel.angular.z))
             self._pub_cmdvel.publish(cmdvel)
 
             self._cmdvel_has_value = True
@@ -241,13 +242,13 @@ class JoyWrapper(Node):
         return self._joy_dpad(joy_msg, self._D_PAD_RIGHT, positive_on)
 
     def _dpad(self, joy_msg, target):
-        if target == "up":
+        if target == 'up':
             return self._dpad_up(joy_msg)
-        elif target == "down":
+        elif target == 'down':
             return self._dpad_down(joy_msg)
-        elif target == "left":
+        elif target == 'left':
             return self._dpad_left(joy_msg)
-        elif target == "right":
+        elif target == 'right':
             return self._dpad_right(joy_msg)
         else:
             return False
@@ -355,8 +356,8 @@ class JoyWrapper(Node):
 
             self._switch_has_been_pressed = any_switch_pressed
             self._node_logger.info(
-                    "linear_x:" + str(self._vel_linear_x) +
-                    ", angular_z:" + str(self._vel_angular_z)
+                    'linear_x:' + str(self._vel_linear_x) +
+                    ', angular_z:' + str(self._vel_angular_z)
                     )
 
     def _config_velocity(self, current, add, lowerlimit, upperlimit):
