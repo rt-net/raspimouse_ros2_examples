@@ -125,20 +125,18 @@ class JoyWrapper(Node):
             Switches, 'switches', self._callback_switches, 1)
 
         self._client_get_state = self.create_client(GetState, 'raspimouse/get_state')
-        self._check_service(self._client_get_state)
+        while not self._client_get_state.wait_for_service(timeout_sec=1.0):
+            self._node_logger.warn(self._client_get_state.srv_name + ' service not available')
 
         self._client_change_state = self.create_client(ChangeState, 'raspimouse/change_state')
-        self._check_service(self._client_change_state)
+        while not self._client_change_state.wait_for_service(timeout_sec=1.0):
+            self._node_logger.warn(self._client_change_state.srv_name + ' service not available')
         self._activate_raspimouse()
 
         self._client_motor_power = self.create_client(SetBool, 'motor_power')
-        self._check_service(self._client_motor_power)
+        while not self._client_motor_power.wait_for_service(timeout_sec=1.0):
+            self._node_logger.warn(self._client_motor_power.srv_name + ' service not available')
         self._motor_on()
-
-    def _check_service(self, client, timeout=1.0):
-        while not client.wait_for_service(timeout_sec=timeout):
-            self._node_logger.info(client.srv_name + ' service not available')
-            self.destroy_node()
 
     def _activate_raspimouse(self):
         self._set_mouse_lifecycle_state(Transition.TRANSITION_CONFIGURE)
