@@ -72,13 +72,13 @@ $ source ~/ros2_ws/install/setup.bash
 次のコマンドでノードを起動します。
 
 ```sh
-$ ros2 launch raspimouse_ros2_examples teleop_with_mouse.launch.py joydev:="/dev/input/js0"
+$ ros2 launch raspimouse_ros2_examples teleop_joy_with_mouse.launch.py joydev:="/dev/input/js0"
 
 # Control from remote computer
 ## on RaspberryPiMouse
 $ ros2 run raspimouse raspimouse
 ## on remote computer
-$ ros2 launch raspimouse_ros2_examples teleop.launch.py
+$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py
 ```
 
 デフォルトのキー割り当てはこちらです。
@@ -87,7 +87,7 @@ $ ros2 launch raspimouse_ros2_examples teleop.launch.py
 
 #### Configure
 
-[./launch/teleop.launch.py](./launch/teleop.launch.py)を編集してコンフィグファイルを切り替えます。
+[./launch/teleop_joy.launch.py](./launch/teleop_joy.launch.py)を編集してコンフィグファイルを切り替えます。
 
 ```python
 def generate_launch_description():
