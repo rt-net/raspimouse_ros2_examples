@@ -21,6 +21,7 @@ find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(lifecycle_msgs REQUIRED)
 
 include_directories(include)
 
@@ -31,7 +32,8 @@ target_compile_definitions(object_tracking_component
 ament_target_dependencies(object_tracking_component
   rclcpp
   rclcpp_components
-  std_msgs)
+  std_msgs
+  lifecycle_msgs)
 rclcpp_components_register_nodes(object_tracking_component "object_tracking::Talker")
 
 add_executable(object_tracking src/object_tracking.cpp)
