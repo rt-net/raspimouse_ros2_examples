@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <algorithm>
 #include <chrono>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "lifecycle_msgs/msg/state.hpp"
 #include "lifecycle_msgs/msg/transition.hpp"
@@ -54,19 +56,34 @@ std::uint8_t state_of(
   return future_result.get()->current_state.id;
 }
 
-bool all_nodes_are_unconfigured(rclcpp::Node::SharedPtr node, std::string target_node_name)
+bool all_nodes_are_unconfigured(
+  rclcpp::Node::SharedPtr node,
+  const std::vector<std::string> & target_node_names)
 {
-  return state_of(target_node_name, node, 10s) == MsgState::PRIMARY_STATE_UNCONFIGURED;
+  return std::all_of(target_node_names.begin(), target_node_names.end(),
+           [&](std::string s) {
+             return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_UNCONFIGURED;
+           });
 }
 
-bool all_nodes_are_inactive(rclcpp::Node::SharedPtr node, std::string target_node_name)
+bool all_nodes_are_inactive(
+  rclcpp::Node::SharedPtr node,
+  const std::vector<std::string> & target_node_names)
 {
-  return state_of(target_node_name, node, 10s) == MsgState::PRIMARY_STATE_INACTIVE;
+  return std::all_of(target_node_names.begin(), target_node_names.end(),
+           [&](std::string s) {
+             return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_INACTIVE;
+           });
 }
 
-bool all_nodes_are_active(rclcpp::Node::SharedPtr node, std::string target_node_name)
+bool all_nodes_are_active(
+  rclcpp::Node::SharedPtr node,
+  const std::vector<std::string> & target_node_names)
 {
-  return state_of(target_node_name, node, 10s) == MsgState::PRIMARY_STATE_ACTIVE;
+  return std::all_of(target_node_names.begin(), target_node_names.end(),
+           [&](std::string s) {
+             return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_ACTIVE;
+           });
 }
 
 bool change_state(
@@ -95,14 +112,24 @@ bool change_state(
   return future_result.get()->success;
 }
 
-bool configure_all_nodes(rclcpp::Node::SharedPtr node, std::string target_node_name)
+bool configure_all_nodes(
+  rclcpp::Node::SharedPtr node,
+  const std::vector<std::string> & target_node_names)
 {
-  return change_state(target_node_name, node, MsgTransition::TRANSITION_CONFIGURE, 10s);
+  return std::all_of(target_node_names.begin(), target_node_names.end(),
+           [&](std::string s) {
+             return change_state(s, node, MsgTransition::TRANSITION_CONFIGURE, 10s);
+           });
 }
 
-bool activate_all_nodes(rclcpp::Node::SharedPtr node, std::string target_node_name)
+bool activate_all_nodes(
+  rclcpp::Node::SharedPtr node,
+  const std::vector<std::string> & target_node_names)
 {
-  return change_state(target_node_name, node, MsgTransition::TRANSITION_ACTIVATE, 10s);
+  return std::all_of(target_node_names.begin(), target_node_names.end(),
+           [&](std::string s) {
+             return change_state(s, node, MsgTransition::TRANSITION_ACTIVATE, 10s);
+           });
 }
 
 
@@ -113,30 +140,30 @@ int main(int argc, char * argv[])
 
   rclcpp::init(argc, argv);
 
-  std::string target_node_name = "raspimouse";
+  std::vector<std::string> target_node_names{"raspimouse", "tracker"};
 
   auto node = rclcpp::Node::make_shared("object_tracking_observer");
 
-  if (!all_nodes_are_unconfigured(node, target_node_name)) {
+  if (!all_nodes_are_unconfigured(node, target_node_names)) {
     RCLCPP_ERROR(node->get_logger(), "Failed to launch nodes.");
     rclcpp::shutdown();
   }
   RCLCPP_INFO(node->get_logger(), "All nodes launched.");
 
-  if (!configure_all_nodes(node, target_node_name)) {
+  if (!configure_all_nodes(node, target_node_names)) {
     RCLCPP_ERROR(node->get_logger(), "Failed to configure nodes.");
     rclcpp::shutdown();
   }
   RCLCPP_INFO(node->get_logger(), "All nodes configured.");
 
-  if (!activate_all_nodes(node, target_node_name)) {
+  if (!activate_all_nodes(node, target_node_names)) {
     RCLCPP_ERROR(node->get_logger(), "Failed to activate nodes.");
     rclcpp::shutdown();
   }
   RCLCPP_INFO(node->get_logger(), "All nodes configured.");
 
   while (rclcpp::ok()) {
-    if (all_nodes_are_active(node, target_node_name)) {
+    if (all_nodes_are_active(node, target_node_names)) {
       RCLCPP_INFO(node->get_logger(), "All nodes are inactive.");
     } else {
       // all node shutdown
