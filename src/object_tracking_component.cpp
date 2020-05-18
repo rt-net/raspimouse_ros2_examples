@@ -31,24 +31,8 @@ namespace object_tracking
 
 Tracker::Tracker(const rclcpp::NodeOptions & options)
 : rclcpp_lifecycle::LifecycleNode("tracker", options),
-  count_(0), frame_id_(0)
+  frame_id_(0)
 {
-}
-
-void Tracker::on_timer()
-{
-  if (!pub_->is_activated()) {
-    RCLCPP_INFO(
-      this->get_logger(),
-      "Lifecycle publisher is currently inactive. Mesages are not published.");
-  }
-
-  auto msg = std::make_unique<std_msgs::msg::String>();
-  msg->data = "Hello World: " + std::to_string(++count_);
-  RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", msg->data.c_str());
-  std::flush(std::cout);
-
-  pub_->publish(std::move(msg));
 }
 
 void Tracker::on_image_timer()
@@ -102,10 +86,6 @@ void Tracker::convert_frame_to_message(
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Tracker::on_configure(const rclcpp_lifecycle::State &)
 {
-  // Create a publisher of "std_mgs/String" messages on the "chatter" topic.
-  pub_ = create_publisher<std_msgs::msg::String>("chatter", 10);
-  // Use a timer to schedule periodic message publishing.
-  timer_ = create_wall_timer(1s, std::bind(&Tracker::on_timer, this));
   image_timer_ = create_wall_timer(100ms, std::bind(&Tracker::on_image_timer, this));
 
   size_t depth = rmw_qos_profile_default.depth;
@@ -140,7 +120,6 @@ Tracker::on_configure(const rclcpp_lifecycle::State &)
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Tracker::on_activate(const rclcpp_lifecycle::State &)
 {
-  pub_->on_activate();
   image_pub_->on_activate();
   RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
 
@@ -150,7 +129,6 @@ Tracker::on_activate(const rclcpp_lifecycle::State &)
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Tracker::on_deactivate(const rclcpp_lifecycle::State &)
 {
-  pub_->on_deactivate();
   image_pub_->on_deactivate();
   RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
 
@@ -160,9 +138,8 @@ Tracker::on_deactivate(const rclcpp_lifecycle::State &)
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Tracker::on_cleanup(const rclcpp_lifecycle::State &)
 {
-  timer_.reset();
-  pub_.reset();
   image_pub_.reset();
+  image_timer_.reset();
 
   RCLCPP_INFO(this->get_logger(), "on_cleanup() is called.");
 
@@ -172,9 +149,8 @@ Tracker::on_cleanup(const rclcpp_lifecycle::State &)
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Tracker::on_shutdown(const rclcpp_lifecycle::State &)
 {
-  timer_.reset();
-  pub_.reset();
   image_pub_.reset();
+  image_timer_.reset();
 
   RCLCPP_INFO(this->get_logger(), "on_shutdown() is called.");
 

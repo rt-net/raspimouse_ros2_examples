@@ -36,16 +36,12 @@ public:
   explicit Tracker(const rclcpp::NodeOptions & options);
 
 protected:
-  void on_timer();
   void on_image_timer();
 
 private:
-  size_t count_;
   size_t frame_id_;
   cv::VideoCapture cap_;
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::String>> pub_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> image_pub_;
-  rclcpp::TimerBase::SharedPtr timer_;
   rclcpp::TimerBase::SharedPtr image_timer_;
 
   std::string mat_type2encoding(int mat_type);
