@@ -14,9 +14,9 @@
 
 #include "raspimouse_ros2_examples/object_tracking_component.hpp"
 
+#include <memory>
 #include <chrono>
 #include <iostream>
-#include <memory>
 #include <utility>
 
 #include "rclcpp/rclcpp.hpp"
@@ -29,25 +29,78 @@ namespace object_tracking
 {
 
 Tracker::Tracker(const rclcpp::NodeOptions & options)
-: Node("tracker", options), count_(0)
+: rclcpp_lifecycle::LifecycleNode("tracker", options), count_(0)
+{
+}
+
+void Tracker::on_timer()
+{
+  if (!pub_->is_activated()) {
+    RCLCPP_INFO(
+      this->get_logger(),
+      "Lifecycle publisher is currently inactive. Mesages are not published.");
+  }
+
+  auto msg = std::make_unique<std_msgs::msg::String>();
+  msg->data = "Hello World: " + std::to_string(++count_);
+  RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", msg->data.c_str());
+  std::flush(std::cout);
+
+  pub_->publish(std::move(msg));
+}
+
+rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+Tracker::on_configure(const rclcpp_lifecycle::State &)
 {
   // Create a publisher of "std_mgs/String" messages on the "chatter" topic.
   pub_ = create_publisher<std_msgs::msg::String>("chatter", 10);
 
   // Use a timer to schedule periodic message publishing.
   timer_ = create_wall_timer(1s, std::bind(&Tracker::on_timer, this));
+
+  RCLCPP_INFO(this->get_logger(), "on_configure() is called.");
+
+  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
-void Tracker::on_timer()
+rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+Tracker::on_activate(const rclcpp_lifecycle::State &)
 {
-  auto msg = std::make_unique<std_msgs::msg::String>();
-  msg->data = "Hello World: " + std::to_string(++count_);
-  RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", msg->data.c_str());
-  std::flush(std::cout);
+  pub_->on_activate();
+  RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
 
-  // Put the message into a queue to be processed by the middleware.
-  // This call is non-blocking.
-  pub_->publish(std::move(msg));
+  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+}
+
+rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+Tracker::on_deactivate(const rclcpp_lifecycle::State &)
+{
+  pub_->on_deactivate();
+  RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
+
+  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+}
+
+rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+Tracker::on_cleanup(const rclcpp_lifecycle::State &)
+{
+  timer_.reset();
+  pub_.reset();
+
+  RCLCPP_INFO(this->get_logger(), "on_cleanup() is called.");
+
+  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+}
+
+rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+Tracker::on_shutdown(const rclcpp_lifecycle::State &)
+{
+  timer_.reset();
+  pub_.reset();
+
+  RCLCPP_INFO(this->get_logger(), "on_shutdown() is called.");
+
+  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
 }  // namespace object_tracking

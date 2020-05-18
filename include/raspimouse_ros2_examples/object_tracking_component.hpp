@@ -15,14 +15,18 @@
 #ifndef RASPIMOUSE_ROS2_EXAMPLES__OBJECT_TRACKING_COMPONENT_HPP_
 #define RASPIMOUSE_ROS2_EXAMPLES__OBJECT_TRACKING_COMPONENT_HPP_
 
+#include <memory>
+
 #include "raspimouse_ros2_examples/visibility_control.h"
 #include "rclcpp/rclcpp.hpp"
+#include "rclcpp_lifecycle/lifecycle_node.hpp"
+#include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 #include "std_msgs/msg/string.hpp"
 
 namespace object_tracking
 {
 
-class Tracker : public rclcpp::Node
+class Tracker : public rclcpp_lifecycle::LifecycleNode
 {
 public:
   RASPIMOUSE_ROS2_EXAMPLES_PUBLIC
@@ -33,8 +37,19 @@ protected:
 
 private:
   size_t count_;
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_;
+  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::String>> pub_;
+  // rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_;
   rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+  on_configure(const rclcpp_lifecycle::State &);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+  on_activate(const rclcpp_lifecycle::State &);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+  on_deactivate(const rclcpp_lifecycle::State &);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+  on_cleanup(const rclcpp_lifecycle::State &);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+  on_shutdown(const rclcpp_lifecycle::State &);
 };
 
 }  // namespace object_tracking
