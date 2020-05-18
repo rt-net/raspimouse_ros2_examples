@@ -127,7 +127,7 @@ int main(int argc, char * argv[])
   RCLCPP_INFO(node->get_logger(), "All nodes configured.");
 
   while (rclcpp::ok()) {
-    if (!all_nodes_are_inactive(node, get_state_service_name)) {
+    if (all_nodes_are_inactive(node, get_state_service_name)) {
       RCLCPP_INFO(node->get_logger(), "All nodes are inactive.");
     } else {
       // all node shutdown
