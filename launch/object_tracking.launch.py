@@ -14,6 +14,7 @@
 
 import launch
 from launch_ros.actions import ComposableNodeContainer
+from launch_ros.actions import Node
 from launch_ros.descriptions import ComposableNode
 
 
@@ -37,4 +38,10 @@ def generate_launch_description():
             output='screen',
     )
 
-    return launch.LaunchDescription([container])
+    object_tracking_core = Node(
+        package='raspimouse_ros2_examples',
+        node_executable='object_tracking',
+        output='screen'
+    )
+
+    return launch.LaunchDescription([container, object_tracking_core])
