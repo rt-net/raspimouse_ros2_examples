@@ -112,12 +112,13 @@ int main(int argc, char * argv[])
 
   rclcpp::init(argc, argv);
 
+  std::string target_node_name = "raspimouse";
   std::string get_state_service_name = "raspimouse/get_state";
   std::string change_state_service_name = "raspimouse/change_state";
 
   auto node = rclcpp::Node::make_shared("object_tracking_observer");
 
-  if (!all_nodes_are_unconfigured(node, get_state_service_name)) {
+  if (!all_nodes_are_unconfigured(node, target_node_name)) {
     RCLCPP_ERROR(node->get_logger(), "Failed to launch nodes.");
     rclcpp::shutdown();
   }
@@ -136,7 +137,7 @@ int main(int argc, char * argv[])
   RCLCPP_INFO(node->get_logger(), "All nodes configured.");
 
   while (rclcpp::ok()) {
-    if (all_nodes_are_active(node, get_state_service_name)) {
+    if (all_nodes_are_active(node, target_node_name)) {
       RCLCPP_INFO(node->get_logger(), "All nodes are inactive.");
     } else {
       // all node shutdown
