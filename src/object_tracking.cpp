@@ -30,16 +30,17 @@ using MsgTransition = lifecycle_msgs::msg::Transition;
 using SrvGetState = lifecycle_msgs::srv::GetState;
 using SrvChangeState = lifecycle_msgs::srv::ChangeState;
 
-bool all_nodes_state_are(
-  rclcpp::Node::SharedPtr node, std::string service_name,
-  std::uint8_t desired_id, std::chrono::seconds time_out = 10s)
+std::uint8_t state_of(
+  std::string target_node_name,
+  rclcpp::Node::SharedPtr node, std::chrono::seconds time_out = 10s)
 {
   auto request = std::make_shared<SrvGetState::Request>();
+  auto service_name = target_node_name + "/get_state";
   auto client = node->create_client<SrvGetState>(service_name);
 
   if (!client->wait_for_service(time_out)) {
     RCLCPP_ERROR(node->get_logger(), "Service is not avaliable.");
-    return false;
+    return MsgState::PRIMARY_STATE_UNKNOWN;
   }
 
   auto future_result = client->async_send_request(request);
@@ -47,29 +48,25 @@ bool all_nodes_state_are(
 
   if (future_status != rclcpp::executor::FutureReturnCode::SUCCESS) {
     RCLCPP_ERROR(node->get_logger(), "Service time out while getting current state.");
-    return false;
+    return MsgState::PRIMARY_STATE_UNKNOWN;
   }
 
-  if (future_result.get()->current_state.id == desired_id) {
-    return true;
-  } else {
-    return false;
-  }
+  return future_result.get()->current_state.id;
 }
 
-bool all_nodes_are_unconfigured(rclcpp::Node::SharedPtr node, std::string service_name)
+bool all_nodes_are_unconfigured(rclcpp::Node::SharedPtr node, std::string target_node_name)
 {
-  return all_nodes_state_are(node, service_name, MsgState::PRIMARY_STATE_UNCONFIGURED, 10s);
+  return state_of(target_node_name, node, 10s) == MsgState::PRIMARY_STATE_UNCONFIGURED;
 }
 
-bool all_nodes_are_inactive(rclcpp::Node::SharedPtr node, std::string service_name)
+bool all_nodes_are_inactive(rclcpp::Node::SharedPtr node, std::string target_node_name)
 {
-  return all_nodes_state_are(node, service_name, MsgState::PRIMARY_STATE_INACTIVE, 10s);
+  return state_of(target_node_name, node, 10s) == MsgState::PRIMARY_STATE_INACTIVE;
 }
 
-bool all_nodes_are_active(rclcpp::Node::SharedPtr node, std::string service_name)
+bool all_nodes_are_active(rclcpp::Node::SharedPtr node, std::string target_node_name)
 {
-  return all_nodes_state_are(node, service_name, MsgState::PRIMARY_STATE_ACTIVE, 10s);
+  return state_of(target_node_name, node, 10s) == MsgState::PRIMARY_STATE_ACTIVE;
 }
 
 bool change_all_nodes_state(
@@ -102,6 +99,12 @@ bool configure_all_nodes(rclcpp::Node::SharedPtr node, std::string service_name)
   return change_all_nodes_state(node, service_name, MsgTransition::TRANSITION_CONFIGURE, 10s);
 }
 
+bool activate_all_nodes(rclcpp::Node::SharedPtr node, std::string service_name)
+{
+  return change_all_nodes_state(node, service_name, MsgTransition::TRANSITION_ACTIVATE, 10s);
+}
+
+
 int main(int argc, char * argv[])
 {
   // Force flush of the stdout buffer.
@@ -126,8 +129,14 @@ int main(int argc, char * argv[])
   }
   RCLCPP_INFO(node->get_logger(), "All nodes configured.");
 
+  if (!activate_all_nodes(node, change_state_service_name)) {
+    RCLCPP_ERROR(node->get_logger(), "Failed to activate nodes.");
+    rclcpp::shutdown();
+  }
+  RCLCPP_INFO(node->get_logger(), "All nodes configured.");
+
   while (rclcpp::ok()) {
-    if (all_nodes_are_inactive(node, get_state_service_name)) {
+    if (all_nodes_are_active(node, get_state_service_name)) {
       RCLCPP_INFO(node->get_logger(), "All nodes are inactive.");
     } else {
       // all node shutdown
