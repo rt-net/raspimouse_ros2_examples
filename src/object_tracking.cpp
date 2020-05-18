@@ -69,13 +69,14 @@ bool all_nodes_are_active(rclcpp::Node::SharedPtr node, std::string target_node_
   return state_of(target_node_name, node, 10s) == MsgState::PRIMARY_STATE_ACTIVE;
 }
 
-bool change_all_nodes_state(
-  rclcpp::Node::SharedPtr node, std::string service_name,
+bool change_state(
+  std::string target_node_name, rclcpp::Node::SharedPtr node,
   std::uint8_t transition, std::chrono::seconds time_out = 10s)
 {
   auto request = std::make_shared<SrvChangeState::Request>();
   request->transition.id = transition;
 
+  auto service_name = target_node_name + "/change_state";
   auto client = node->create_client<SrvChangeState>(service_name);
 
   if (!client->wait_for_service(time_out)) {
@@ -94,14 +95,14 @@ bool change_all_nodes_state(
   return future_result.get()->success;
 }
 
-bool configure_all_nodes(rclcpp::Node::SharedPtr node, std::string service_name)
+bool configure_all_nodes(rclcpp::Node::SharedPtr node, std::string target_node_name)
 {
-  return change_all_nodes_state(node, service_name, MsgTransition::TRANSITION_CONFIGURE, 10s);
+  return change_state(target_node_name, node, MsgTransition::TRANSITION_CONFIGURE, 10s);
 }
 
-bool activate_all_nodes(rclcpp::Node::SharedPtr node, std::string service_name)
+bool activate_all_nodes(rclcpp::Node::SharedPtr node, std::string target_node_name)
 {
-  return change_all_nodes_state(node, service_name, MsgTransition::TRANSITION_ACTIVATE, 10s);
+  return change_state(target_node_name, node, MsgTransition::TRANSITION_ACTIVATE, 10s);
 }
 
 
@@ -113,8 +114,6 @@ int main(int argc, char * argv[])
   rclcpp::init(argc, argv);
 
   std::string target_node_name = "raspimouse";
-  std::string get_state_service_name = "raspimouse/get_state";
-  std::string change_state_service_name = "raspimouse/change_state";
 
   auto node = rclcpp::Node::make_shared("object_tracking_observer");
 
@@ -124,13 +123,13 @@ int main(int argc, char * argv[])
   }
   RCLCPP_INFO(node->get_logger(), "All nodes launched.");
 
-  if (!configure_all_nodes(node, change_state_service_name)) {
+  if (!configure_all_nodes(node, target_node_name)) {
     RCLCPP_ERROR(node->get_logger(), "Failed to configure nodes.");
     rclcpp::shutdown();
   }
   RCLCPP_INFO(node->get_logger(), "All nodes configured.");
 
-  if (!activate_all_nodes(node, change_state_service_name)) {
+  if (!activate_all_nodes(node, target_node_name)) {
     RCLCPP_ERROR(node->get_logger(), "Failed to activate nodes.");
     rclcpp::shutdown();
   }
