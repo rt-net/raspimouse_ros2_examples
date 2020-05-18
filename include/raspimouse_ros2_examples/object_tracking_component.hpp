@@ -16,12 +16,15 @@
 #define RASPIMOUSE_ROS2_EXAMPLES__OBJECT_TRACKING_COMPONENT_HPP_
 
 #include <memory>
+#include <string>
 
 #include "raspimouse_ros2_examples/visibility_control.h"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "sensor_msgs/msg/image.hpp"
+#include "opencv2/highgui/highgui.hpp"
 
 namespace object_tracking
 {
@@ -34,12 +37,22 @@ public:
 
 protected:
   void on_timer();
+  void on_image_timer();
 
 private:
   size_t count_;
+  size_t frame_id_;
+  cv::VideoCapture cap_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::String>> pub_;
-  // rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_;
+  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> image_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::TimerBase::SharedPtr image_timer_;
+
+  std::string mat_type2encoding(int mat_type);
+  void convert_frame_to_message(
+    const cv::Mat & frame, size_t frame_id,
+    sensor_msgs::msg::Image & msg);
+
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
   on_configure(const rclcpp_lifecycle::State &);
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn

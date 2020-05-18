@@ -22,7 +22,10 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
+find_package(OpenCV REQUIRED)
+
 
 include_directories(include)
 
@@ -34,7 +37,9 @@ ament_target_dependencies(object_tracking_component
   rclcpp
   rclcpp_components
   rclcpp_lifecycle
-  std_msgs)
+  std_msgs
+  sensor_msgs
+  OpenCV)
 rclcpp_components_register_nodes(object_tracking_component "object_tracking::Tracker")
 
 add_executable(object_tracking src/object_tracking.cpp)

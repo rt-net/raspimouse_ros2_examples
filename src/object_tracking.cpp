@@ -147,20 +147,23 @@ int main(int argc, char * argv[])
   if (!all_nodes_are_unconfigured(node, target_node_names)) {
     RCLCPP_ERROR(node->get_logger(), "Failed to launch nodes.");
     rclcpp::shutdown();
+  } else {
+    RCLCPP_INFO(node->get_logger(), "All nodes launched.");
   }
-  RCLCPP_INFO(node->get_logger(), "All nodes launched.");
 
   if (!configure_all_nodes(node, target_node_names)) {
     RCLCPP_ERROR(node->get_logger(), "Failed to configure nodes.");
     rclcpp::shutdown();
+  } else {
+    RCLCPP_INFO(node->get_logger(), "All nodes configured.");
   }
-  RCLCPP_INFO(node->get_logger(), "All nodes configured.");
 
   if (!activate_all_nodes(node, target_node_names)) {
     RCLCPP_ERROR(node->get_logger(), "Failed to activate nodes.");
     rclcpp::shutdown();
+  } else {
+    RCLCPP_INFO(node->get_logger(), "All nodes configured.");
   }
-  RCLCPP_INFO(node->get_logger(), "All nodes configured.");
 
   while (rclcpp::ok()) {
     if (all_nodes_are_active(node, target_node_names)) {
