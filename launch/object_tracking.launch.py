@@ -28,8 +28,8 @@ def generate_launch_description():
             composable_node_descriptions=[
                 ComposableNode(
                     package='raspimouse_ros2_examples',
-                    node_plugin='object_tracking::Talker',
-                    node_name='talker'),
+                    node_plugin='object_tracking::Tracker',
+                    node_name='tracker'),
                 ComposableNode(
                     package='raspimouse',
                     node_plugin='raspimouse::Raspimouse',

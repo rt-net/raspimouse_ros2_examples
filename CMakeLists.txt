@@ -33,7 +33,7 @@ ament_target_dependencies(object_tracking_component
   rclcpp
   rclcpp_components
   std_msgs)
-rclcpp_components_register_nodes(object_tracking_component "object_tracking::Talker")
+rclcpp_components_register_nodes(object_tracking_component "object_tracking::Tracker")
 
 add_executable(object_tracking src/object_tracking.cpp)
 target_link_libraries(object_tracking object_tracking_component)

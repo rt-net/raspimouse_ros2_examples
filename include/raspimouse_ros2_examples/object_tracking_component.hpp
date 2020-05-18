@@ -22,11 +22,11 @@
 namespace object_tracking
 {
 
-class Talker : public rclcpp::Node
+class Tracker : public rclcpp::Node
 {
 public:
   RASPIMOUSE_ROS2_EXAMPLES_PUBLIC
-  explicit Talker(const rclcpp::NodeOptions & options);
+  explicit Tracker(const rclcpp::NodeOptions & options);
 
 protected:
   void on_timer();

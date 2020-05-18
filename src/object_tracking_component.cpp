@@ -28,17 +28,17 @@ using namespace std::chrono_literals;
 namespace object_tracking
 {
 
-Talker::Talker(const rclcpp::NodeOptions & options)
-: Node("talker", options), count_(0)
+Tracker::Tracker(const rclcpp::NodeOptions & options)
+: Node("tracker", options), count_(0)
 {
   // Create a publisher of "std_mgs/String" messages on the "chatter" topic.
   pub_ = create_publisher<std_msgs::msg::String>("chatter", 10);
 
   // Use a timer to schedule periodic message publishing.
-  timer_ = create_wall_timer(1s, std::bind(&Talker::on_timer, this));
+  timer_ = create_wall_timer(1s, std::bind(&Tracker::on_timer, this));
 }
 
-void Talker::on_timer()
+void Tracker::on_timer()
 {
   auto msg = std::make_unique<std_msgs::msg::String>();
   msg->data = "Hello World: " + std::to_string(++count_);
@@ -54,4 +54,4 @@ void Talker::on_timer()
 
 #include "rclcpp_components/register_node_macro.hpp"
 
-RCLCPP_COMPONENTS_REGISTER_NODE(object_tracking::Talker)
+RCLCPP_COMPONENTS_REGISTER_NODE(object_tracking::Tracker)
