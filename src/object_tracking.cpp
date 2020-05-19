@@ -41,7 +41,8 @@ std::uint8_t state_of(
   auto client = node->create_client<SrvGetState>(service_name);
 
   if (!client->wait_for_service(time_out)) {
-    RCLCPP_ERROR(node->get_logger(), "Service is not avaliable.");
+    RCLCPP_ERROR(node->get_logger(),
+      "Service %s is not avaliable.", service_name.c_str());
     return MsgState::PRIMARY_STATE_UNKNOWN;
   }
 
@@ -49,7 +50,8 @@ std::uint8_t state_of(
   auto future_status = rclcpp::spin_until_future_complete(node, future_result, time_out);
 
   if (future_status != rclcpp::executor::FutureReturnCode::SUCCESS) {
-    RCLCPP_ERROR(node->get_logger(), "Service time out while getting current state.");
+    RCLCPP_ERROR(node->get_logger(),
+      "Service %s time out while getting current state.", service_name.c_str());
     return MsgState::PRIMARY_STATE_UNKNOWN;
   }
 
@@ -97,7 +99,8 @@ bool change_state(
   auto client = node->create_client<SrvChangeState>(service_name);
 
   if (!client->wait_for_service(time_out)) {
-    RCLCPP_ERROR(node->get_logger(), "Service is not avaliable.");
+    RCLCPP_ERROR(node->get_logger(),
+      "Service %s is not avaliable.", service_name.c_str());
     return false;
   }
 
@@ -105,7 +108,8 @@ bool change_state(
   auto future_status = rclcpp::spin_until_future_complete(node, future_result, time_out);
 
   if (future_status != rclcpp::executor::FutureReturnCode::SUCCESS) {
-    RCLCPP_ERROR(node->get_logger(), "Service time out while changing current state.");
+    RCLCPP_ERROR(node->get_logger(),
+      "Service %s time out while changing current state.", service_name.c_str());
     return false;
   }
 
