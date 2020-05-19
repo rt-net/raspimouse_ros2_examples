@@ -31,6 +31,25 @@ using namespace std::chrono_literals;
 namespace object_tracking
 {
 
+// Ref: https://github.com/ros2/demos/blob/dashing/lifecycle/src/lifecycle_service_client.cpp
+template<typename FutureT, typename WaitTimeT>
+std::future_status
+wait_for_result(
+  FutureT & future,
+  WaitTimeT time_to_wait)
+{
+  auto end = std::chrono::steady_clock::now() + time_to_wait;
+  std::chrono::milliseconds wait_period(100);
+  std::future_status status = std::future_status::timeout;
+  do {
+    auto now = std::chrono::steady_clock::now();
+    auto time_left = end - now;
+    if (time_left <= std::chrono::seconds(0)) {break;}
+    status = future.wait_for((time_left < wait_period) ? time_left : wait_period);
+  } while (rclcpp::ok() && status != std::future_status::ready);
+  return status;
+}
+
 Tracker::Tracker(const rclcpp::NodeOptions & options)
 : rclcpp_lifecycle::LifecycleNode("tracker", options),
   frame_id_(0), device_index_(0), image_width_(320), image_height_(240)
@@ -57,6 +76,12 @@ void Tracker::on_image_timer()
     image_pub_->publish(std::move(msg));
     ++frame_id_;
   }
+}
+
+void Tracker::on_cmd_vel_timer()
+{
+  auto msg = std::make_unique<geometry_msgs::msg::Twist>(cmd_vel_);
+  cmd_vel_pub_->publish(std::move(msg));
 }
 
 // Ref: https://github.com/ros2/demos/blob/dashing/image_tools/src/cam2image.cpp
@@ -125,18 +150,27 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
     cv::Moments mt = cv::moments(contours.at(max_area_index));
     cv::Point mt_point = cv::Point(mt.m10 / mt.m00, mt.m01 / mt.m00);
 
+    double normalized_x = mt_point.x / (input_frame.cols * 0.5) - 1.0;
+    cmd_vel_.angular.z = -1.5 * normalized_x;
+
     cv::drawContours(result_frame, contours, max_area_index,
       cv::Scalar(0, 255, 0), 2, cv::LINE_4, hierarchy);
     cv::circle(result_frame, mt_point, 30, cv::Scalar(0, 0, 255), 2, cv::LINE_4);
+    cv::putText(result_frame, std::to_string(normalized_x), mt_point,
+      cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 0, 0), 2);
+  } else {
+    cmd_vel_.angular.z *= 0.9;
   }
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Tracker::on_configure(const rclcpp_lifecycle::State &)
 {
-  image_timer_ = create_wall_timer(100ms, std::bind(&Tracker::on_image_timer, this));
-  // Don't actually start publishing image data until activated
+  image_timer_ = create_wall_timer(50ms, std::bind(&Tracker::on_image_timer, this));
+  cmd_vel_timer_ = create_wall_timer(10ms, std::bind(&Tracker::on_cmd_vel_timer, this));
+  // Don't actually start publishing data until activated
   image_timer_->cancel();
+  cmd_vel_timer_->cancel();
 
   std::string topic("image");
   RCLCPP_INFO(this->get_logger(), "on_configure() is called.");
@@ -145,6 +179,8 @@ Tracker::on_configure(const rclcpp_lifecycle::State &)
   qos.best_effort();
   image_pub_ = create_publisher<sensor_msgs::msg::Image>(topic, qos);
   result_image_pub_ = create_publisher<sensor_msgs::msg::Image>("result_image", qos);
+  cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
+
 
   // Initialize OpenCV video capture stream.
   cap_.open(device_index_);
@@ -161,9 +197,21 @@ Tracker::on_configure(const rclcpp_lifecycle::State &)
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Tracker::on_activate(const rclcpp_lifecycle::State &)
 {
+  motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
+  if (!motor_power_client_->wait_for_service(5s)) {
+    RCLCPP_ERROR(this->get_logger(),
+      "Service motor_power is not avaliable.");
+    return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::FAILURE;
+  }
+  auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
+  request->data = true;
+  auto future_result = motor_power_client_->async_send_request(request);
+
   image_pub_->on_activate();
   result_image_pub_->on_activate();
+  cmd_vel_pub_->on_activate();
   image_timer_->reset();
+  cmd_vel_timer_->reset();
   RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
 
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
@@ -174,7 +222,9 @@ Tracker::on_deactivate(const rclcpp_lifecycle::State &)
 {
   image_pub_->on_deactivate();
   result_image_pub_->on_deactivate();
+  cmd_vel_pub_->on_deactivate();
   image_timer_->cancel();
+  cmd_vel_timer_->cancel();
   RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
 
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
@@ -185,7 +235,9 @@ Tracker::on_cleanup(const rclcpp_lifecycle::State &)
 {
   image_pub_.reset();
   result_image_pub_.reset();
+  cmd_vel_pub_.reset();
   image_timer_.reset();
+  cmd_vel_timer_.reset();
 
   RCLCPP_INFO(this->get_logger(), "on_cleanup() is called.");
 
@@ -197,7 +249,9 @@ Tracker::on_shutdown(const rclcpp_lifecycle::State &)
 {
   image_pub_.reset();
   result_image_pub_.reset();
+  cmd_vel_pub_.reset();
   image_timer_.reset();
+  cmd_vel_timer_.reset();
 
   RCLCPP_INFO(this->get_logger(), "on_shutdown() is called.");
 

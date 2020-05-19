@@ -23,7 +23,9 @@
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "std_srvs/srv/set_bool.hpp"
 #include "sensor_msgs/msg/image.hpp"
+#include "geometry_msgs/msg/twist.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
 namespace object_tracking
@@ -37,6 +39,7 @@ public:
 
 protected:
   void on_image_timer();
+  void on_cmd_vel_timer();
 
 private:
   size_t frame_id_;
@@ -44,9 +47,13 @@ private:
   int device_index_;
   double image_width_;
   double image_height_;
+  geometry_msgs::msg::Twist cmd_vel_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> image_pub_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> result_image_pub_;
+  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::Twist>> cmd_vel_pub_;
+  std::shared_ptr<rclcpp::Client<std_srvs::srv::SetBool>> motor_power_client_;
   rclcpp::TimerBase::SharedPtr image_timer_;
+  rclcpp::TimerBase::SharedPtr cmd_vel_timer_;
 
   std::string mat_type2encoding(int mat_type);
   void convert_frame_to_message(
