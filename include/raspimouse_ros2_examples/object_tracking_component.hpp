@@ -41,6 +41,9 @@ protected:
 private:
   size_t frame_id_;
   cv::VideoCapture cap_;
+  int device_index_;
+  double image_width_;
+  double image_height_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> image_pub_;
   rclcpp::TimerBase::SharedPtr image_timer_;
 

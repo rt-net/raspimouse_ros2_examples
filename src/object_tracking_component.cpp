@@ -31,7 +31,7 @@ namespace object_tracking
 
 Tracker::Tracker(const rclcpp::NodeOptions & options)
 : rclcpp_lifecycle::LifecycleNode("tracker", options),
-  frame_id_(0)
+  frame_id_(0), device_index_(0), image_width_(320), image_height_(240)
 {
 }
 
@@ -91,9 +91,6 @@ Tracker::on_configure(const rclcpp_lifecycle::State &)
   image_timer_->cancel();
 
   std::string topic("image");
-  size_t width = 320;
-  size_t height = 240;
-
   RCLCPP_INFO(this->get_logger(), "on_configure() is called.");
 
   auto qos = rclcpp::QoS(1);
@@ -101,10 +98,9 @@ Tracker::on_configure(const rclcpp_lifecycle::State &)
   image_pub_ = create_publisher<sensor_msgs::msg::Image>(topic, qos);
 
   // Initialize OpenCV video capture stream.
-  // Always open device 0.
-  cap_.open(0);
-  cap_.set(cv::CAP_PROP_FRAME_WIDTH, static_cast<double>(width));
-  cap_.set(cv::CAP_PROP_FRAME_HEIGHT, static_cast<double>(height));
+  cap_.open(device_index_);
+  cap_.set(cv::CAP_PROP_FRAME_WIDTH, image_width_);
+  cap_.set(cv::CAP_PROP_FRAME_HEIGHT, image_height_);
   if (!cap_.isOpened()) {
     RCLCPP_ERROR(this->get_logger(), "Could not open video stream");
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::FAILURE;
