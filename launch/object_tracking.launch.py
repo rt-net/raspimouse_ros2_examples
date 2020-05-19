@@ -33,7 +33,8 @@ def generate_launch_description():
                 ComposableNode(
                     package='raspimouse',
                     node_plugin='raspimouse::Raspimouse',
-                    node_name='raspimouse'),
+                    node_name='raspimouse',
+                    parameters=[{'use_light_sensors': False}]),
             ],
             output='screen',
     )
