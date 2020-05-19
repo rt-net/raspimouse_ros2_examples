@@ -167,10 +167,10 @@ int main(int argc, char * argv[])
 
   while (rclcpp::ok()) {
     if (all_nodes_are_active(node, target_node_names)) {
-      RCLCPP_INFO(node->get_logger(), "All nodes are inactive.");
+      RCLCPP_INFO(node->get_logger(), "All nodes are active.");
     } else {
       // all node shutdown
-      RCLCPP_ERROR(node->get_logger(), "Any node is not inactive.");
+      RCLCPP_ERROR(node->get_logger(), "Any node is not active.");
       break;
     }
     rclcpp::sleep_for(5s);
