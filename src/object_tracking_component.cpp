@@ -87,21 +87,17 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Tracker::on_configure(const rclcpp_lifecycle::State &)
 {
   image_timer_ = create_wall_timer(100ms, std::bind(&Tracker::on_image_timer, this));
+  // Don't actually start publishing image data until activated
+  image_timer_->cancel();
 
-  size_t depth = rmw_qos_profile_default.depth;
-  rmw_qos_reliability_policy_t reliability_policy = rmw_qos_profile_default.reliability;
-  rmw_qos_history_policy_t history_policy = rmw_qos_profile_default.history;
   std::string topic("image");
   size_t width = 320;
   size_t height = 240;
 
   RCLCPP_INFO(this->get_logger(), "on_configure() is called.");
 
-  auto qos = rclcpp::QoS(
-    rclcpp::QoSInitialization(
-      history_policy,
-      depth));
-  qos.reliability(reliability_policy);
+  auto qos = rclcpp::QoS(1);
+  qos.best_effort();
   image_pub_ = create_publisher<sensor_msgs::msg::Image>(topic, qos);
 
   // Initialize OpenCV video capture stream.
@@ -121,6 +117,7 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Tracker::on_activate(const rclcpp_lifecycle::State &)
 {
   image_pub_->on_activate();
+  image_timer_->reset();
   RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
 
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
@@ -130,6 +127,7 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Tracker::on_deactivate(const rclcpp_lifecycle::State &)
 {
   image_pub_->on_deactivate();
+  image_timer_->cancel();
   RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
 
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
