@@ -162,10 +162,11 @@ int main(int argc, char * argv[])
     RCLCPP_ERROR(node->get_logger(), "Failed to activate nodes.");
     rclcpp::shutdown();
   } else {
-    RCLCPP_INFO(node->get_logger(), "All nodes configured.");
+    RCLCPP_INFO(node->get_logger(), "All nodes activated.");
   }
 
   while (rclcpp::ok()) {
+    rclcpp::sleep_for(10s);
     if (all_nodes_are_active(node, target_node_names)) {
       RCLCPP_INFO(node->get_logger(), "All nodes are active.");
     } else {
@@ -173,7 +174,6 @@ int main(int argc, char * argv[])
       RCLCPP_ERROR(node->get_logger(), "Any node is not active.");
       break;
     }
-    rclcpp::sleep_for(5s);
   }
 
   rclcpp::shutdown();
