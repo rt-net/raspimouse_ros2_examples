@@ -14,6 +14,7 @@
 
 #include "raspimouse_ros2_examples/object_tracking_component.hpp"
 
+#include <opencv2/opencv.hpp>
 #include <memory>
 #include <chrono>
 #include <iostream>
@@ -38,12 +39,18 @@ Tracker::Tracker(const rclcpp::NodeOptions & options)
 void Tracker::on_image_timer()
 {
   auto msg = std::make_unique<sensor_msgs::msg::Image>();
+  auto result_msg = std::make_unique<sensor_msgs::msg::Image>();
   msg->is_bigendian = false;
+  result_msg->is_bigendian = false;
 
-  cv::Mat frame;
+  cv::Mat frame, result_frame;
   cap_ >> frame;
 
   if (!frame.empty()) {
+    tracking(frame, result_frame);
+    convert_frame_to_message(result_frame, frame_id_, *result_msg);
+    result_image_pub_->publish(std::move(result_msg));
+
     // Publish the image message and increment the frame_id.
     convert_frame_to_message(frame, frame_id_, *msg);
     image_pub_->publish(std::move(msg));
@@ -83,6 +90,11 @@ void Tracker::convert_frame_to_message(
   msg.header.frame_id = std::to_string(frame_id);
 }
 
+void Tracker::tracking(const cv::Mat & frame, cv::Mat & result_frame)
+{
+  cv::cvtColor(frame, result_frame, cv::COLOR_BGR2GRAY);
+}
+
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Tracker::on_configure(const rclcpp_lifecycle::State &)
 {
@@ -96,6 +108,7 @@ Tracker::on_configure(const rclcpp_lifecycle::State &)
   auto qos = rclcpp::QoS(1);
   qos.best_effort();
   image_pub_ = create_publisher<sensor_msgs::msg::Image>(topic, qos);
+  result_image_pub_ = create_publisher<sensor_msgs::msg::Image>("result_image", qos);
 
   // Initialize OpenCV video capture stream.
   cap_.open(device_index_);
@@ -113,6 +126,7 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Tracker::on_activate(const rclcpp_lifecycle::State &)
 {
   image_pub_->on_activate();
+  result_image_pub_->on_activate();
   image_timer_->reset();
   RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
 
@@ -123,6 +137,7 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Tracker::on_deactivate(const rclcpp_lifecycle::State &)
 {
   image_pub_->on_deactivate();
+  result_image_pub_->on_deactivate();
   image_timer_->cancel();
   RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
 
@@ -133,6 +148,7 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Tracker::on_cleanup(const rclcpp_lifecycle::State &)
 {
   image_pub_.reset();
+  result_image_pub_.reset();
   image_timer_.reset();
 
   RCLCPP_INFO(this->get_logger(), "on_cleanup() is called.");
@@ -144,6 +160,7 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Tracker::on_shutdown(const rclcpp_lifecycle::State &)
 {
   image_pub_.reset();
+  result_image_pub_.reset();
   image_timer_.reset();
 
   RCLCPP_INFO(this->get_logger(), "on_shutdown() is called.");

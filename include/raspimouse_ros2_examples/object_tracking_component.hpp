@@ -45,12 +45,15 @@ private:
   double image_width_;
   double image_height_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> image_pub_;
+  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> result_image_pub_;
   rclcpp::TimerBase::SharedPtr image_timer_;
 
   std::string mat_type2encoding(int mat_type);
   void convert_frame_to_message(
     const cv::Mat & frame, size_t frame_id,
     sensor_msgs::msg::Image & msg);
+
+  void tracking(const cv::Mat & frame, cv::Mat & result_frame);
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
   on_configure(const rclcpp_lifecycle::State &);
