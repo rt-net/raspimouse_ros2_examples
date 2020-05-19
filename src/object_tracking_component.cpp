@@ -20,6 +20,7 @@
 #include <iostream>
 #include <utility>
 #include <string>
+#include <vector>
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
@@ -90,9 +91,44 @@ void Tracker::convert_frame_to_message(
   msg.header.frame_id = std::to_string(frame_id);
 }
 
-void Tracker::tracking(const cv::Mat & frame, cv::Mat & result_frame)
+void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
 {
-  cv::cvtColor(frame, result_frame, cv::COLOR_BGR2GRAY);
+  // Specific colors are extracted from the input image and converted to binary values.
+  cv::Mat hsv;
+  cv::cvtColor(input_frame, hsv, cv::COLOR_BGR2HSV);
+  cv::Mat extracted_bin;
+  cv::inRange(hsv, cv::Scalar(9, 100, 150), cv::Scalar(29, 255, 255), extracted_bin);
+  input_frame.copyTo(result_frame, extracted_bin);
+
+  // Remove noise with morphology transformation
+  cv::Mat morph_bin;
+  cv::morphologyEx(extracted_bin, morph_bin, cv::MORPH_CLOSE, cv::Mat());
+
+  // Extracting contours
+  std::vector<std::vector<cv::Point>> contours;
+  std::vector<cv::Vec4i> hierarchy;
+  cv::findContours(morph_bin, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
+
+  // Extracting the largest contours
+  double max_area = 0;
+  int max_area_index = -1;
+  for (unsigned int index = 0; index < contours.size(); index++) {
+    double area = cv::contourArea(contours.at(index));
+    if (area > max_area) {
+      max_area = area;
+      max_area_index = index;
+    }
+  }
+
+  // If the contour exists (if the object exists), find the centroid of the contour
+  if (max_area_index >= 0) {
+    cv::Moments mt = cv::moments(contours.at(max_area_index));
+    cv::Point mt_point = cv::Point(mt.m10 / mt.m00, mt.m01 / mt.m00);
+
+    cv::drawContours(result_frame, contours, max_area_index,
+      cv::Scalar(0, 255, 0), 2, cv::LINE_4, hierarchy);
+    cv::circle(result_frame, mt_point, 30, cv::Scalar(0, 0, 255), 2, cv::LINE_4);
+  }
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn

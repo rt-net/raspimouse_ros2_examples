@@ -53,7 +53,7 @@ private:
     const cv::Mat & frame, size_t frame_id,
     sensor_msgs::msg::Image & msg);
 
-  void tracking(const cv::Mat & frame, cv::Mat & result_frame);
+  void tracking(const cv::Mat & input_frame, cv::Mat & result_frame);
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
   on_configure(const rclcpp_lifecycle::State &);
