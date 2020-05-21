@@ -176,7 +176,6 @@ int main(int argc, char * argv[])
     } else {
       // all node shutdown
       RCLCPP_ERROR(node->get_logger(), "Any node is not active.");
-      break;
     }
   }
 

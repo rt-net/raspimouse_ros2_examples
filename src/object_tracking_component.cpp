@@ -157,10 +157,11 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
     object_normalized_area_ = max_area / (input_frame.rows * input_frame.cols);
     object_is_detected_ = true;
 
+    std::string text = "Area:" + std::to_string(object_normalized_area_) + "%";
     cv::drawContours(result_frame, contours, max_area_index,
       cv::Scalar(0, 255, 0), 2, cv::LINE_4, hierarchy);
     cv::circle(result_frame, mt_point, 30, cv::Scalar(0, 0, 255), 2, cv::LINE_4);
-    cv::putText(result_frame, std::to_string(object_normalized_area_), cv::Point(0, 30),
+    cv::putText(result_frame, text, cv::Point(0, 30),
       cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 0, 0), 2);
   } else {
     object_is_detected_ = false;
@@ -169,16 +170,14 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
 
 CallbackReturn Tracker::on_configure(const rclcpp_lifecycle::State &)
 {
+  RCLCPP_INFO(this->get_logger(), "on_configure() is called.");
+
   image_timer_ = create_wall_timer(50ms, std::bind(&Tracker::on_image_timer, this));
   cmd_vel_timer_ = create_wall_timer(10ms, std::bind(&Tracker::on_cmd_vel_timer, this));
   // Don't actually start publishing data until activated
   image_timer_->cancel();
   cmd_vel_timer_->cancel();
 
-  RCLCPP_INFO(this->get_logger(), "on_configure() is called.");
-
-  // auto qos = rclcpp::QoS(1);
-  // qos.best_effort();
   image_pub_ = create_publisher<sensor_msgs::msg::Image>("raw_image", 1);
   result_image_pub_ = create_publisher<sensor_msgs::msg::Image>("result_image", 1);
   cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
@@ -197,6 +196,8 @@ CallbackReturn Tracker::on_configure(const rclcpp_lifecycle::State &)
 
 CallbackReturn Tracker::on_activate(const rclcpp_lifecycle::State &)
 {
+  RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
+
   motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
   if (!motor_power_client_->wait_for_service(5s)) {
     RCLCPP_ERROR(this->get_logger(),
@@ -212,45 +213,47 @@ CallbackReturn Tracker::on_activate(const rclcpp_lifecycle::State &)
   cmd_vel_pub_->on_activate();
   image_timer_->reset();
   cmd_vel_timer_->reset();
-  RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
 
   return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn Tracker::on_deactivate(const rclcpp_lifecycle::State &)
 {
+  RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
   image_pub_->on_deactivate();
   result_image_pub_->on_deactivate();
   cmd_vel_pub_->on_deactivate();
   image_timer_->cancel();
   cmd_vel_timer_->cancel();
-  RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
+
+  object_is_detected_ = false;
+  cmd_vel_ = geometry_msgs::msg::Twist();
 
   return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn Tracker::on_cleanup(const rclcpp_lifecycle::State &)
 {
+  RCLCPP_INFO(this->get_logger(), "on_cleanup() is called.");
+
   image_pub_.reset();
   result_image_pub_.reset();
   cmd_vel_pub_.reset();
   image_timer_.reset();
   cmd_vel_timer_.reset();
-
-  RCLCPP_INFO(this->get_logger(), "on_cleanup() is called.");
 
   return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn Tracker::on_shutdown(const rclcpp_lifecycle::State &)
 {
+  RCLCPP_INFO(this->get_logger(), "on_shutdown() is called.");
+
   image_pub_.reset();
   result_image_pub_.reset();
   cmd_vel_pub_.reset();
   image_timer_.reset();
   cmd_vel_timer_.reset();
-
-  RCLCPP_INFO(this->get_logger(), "on_shutdown() is called.");
 
   return CallbackReturn::SUCCESS;
 }
