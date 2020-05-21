@@ -64,16 +64,20 @@ void Tracker::on_image_timer()
 
 void Tracker::on_cmd_vel_timer()
 {
-  const double LINEAR_VEL = -0.5;
-  const double ANGULAR_VEL = -1.0;
-  const double TARGET_AREA = 0.3;
+  const double LINEAR_VEL = -0.5;  // unit: m/s
+  const double ANGULAR_VEL = -1.0; // unit: rad/s
+  const double TARGET_AREA = 0.3; // %
+  const double OBJECT_AREA_THRESHOLD = 0.05;  // %
+  const double ATTENUATION_RATE = 0.8;
 
-  if (object_is_detected_) {
+  // Detects an object and tracks it 
+  // when the number of pixels of the object is greater than the threshold.
+  if (object_is_detected_ && object_normalized_area_ > OBJECT_AREA_THRESHOLD) {
     cmd_vel_.linear.x = LINEAR_VEL * (object_normalized_area_ - TARGET_AREA);
     cmd_vel_.angular.z = ANGULAR_VEL * object_normalized_point_.x;
   } else {
-    cmd_vel_.linear.x *= 0.8;
-    cmd_vel_.angular.z *= 0.8;
+    cmd_vel_.linear.x *= ATTENUATION_RATE;
+    cmd_vel_.angular.z *= ATTENUATION_RATE;
   }
   auto msg = std::make_unique<geometry_msgs::msg::Twist>(cmd_vel_);
   cmd_vel_pub_->publish(std::move(msg));
@@ -157,7 +161,7 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
     cv::drawContours(result_frame, contours, max_area_index,
       cv::Scalar(0, 255, 0), 2, cv::LINE_4, hierarchy);
     cv::circle(result_frame, mt_point, 30, cv::Scalar(0, 0, 255), 2, cv::LINE_4);
-    cv::putText(result_frame, std::to_string(object_normalized_point_.x), cv::Point(0, 30),
+    cv::putText(result_frame, std::to_string(object_normalized_area_), cv::Point(0, 30),
       cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 0, 0), 2);
   } else {
     object_is_detected_ = false;
