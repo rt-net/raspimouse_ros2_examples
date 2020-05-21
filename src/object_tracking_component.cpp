@@ -27,9 +27,11 @@
 #include "lifecycle_msgs/srv/change_state.hpp"
 
 using namespace std::chrono_literals;
+using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
 namespace object_tracking
 {
+
 
 Tracker::Tracker(const rclcpp::NodeOptions & options)
 : rclcpp_lifecycle::LifecycleNode("tracker", options),
@@ -162,8 +164,7 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
   }
 }
 
-rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Tracker::on_configure(const rclcpp_lifecycle::State &)
+CallbackReturn Tracker::on_configure(const rclcpp_lifecycle::State &)
 {
   image_timer_ = create_wall_timer(50ms, std::bind(&Tracker::on_image_timer, this));
   cmd_vel_timer_ = create_wall_timer(10ms, std::bind(&Tracker::on_cmd_vel_timer, this));
@@ -187,20 +188,19 @@ Tracker::on_configure(const rclcpp_lifecycle::State &)
   cap_.set(cv::CAP_PROP_FRAME_HEIGHT, image_height_);
   if (!cap_.isOpened()) {
     RCLCPP_ERROR(this->get_logger(), "Could not open video stream");
-    return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::FAILURE;
+    return CallbackReturn::FAILURE;
   }
 
-  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  return CallbackReturn::SUCCESS;
 }
 
-rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Tracker::on_activate(const rclcpp_lifecycle::State &)
+CallbackReturn Tracker::on_activate(const rclcpp_lifecycle::State &)
 {
   motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
   if (!motor_power_client_->wait_for_service(5s)) {
     RCLCPP_ERROR(this->get_logger(),
       "Service motor_power is not avaliable.");
-    return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::FAILURE;
+    return CallbackReturn::FAILURE;
   }
   auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
   request->data = true;
@@ -213,11 +213,10 @@ Tracker::on_activate(const rclcpp_lifecycle::State &)
   cmd_vel_timer_->reset();
   RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
 
-  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  return CallbackReturn::SUCCESS;
 }
 
-rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Tracker::on_deactivate(const rclcpp_lifecycle::State &)
+CallbackReturn Tracker::on_deactivate(const rclcpp_lifecycle::State &)
 {
   image_pub_->on_deactivate();
   result_image_pub_->on_deactivate();
@@ -226,11 +225,10 @@ Tracker::on_deactivate(const rclcpp_lifecycle::State &)
   cmd_vel_timer_->cancel();
   RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
 
-  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  return CallbackReturn::SUCCESS;
 }
 
-rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Tracker::on_cleanup(const rclcpp_lifecycle::State &)
+CallbackReturn Tracker::on_cleanup(const rclcpp_lifecycle::State &)
 {
   image_pub_.reset();
   result_image_pub_.reset();
@@ -240,11 +238,10 @@ Tracker::on_cleanup(const rclcpp_lifecycle::State &)
 
   RCLCPP_INFO(this->get_logger(), "on_cleanup() is called.");
 
-  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  return CallbackReturn::SUCCESS;
 }
 
-rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Tracker::on_shutdown(const rclcpp_lifecycle::State &)
+CallbackReturn Tracker::on_shutdown(const rclcpp_lifecycle::State &)
 {
   image_pub_.reset();
   result_image_pub_.reset();
@@ -254,7 +251,7 @@ Tracker::on_shutdown(const rclcpp_lifecycle::State &)
 
   RCLCPP_INFO(this->get_logger(), "on_shutdown() is called.");
 
-  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  return CallbackReturn::SUCCESS;
 }
 
 }  // namespace object_tracking
