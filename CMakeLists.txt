@@ -50,7 +50,6 @@ add_executable(object_tracking src/object_tracking.cpp)
 target_link_libraries(object_tracking object_tracking_component)
 ament_target_dependencies(object_tracking
   rclcpp
-  std_msgs
   lifecycle_msgs)
 
 install(TARGETS
