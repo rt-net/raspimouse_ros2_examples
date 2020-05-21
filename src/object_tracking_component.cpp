@@ -35,7 +35,7 @@ namespace object_tracking
 
 Tracker::Tracker(const rclcpp::NodeOptions & options)
 : rclcpp_lifecycle::LifecycleNode("tracker", options),
-  frame_id_(0), device_index_(0), image_width_(320), image_height_(240),
+  device_index_(0), image_width_(320), image_height_(240),
   object_is_detected_(false)
 {
 }
@@ -52,13 +52,11 @@ void Tracker::on_image_timer()
 
   if (!frame.empty()) {
     tracking(frame, result_frame);
-    convert_frame_to_message(result_frame, frame_id_, *result_msg);
+    convert_frame_to_message(result_frame, *result_msg);
     result_image_pub_->publish(std::move(result_msg));
 
-    // Publish the image message and increment the frame_id.
-    convert_frame_to_message(frame, frame_id_, *msg);
+    convert_frame_to_message(frame, *msg);
     image_pub_->publish(std::move(msg));
-    ++frame_id_;
   }
 }
 
@@ -102,7 +100,7 @@ std::string Tracker::mat_type2encoding(int mat_type)
 
 // Ref: https://github.com/ros2/demos/blob/dashing/image_tools/src/cam2image.cpp
 void Tracker::convert_frame_to_message(
-  const cv::Mat & frame, size_t frame_id, sensor_msgs::msg::Image & msg)
+  const cv::Mat & frame, sensor_msgs::msg::Image & msg)
 {
   // copy cv information into ros message
   msg.height = frame.rows;
@@ -112,7 +110,7 @@ void Tracker::convert_frame_to_message(
   size_t size = frame.step * frame.rows;
   msg.data.resize(size);
   memcpy(&msg.data[0], frame.data, size);
-  msg.header.frame_id = std::to_string(frame_id);
+  msg.header.frame_id = "camera_frame";
 }
 
 void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
@@ -176,15 +174,13 @@ CallbackReturn Tracker::on_configure(const rclcpp_lifecycle::State &)
   image_timer_->cancel();
   cmd_vel_timer_->cancel();
 
-  std::string topic("image");
   RCLCPP_INFO(this->get_logger(), "on_configure() is called.");
 
   // auto qos = rclcpp::QoS(1);
   // qos.best_effort();
-  image_pub_ = create_publisher<sensor_msgs::msg::Image>(topic, 1);
+  image_pub_ = create_publisher<sensor_msgs::msg::Image>("raw_image", 1);
   result_image_pub_ = create_publisher<sensor_msgs::msg::Image>("result_image", 1);
   cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
-
 
   // Initialize OpenCV video capture stream.
   cap_.open(device_index_);

@@ -42,7 +42,6 @@ protected:
   void on_cmd_vel_timer();
 
 private:
-  size_t frame_id_;
   cv::VideoCapture cap_;
   int device_index_;
   double image_width_;
@@ -60,7 +59,7 @@ private:
 
   std::string mat_type2encoding(int mat_type);
   void convert_frame_to_message(
-    const cv::Mat & frame, size_t frame_id,
+    const cv::Mat & frame,
     sensor_msgs::msg::Image & msg);
 
   void tracking(const cv::Mat & input_frame, cv::Mat & result_frame);
