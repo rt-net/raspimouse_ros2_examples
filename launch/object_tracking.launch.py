@@ -42,7 +42,9 @@ def generate_launch_description():
     object_tracking_core = Node(
         package='raspimouse_ros2_examples',
         node_executable='object_tracking',
-        output='screen'
+        output='screen',
+        parameters=[{'components': ['raspimouse','tracker']}]
+
     )
 
     return launch.LaunchDescription([container, object_tracking_core])

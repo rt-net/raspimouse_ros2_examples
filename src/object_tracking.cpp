@@ -148,6 +148,14 @@ int main(int argc, char * argv[])
 
   auto node = rclcpp::Node::make_shared("object_tracking_observer");
 
+  node->declare_parameter("components", std::vector<std::string>());
+  auto components = node->get_parameter("components").get_value<std::vector<std::string>>();
+
+  if(components.size() == 0){
+    RCLCPP_ERROR(node->get_logger(), "param components has no value.");
+    rclcpp::shutdown();
+  }
+
   if (!all_nodes_are_unconfigured(node, target_node_names)) {
     RCLCPP_ERROR(node->get_logger(), "Failed to launch nodes.");
     rclcpp::shutdown();
