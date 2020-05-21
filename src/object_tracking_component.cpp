@@ -32,7 +32,6 @@ using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface
 namespace object_tracking
 {
 
-
 Tracker::Tracker(const rclcpp::NodeOptions & options)
 : rclcpp_lifecycle::LifecycleNode("tracker", options),
   device_index_(0), image_width_(320), image_height_(240),
@@ -63,8 +62,8 @@ void Tracker::on_image_timer()
 void Tracker::on_cmd_vel_timer()
 {
   const double LINEAR_VEL = -0.5;  // unit: m/s
-  const double ANGULAR_VEL = -1.0; // unit: rad/s
-  const double TARGET_AREA = 0.3; // %
+  const double ANGULAR_VEL = -1.0;  // unit: rad/s
+  const double TARGET_AREA = 0.3;  // %
   const double OBJECT_AREA_THRESHOLD = 0.05;  // %
   const double ATTENUATION_RATE = 0.8;
 
@@ -119,7 +118,9 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
   cv::Mat hsv;
   cv::cvtColor(input_frame, hsv, cv::COLOR_BGR2HSV);
   cv::Mat extracted_bin;
-  cv::inRange(hsv, cv::Scalar(9, 100, 150), cv::Scalar(29, 255, 255), extracted_bin);
+  cv::inRange(hsv, cv::Scalar(9, 100, 100), cv::Scalar(29, 255, 255), extracted_bin);  // Orange
+  // cv::inRange(hsv, cv::Scalar(60, 100, 100), cv::Scalar(80, 255, 255), extracted_bin);  // Green
+  // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);  // Blue
   input_frame.copyTo(result_frame, extracted_bin);
 
   // Remove noise with morphology transformation
