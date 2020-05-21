@@ -47,6 +47,9 @@ private:
   int device_index_;
   double image_width_;
   double image_height_;
+  bool object_is_detected_;
+  cv::Point2d object_normalized_point_;
+  double object_normalized_area_;
   geometry_msgs::msg::Twist cmd_vel_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> image_pub_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> result_image_pub_;

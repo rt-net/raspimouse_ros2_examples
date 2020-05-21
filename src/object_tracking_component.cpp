@@ -52,7 +52,8 @@ wait_for_result(
 
 Tracker::Tracker(const rclcpp::NodeOptions & options)
 : rclcpp_lifecycle::LifecycleNode("tracker", options),
-  frame_id_(0), device_index_(0), image_width_(320), image_height_(240)
+  frame_id_(0), device_index_(0), image_width_(320), image_height_(240),
+  object_is_detected_(false)
 {
 }
 
@@ -80,6 +81,17 @@ void Tracker::on_image_timer()
 
 void Tracker::on_cmd_vel_timer()
 {
+  const double LINEAR_VEL = -0.5;
+  const double ANGULAR_VEL = -1.0;
+  const double TARGET_AREA = 0.3;
+
+  if (object_is_detected_) {
+    cmd_vel_.linear.x = LINEAR_VEL * (object_normalized_area_ - TARGET_AREA);
+    cmd_vel_.angular.z = ANGULAR_VEL * object_normalized_point_.x;
+  } else {
+    cmd_vel_.linear.x *= 0.8;
+    cmd_vel_.angular.z *= 0.8;
+  }
   auto msg = std::make_unique<geometry_msgs::msg::Twist>(cmd_vel_);
   cmd_vel_pub_->publish(std::move(msg));
 }
@@ -150,16 +162,22 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
     cv::Moments mt = cv::moments(contours.at(max_area_index));
     cv::Point mt_point = cv::Point(mt.m10 / mt.m00, mt.m01 / mt.m00);
 
-    double normalized_x = mt_point.x / (input_frame.cols * 0.5) - 1.0;
-    cmd_vel_.angular.z = -1.5 * normalized_x;
+    // Normalize the centroid coordinates to [-1.0, 1.0].
+    object_normalized_point_ = cv::Point2d(
+      2.0 * mt_point.x / input_frame.cols - 1.0,
+      2.0 * mt_point.y / input_frame.rows - 1.0
+    );
+    // Normalize the the contour area to [0.0, 1.0].
+    object_normalized_area_ = max_area / (input_frame.rows * input_frame.cols);
+    object_is_detected_ = true;
 
     cv::drawContours(result_frame, contours, max_area_index,
       cv::Scalar(0, 255, 0), 2, cv::LINE_4, hierarchy);
     cv::circle(result_frame, mt_point, 30, cv::Scalar(0, 0, 255), 2, cv::LINE_4);
-    cv::putText(result_frame, std::to_string(normalized_x), mt_point,
+    cv::putText(result_frame, std::to_string(object_normalized_point_.x), cv::Point(0, 30),
       cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 0, 0), 2);
   } else {
-    cmd_vel_.angular.z *= 0.9;
+    object_is_detected_ = false;
   }
 }
 
@@ -175,10 +193,10 @@ Tracker::on_configure(const rclcpp_lifecycle::State &)
   std::string topic("image");
   RCLCPP_INFO(this->get_logger(), "on_configure() is called.");
 
-  auto qos = rclcpp::QoS(1);
-  qos.best_effort();
-  image_pub_ = create_publisher<sensor_msgs::msg::Image>(topic, qos);
-  result_image_pub_ = create_publisher<sensor_msgs::msg::Image>("result_image", qos);
+  // auto qos = rclcpp::QoS(1);
+  // qos.best_effort();
+  image_pub_ = create_publisher<sensor_msgs::msg::Image>(topic, 1);
+  result_image_pub_ = create_publisher<sensor_msgs::msg::Image>("result_image", 1);
   cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
 
 
