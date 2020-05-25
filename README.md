@@ -165,6 +165,8 @@ $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py
 や[rqt_image_view](https://index.ros.org/doc/ros2/Tutorials/RQt-Overview-Usage/)
 で表示できます。
 
+![object_tracking_images](https://github.com/rt-net/raspimouse_ros2_examples/blob/images/object_tracking_images.png)
+
 #### Configure
 
 追跡対象の色を変更するには
