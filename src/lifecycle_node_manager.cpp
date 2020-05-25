@@ -146,7 +146,7 @@ int main(int argc, char * argv[])
 
   std::vector<std::string> target_node_names{"raspimouse", "tracker"};
 
-  auto node = rclcpp::Node::make_shared("object_tracking_observer");
+  auto node = rclcpp::Node::make_shared("lifecycle_node_manager");
 
   node->declare_parameter("components", std::vector<std::string>());
   auto components = node->get_parameter("components").get_value<std::vector<std::string>>();

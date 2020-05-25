@@ -46,9 +46,8 @@ ament_target_dependencies(object_tracking_component
   OpenCV)
 rclcpp_components_register_nodes(object_tracking_component "object_tracking::Tracker")
 
-add_executable(object_tracking src/object_tracking.cpp)
-target_link_libraries(object_tracking object_tracking_component)
-ament_target_dependencies(object_tracking
+add_executable(lifecycle_node_manager src/lifecycle_node_manager.cpp)
+ament_target_dependencies(lifecycle_node_manager
   rclcpp
   lifecycle_msgs)
 
@@ -58,7 +57,7 @@ install(TARGETS
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
 install(TARGETS
-  object_tracking
+  lifecycle_node_manager
   DESTINATION lib/${PROJECT_NAME})
 
 # python scripts

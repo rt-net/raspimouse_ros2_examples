@@ -40,8 +40,9 @@ def generate_launch_description():
     )
 
     object_tracking_core = Node(
+        node_name='manager',
         package='raspimouse_ros2_examples',
-        node_executable='object_tracking',
+        node_executable='lifecycle_node_manager',
         output='screen',
         parameters=[{'components': ['raspimouse','tracker']}]
 
