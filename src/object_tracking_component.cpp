@@ -157,7 +157,7 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
     object_normalized_area_ = max_area / (input_frame.rows * input_frame.cols);
     object_is_detected_ = true;
 
-    std::string text = "Area:" + std::to_string(object_normalized_area_) + "%";
+    std::string text = "Area:" + std::to_string(object_normalized_area_ * 100) + "%";
     cv::drawContours(result_frame, contours, max_area_index,
       cv::Scalar(0, 255, 0), 2, cv::LINE_4, hierarchy);
     cv::circle(result_frame, mt_point, 30, cv::Scalar(0, 0, 255), 2, cv::LINE_4);
