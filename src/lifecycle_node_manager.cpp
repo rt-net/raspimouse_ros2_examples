@@ -144,42 +144,40 @@ int main(int argc, char * argv[])
 
   rclcpp::init(argc, argv);
 
-  std::vector<std::string> target_node_names{"raspimouse", "tracker"};
-
   auto node = rclcpp::Node::make_shared("lifecycle_node_manager");
 
   node->declare_parameter("components", std::vector<std::string>());
   auto components = node->get_parameter("components").get_value<std::vector<std::string>>();
 
   if(components.size() == 0){
-    RCLCPP_ERROR(node->get_logger(), "param components has no value.");
+    RCLCPP_ERROR(node->get_logger(), "param 'components' has no value.");
     rclcpp::shutdown();
   }
 
-  if (!all_nodes_are_unconfigured(node, target_node_names)) {
+  if (!all_nodes_are_unconfigured(node, components)) {
     RCLCPP_ERROR(node->get_logger(), "Failed to launch nodes.");
     rclcpp::shutdown();
   } else {
-    RCLCPP_INFO(node->get_logger(), "All nodes launched.");
+    RCLCPP_INFO(node->get_logger(), "Launched all nodes.");
   }
 
-  if (!configure_all_nodes(node, target_node_names)) {
+  if (!configure_all_nodes(node, components)) {
     RCLCPP_ERROR(node->get_logger(), "Failed to configure nodes.");
     rclcpp::shutdown();
   } else {
-    RCLCPP_INFO(node->get_logger(), "All nodes configured.");
+    RCLCPP_INFO(node->get_logger(), "Configured all nodes.");
   }
 
-  if (!activate_all_nodes(node, target_node_names)) {
+  if (!activate_all_nodes(node, components)) {
     RCLCPP_ERROR(node->get_logger(), "Failed to activate nodes.");
     rclcpp::shutdown();
   } else {
-    RCLCPP_INFO(node->get_logger(), "All nodes activated.");
+    RCLCPP_INFO(node->get_logger(), "Activated all nodes.");
   }
 
   while (rclcpp::ok()) {
     rclcpp::sleep_for(10s);
-    if (all_nodes_are_active(node, target_node_names)) {
+    if (all_nodes_are_active(node, components)) {
       RCLCPP_INFO(node->get_logger(), "All nodes are active.");
     } else {
       // all node shutdown
