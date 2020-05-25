@@ -67,7 +67,7 @@ void Tracker::on_cmd_vel_timer()
   const double OBJECT_AREA_THRESHOLD = 0.05;  // %
   const double ATTENUATION_RATE = 0.8;
 
-  // Detects an object and tracks it 
+  // Detects an object and tracks it
   // when the number of pixels of the object is greater than the threshold.
   if (object_is_detected_ && object_normalized_area_ > OBJECT_AREA_THRESHOLD) {
     cmd_vel_.linear.x = LINEAR_VEL * (object_normalized_area_ - TARGET_AREA);

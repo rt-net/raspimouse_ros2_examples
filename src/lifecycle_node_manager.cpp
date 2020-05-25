@@ -149,7 +149,7 @@ int main(int argc, char * argv[])
   node->declare_parameter("components", std::vector<std::string>());
   auto components = node->get_parameter("components").get_value<std::vector<std::string>>();
 
-  if(components.size() == 0){
+  if (components.size() == 0) {
     RCLCPP_ERROR(node->get_logger(), "param 'components' has no value.");
     rclcpp::shutdown();
   }
