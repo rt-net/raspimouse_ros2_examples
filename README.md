@@ -173,7 +173,7 @@ $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py
 [`./src/object_tracking_component.cpp`](./src/object_tracking_component.cpp)
 を編集します。
 
-物体検出精度が悪い時にはカメラの露光や関数内のパラメータを調整して下さい．
+物体検出精度が悪い時にはカメラの露光や関数内のパラメータを調整して下さい。
 
 ```cpp
 void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
