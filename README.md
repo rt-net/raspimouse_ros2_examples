@@ -54,6 +54,7 @@ $ source ~/ros2_ws/install/setup.bash
 ## How To Use Examples
 
 - [joystick_control](#joystick_control)
+- [object_tracking](#object_tracking)
 
 ---
 
@@ -111,6 +112,78 @@ button_cmd_enable       : 4
 #### Videos
 
 [![joystick_control](http://img.youtube.com/vi/GswxdB8Ia0Y/sddefault.jpg)](https://youtu.be/GswxdB8Ia0Y)
+
+[back to example list](#how-to-use-examples)
+
+--- 
+
+### object_tracking
+
+<img src="https://github.com/rt-net/raspimouse_ros_exapmles/blob/images/object_tracking.JPG" width=500 />
+
+色情報をもとにオレンジ色のボールの追跡を行うコード例です。
+USB接続のWebカメラとOpenCVを使ってボール追跡をします。
+
+#### Requirements 
+
+- Webカメラ
+  - [Logicool HD WEBCAM C310N](https://www.logicool.co.jp/ja-jp/product/hd-webcam-c310n)
+- カメラマウント
+  - [Raspberry Pi Mouse オプションキット No.4 \[Webカメラマウント\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3584)
+- ボール（Optional）
+  - [ソフトボール（オレンジ）](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1307&products_id=3701)
+- Software
+  - OpenCV
+  - v4l-utils
+
+#### Installation
+
+Raspberry Pi Mouseにカメラマウントを取り付け，WebカメラをRaspberry Piに接続します．
+
+次のコマンドで、カメラ制御用のパッケージ（v4l-utils）をインストールします。
+
+```sh
+$ sudo apt install v4l-utils
+```
+#### How to use
+
+次のスクリプトを実行して、カメラの自動調節機能（自動露光，オートホワイトバランス等）を切ります。
+
+```sh
+$ cd ~/ros2_ws/src/raspimouse_ros2_examples/config
+$ ./camera.bash
+```
+
+次のコマンドでノードを起動します。
+
+```sh
+$ ros2 launch raspimouse_ros2_examples object_tracking.launch.py
+```
+
+カメラ画像は`raw_image`、物体検出画像は`result_image`というトピックとして発行されます。
+これらの画像は[RViz](https://index.ros.org/r/rviz/)
+や[rqt_image_view](https://index.ros.org/doc/ros2/Tutorials/RQt-Overview-Usage/)
+で表示できます。
+
+#### Configure
+
+追跡対象の色を変更するには
+[`./src/object_tracking_component.cpp`](./src/object_tracking_component.cpp)
+を編集します。
+
+物体検出精度が悪い時にはカメラの露光や関数内のパラメータを調整して下さい．
+
+```cpp
+void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
+{
+  cv::inRange(hsv, cv::Scalar(9, 100, 100), cv::Scalar(29, 255, 255), extracted_bin);  // Orange
+  // cv::inRange(hsv, cv::Scalar(60, 100, 100), cv::Scalar(80, 255, 255), extracted_bin);  // Green
+  // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);  // Blue
+```
+
+#### Videos
+
+[![object_tracking](http://img.youtube.com/vi/U6_BuvrjyFc/sddefault.jpg)](https://youtu.be/U6_BuvrjyFc)
 
 [back to example list](#how-to-use-examples)
 

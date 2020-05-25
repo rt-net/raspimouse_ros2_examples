@@ -53,6 +53,7 @@ This repository is licensed under the Apache 2.0, see [LICENSE](./LICENSE) for d
 ## How To Use Examples
 
 - [joystick_control](#joystick_control)
+- [object_tracking](#object_tracking)
 
 ---
 
@@ -110,6 +111,75 @@ button_cmd_enable       : 4
 #### Videos
 
 [![joystick_control](http://img.youtube.com/vi/GswxdB8Ia0Y/sddefault.jpg)](https://youtu.be/GswxdB8Ia0Y)
+
+[back to example list](#how-to-use-examples)
+
+--- 
+
+### object_tracking
+
+![object_tracking](https://github.com/rt-net/raspimouse_ros_exapmles/blob/images/object_tracking.JPG)
+
+This is an example to use RGB camera images and OpenCV library for object tracking.
+
+#### Requirements 
+
+- Web camera
+  - [Logicool HD WEBCAM C310N](https://www.logicool.co.jp/ja-jp/product/hd-webcam-c310n)
+- Camera mount
+  - [Raspberry Pi Mouse Option kit No.4 \[Webcam mount\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3584&language=en)
+- Orange ball（Optional）
+  - [Soft Ball (Orange)](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1307&products_id=3701&language=en)
+- Software
+  - OpenCV
+  - v4l-utils
+
+#### Installation
+
+Install a camera mount and a web camera to Raspberry Pi Mouse, then connect the camera to the Raspberry Pi．
+
+Next, install the v4l-utils package with the following command:
+
+```sh
+sudo apt install v4l-utils
+```
+#### How to use
+
+Turn off automatic adjustment parameters of a camera (auto focus, auto while balance, etc.) with the following command:
+
+```sh
+$ cd ~/ros2_ws/src/raspimouse_ros2_examples/config
+$ ./camera.bash
+```
+
+Then, launch nodes with the following command:
+
+```sh
+$ ros2 launch raspimouse_ros2_examples object_tracking.launch.py
+```
+
+This sample publishes two topics: `raw_image` for the camera image and `result_image` for the object detection image.
+These images can be viewed with [RViz](https://index.ros.org/r/rviz/)
+or [rqt_image_view](https://index.ros.org/doc/ros2/Tutorials/RQt-Overview-Usage/).
+
+#### Configure
+
+Edit [`./src/object_tracking_component.cpp`](./src/object_tracking_component.cpp)
+to change a color of tracking target.
+
+If the object detection accuracy is poor, adjust the camera exposure and parameters in the function
+
+```cpp
+void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
+{
+  cv::inRange(hsv, cv::Scalar(9, 100, 100), cv::Scalar(29, 255, 255), extracted_bin);  // Orange
+  // cv::inRange(hsv, cv::Scalar(60, 100, 100), cv::Scalar(80, 255, 255), extracted_bin);  // Green
+  // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);  // Blue
+```
+
+#### Videos
+
+[![object_tracking](http://img.youtube.com/vi/U6_BuvrjyFc/sddefault.jpg)](https://youtu.be/U6_BuvrjyFc)
 
 [back to example list](#how-to-use-examples)
 
