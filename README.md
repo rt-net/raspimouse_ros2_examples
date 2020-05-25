@@ -138,7 +138,7 @@ USB接続のWebカメラとOpenCVを使ってボール追跡をします。
 
 #### Installation
 
-Raspberry Pi Mouseにカメラマウントを取り付け，WebカメラをRaspberry Piに接続します．
+Raspberry Pi Mouseにカメラマウントを取り付け、WebカメラをRaspberry Piに接続します。
 
 次のコマンドで、カメラ制御用のパッケージ（v4l-utils）をインストールします。
 
