@@ -162,6 +162,8 @@ This sample publishes two topics: `raw_image` for the camera image and `result_i
 These images can be viewed with [RViz](https://index.ros.org/r/rviz/)
 or [rqt_image_view](https://index.ros.org/doc/ros2/Tutorials/RQt-Overview-Usage/).
 
+![object_tracking_images](https://github.com/rt-net/raspimouse_ros2_examples/blob/images/object_tracking_images.png)
+
 #### Configure
 
 Edit [`./src/object_tracking_component.cpp`](./src/object_tracking_component.cpp)
