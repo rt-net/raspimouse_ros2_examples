@@ -138,11 +138,6 @@ This is an example to use RGB camera images and OpenCV library for object tracki
 
 Install a camera mount and a web camera to Raspberry Pi Mouse, then connect the camera to the Raspberry Pi．
 
-Next, install the v4l-utils package with the following command:
-
-```sh
-sudo apt install v4l-utils
-```
 #### How to use
 
 Turn off automatic adjustment parameters of a camera (auto focus, auto while balance, etc.) with the following command:

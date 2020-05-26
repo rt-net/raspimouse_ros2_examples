@@ -140,11 +140,6 @@ USB接続のWebカメラとOpenCVを使ってボール追跡をします。
 
 Raspberry Pi Mouseにカメラマウントを取り付け、WebカメラをRaspberry Piに接続します。
 
-次のコマンドで、カメラ制御用のパッケージ（v4l-utils）をインストールします。
-
-```sh
-$ sudo apt install v4l-utils
-```
 #### How to use
 
 次のスクリプトを実行して、カメラの自動調節機能（自動露光，オートホワイトバランス等）を切ります。
