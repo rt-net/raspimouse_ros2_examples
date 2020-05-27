@@ -62,10 +62,9 @@ void Tracker::on_image_timer()
 void Tracker::on_cmd_vel_timer()
 {
   const double LINEAR_VEL = -0.5;  // unit: m/s
-  const double ANGULAR_VEL = -1.0;  // unit: rad/s
-  const double TARGET_AREA = 0.3;  // %
-  const double OBJECT_AREA_THRESHOLD = 0.05;  // %
-  const double ATTENUATION_RATE = 0.8;
+  const double ANGULAR_VEL = -0.8;  // unit: rad/s
+  const double TARGET_AREA = 0.3;  // 0.0 ~ 1.0
+  const double OBJECT_AREA_THRESHOLD = 0.06;  // 0.0 ~ 1.0
 
   // Detects an object and tracks it
   // when the number of pixels of the object is greater than the threshold.
@@ -73,8 +72,8 @@ void Tracker::on_cmd_vel_timer()
     cmd_vel_.linear.x = LINEAR_VEL * (object_normalized_area_ - TARGET_AREA);
     cmd_vel_.angular.z = ANGULAR_VEL * object_normalized_point_.x;
   } else {
-    cmd_vel_.linear.x *= ATTENUATION_RATE;
-    cmd_vel_.angular.z *= ATTENUATION_RATE;
+    cmd_vel_.linear.x = 0.0;
+    cmd_vel_.angular.z = 0.0;
   }
   auto msg = std::make_unique<geometry_msgs::msg::Twist>(cmd_vel_);
   cmd_vel_pub_->publish(std::move(msg));
@@ -172,8 +171,8 @@ CallbackReturn Tracker::on_configure(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_configure() is called.");
 
-  image_timer_ = create_wall_timer(50ms, std::bind(&Tracker::on_image_timer, this));
-  cmd_vel_timer_ = create_wall_timer(10ms, std::bind(&Tracker::on_cmd_vel_timer, this));
+  image_timer_ = create_wall_timer(100ms, std::bind(&Tracker::on_image_timer, this));
+  cmd_vel_timer_ = create_wall_timer(50ms, std::bind(&Tracker::on_cmd_vel_timer, this));
   // Don't actually start publishing data until activated
   image_timer_->cancel();
   cmd_vel_timer_->cancel();
