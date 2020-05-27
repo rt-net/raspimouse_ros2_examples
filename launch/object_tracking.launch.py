@@ -39,7 +39,7 @@ def generate_launch_description():
             output='screen',
     )
 
-    object_tracking_core = Node(
+    manager = Node(
         node_name='manager',
         package='raspimouse_ros2_examples',
         node_executable='lifecycle_node_manager',
@@ -48,4 +48,4 @@ def generate_launch_description():
 
     )
 
-    return launch.LaunchDescription([container, object_tracking_core])
+    return launch.LaunchDescription([container, manager])
