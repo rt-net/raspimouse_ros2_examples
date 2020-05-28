@@ -144,7 +144,7 @@ Turn off automatic adjustment parameters of a camera (auto focus, auto while bal
 
 ```sh
 $ cd ~/ros2_ws/src/raspimouse_ros2_examples/config
-$ ./camera.bash
+$ ./configure_camera.bash
 ```
 
 Then, launch nodes with the following command:

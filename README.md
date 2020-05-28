@@ -146,7 +146,7 @@ Raspberry Pi Mouseにカメラマウントを取り付け、WebカメラをRaspb
 
 ```sh
 $ cd ~/ros2_ws/src/raspimouse_ros2_examples/config
-$ ./camera.bash
+$ ./configure_camera.bash
 ```
 
 次のコマンドでノードを起動します。
