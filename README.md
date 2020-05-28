@@ -162,7 +162,7 @@ $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py
 
 **画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。**
 
-![object_tracking_images](https://github.com/rt-net/raspimouse_ros2_examples/blob/images/object_tracking_images.png)
+<img src="https://github.com/rt-net/raspimouse_ros2_examples/blob/images/object_tracking_images.png" width=500 />
 
 #### Configure
 
