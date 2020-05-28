@@ -159,7 +159,7 @@ or [rqt_image_view](https://index.ros.org/doc/ros2/Tutorials/RQt-Overview-Usage/
 
 **Viewing an image may cause the node to behave unstable and not publish cmd_vel or image topics.**
 
-![object_tracking_images](https://github.com/rt-net/raspimouse_ros2_examples/blob/images/object_tracking_images.png)
+<img src="https://github.com/rt-net/raspimouse_ros2_examples/blob/images/object_tracking_images.png" width=500 />
 
 #### Configure
 
