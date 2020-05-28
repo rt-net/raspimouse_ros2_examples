@@ -118,7 +118,7 @@ button_cmd_enable       : 4
 
 ### object_tracking
 
-![object_tracking](https://github.com/rt-net/raspimouse_ros_exapmles/blob/images/object_tracking.JPG)
+<img src="https://github.com/rt-net/raspimouse_ros_exapmles/blob/images/object_tracking.JPG" width=500 />
 
 This is an example to use RGB camera images and OpenCV library for object tracking.
 
