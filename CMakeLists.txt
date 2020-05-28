@@ -18,6 +18,47 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(lifecycle_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(OpenCV REQUIRED)
+
+
+include_directories(include)
+
+add_library(object_tracking_component SHARED
+  src/object_tracking_component.cpp)
+target_compile_definitions(object_tracking_component
+  PRIVATE "RASPIMOUSE_ROS2_EXAMPLES_BUILDING_DLL")
+ament_target_dependencies(object_tracking_component
+  rclcpp
+  rclcpp_components
+  rclcpp_lifecycle
+  std_msgs
+  std_srvs
+  sensor_msgs
+  geometry_msgs
+  OpenCV)
+rclcpp_components_register_nodes(object_tracking_component "object_tracking::Tracker")
+
+add_executable(lifecycle_node_manager src/lifecycle_node_manager.cpp)
+ament_target_dependencies(lifecycle_node_manager
+  rclcpp
+  lifecycle_msgs)
+
+install(TARGETS
+  object_tracking_component
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
+install(TARGETS
+  lifecycle_node_manager
+  DESTINATION lib/${PROJECT_NAME})
 
 # python scripts
 ament_python_install_package(${PROJECT_NAME})
