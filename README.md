@@ -160,6 +160,8 @@ $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py
 や[rqt_image_view](https://index.ros.org/doc/ros2/Tutorials/RQt-Overview-Usage/)
 で表示できます。
 
+**画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。**
+
 ![object_tracking_images](https://github.com/rt-net/raspimouse_ros2_examples/blob/images/object_tracking_images.png)
 
 #### Configure

@@ -157,6 +157,8 @@ This sample publishes two topics: `raw_image` for the camera image and `result_i
 These images can be viewed with [RViz](https://index.ros.org/r/rviz/)
 or [rqt_image_view](https://index.ros.org/doc/ros2/Tutorials/RQt-Overview-Usage/).
 
+**Viewing an image may cause the node to behave unstable and not publish cmd_vel or image topics.**
+
 ![object_tracking_images](https://github.com/rt-net/raspimouse_ros2_examples/blob/images/object_tracking_images.png)
 
 #### Configure
