@@ -32,42 +32,85 @@ using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface
 namespace line_follower
 {
 
+const int Follower::NUM_OF_SAMPLES = 10;
+
 Follower::Follower(const rclcpp::NodeOptions & options)
-: rclcpp_lifecycle::LifecycleNode("follower", options)
+: rclcpp_lifecycle::LifecycleNode("follower", options),
+  present_sensor_values_(SensorsType(SENSOR_NUM, 0)),
+  sensor_line_values_(SensorsType(SENSOR_NUM, 0)),
+  sensor_field_values_(SensorsType(SENSOR_NUM, 0)),
+  line_thresholds_(SensorsType(SENSOR_NUM, 0)),
+  sampling_values_(SensorsType(SENSOR_NUM, 0)),
+  line_is_detected_by_sensor_(std::vector<bool>(SENSOR_NUM, false)),
+  sampling_count_(0),
+  line_values_are_sampled_(false), field_values_are_sampled_(false),
+  line_sampling_(false), field_sampling_(false),
+  can_publish_cmdvel_(false)
 {
 }
 
 void Follower::on_cmd_vel_timer()
 {
+  if (line_sampling_ || field_sampling_) {
+    return;
+  }
+
   if (switches_.switch0) {
     set_motor_power(true);
     beep_start();
 
   } else if (switches_.switch1) {
     set_motor_power(false);
-    beep_success();
+    beep_start();
+    line_sampling_ = true;
 
   } else if (switches_.switch2) {
     set_motor_power(true);
-    beep_failure();
-
+    beep_start();
+    field_sampling_ = true;
   }
   // Reset
   switches_ = raspimouse_msgs::msg::Switches();
 
+  RCLCPP_INFO(this->get_logger(), "Line values: L:%d, ML:%d, MR:%d, R:%d",
+    sensor_line_values_[LEFT],
+    sensor_line_values_[MID_LEFT],
+    sensor_line_values_[MID_RIGHT],
+    sensor_line_values_[RIGHT]
+    );
+
+  RCLCPP_INFO(this->get_logger(), "Field values: L:%d, ML:%d, MR:%d, R:%d",
+    sensor_field_values_[LEFT],
+    sensor_field_values_[MID_LEFT],
+    sensor_field_values_[MID_RIGHT],
+    sensor_field_values_[RIGHT]
+    );
+
   // RCLCPP_INFO(this->get_logger(), "Switches: %d, %d, %d",
   //   switches_.switch0, switches_.switch1, switches_.switch2);
-  // RCLCPP_INFO(this->get_logger(), "Sensors: %d %d, %d, %d",
-  //   light_sensors_.left, light_sensors_.forward_l, light_sensors_.forward_r, light_sensors_.right);
   cmd_vel_.linear.x = 0.0;
   cmd_vel_.angular.z = 0.0;
   auto msg = std::make_unique<geometry_msgs::msg::Twist>(cmd_vel_);
+
+  // RCLCPP_INFO(this->get_logger(), "Sensor values: L:%d, ML:%d, MR:%d, R:%d",
+  //   present_sensor_values[LEFT],
+  //   present_sensor_values[MID_LEFT],
+  //   present_sensor_values[MID_RIGHT],
+  //   present_sensor_values[RIGHT]
+  //   );
   // cmd_vel_pub_->publish(std::move(msg));
 }
 
 void Follower::callback_light_sensors(const raspimouse_msgs::msg::LightSensors::SharedPtr msg)
 {
-  light_sensors_ = *msg;
+  present_sensor_values_[LEFT] = msg->forward_r;
+  present_sensor_values_[MID_LEFT] = msg->right;
+  present_sensor_values_[MID_RIGHT] = msg->left;
+  present_sensor_values_[RIGHT] = msg->forward_l;
+
+  if (line_sampling_ || field_sampling_) {
+    multisampling();
+  }
 }
 
 void Follower::callback_switches(const raspimouse_msgs::msg::Switches::SharedPtr msg)
@@ -112,6 +155,33 @@ void Follower::beep_failure(void)
   for (int i=0; i<4; i++) {
     beep_buzzer(500, 100ms);
     rclcpp::sleep_for(100ms);
+  }
+}
+
+void Follower::multisampling(void)
+{
+  if (sampling_count_ < NUM_OF_SAMPLES) {
+    for (int sensor_i = 0; sensor_i < SENSOR_NUM; sensor_i++) {
+      sampling_values_[sensor_i] += present_sensor_values_[sensor_i];
+    }
+    sampling_count_++;
+
+  } else {
+    for (int sensor_i = 0; sensor_i < SENSOR_NUM; sensor_i++) {
+      sampling_values_[sensor_i] = sampling_values_[sensor_i] / NUM_OF_SAMPLES;
+    }
+
+    if (line_sampling_) {
+      sensor_line_values_ = sampling_values_;
+      line_values_are_sampled_ = true;
+    } else {
+      sensor_field_values_ = sampling_values_;
+      field_values_are_sampled_ = true;
+    }
+    sampling_count_ = 0;
+    sampling_values_ = SensorsType(SENSOR_NUM, 0);
+    line_sampling_ = field_sampling_ = false;
+    beep_success();
   }
 }
 
