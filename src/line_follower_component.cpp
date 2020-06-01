@@ -87,13 +87,12 @@ void Follower::beep_buzzer(const int freq, const std::chrono::nanoseconds & beep
   auto msg = std::make_unique<std_msgs::msg::Int16>();
   msg->data = freq;
   buzzer_pub_->publish(std::move(msg));
-  this->one_off_timer = this->create_wall_timer(
-            beep_time, [this]() {
-              auto msg = std::make_unique<std_msgs::msg::Int16>();
-              msg->data = 0;
-              buzzer_pub_->publish(std::move(msg));
-              this->one_off_timer->cancel();
-            });
+
+  rclcpp::sleep_for(beep_time);
+
+  msg = std::make_unique<std_msgs::msg::Int16>();
+  msg->data = 0;
+  buzzer_pub_->publish(std::move(msg));
 }
 
 void Follower::beep_start(void)
@@ -103,15 +102,18 @@ void Follower::beep_start(void)
 
 void Follower::beep_success(void)
 {
-  beep_buzzer(1000, 500ms);
+  beep_buzzer(1000, 100ms);
+  rclcpp::sleep_for(100ms);
+  beep_buzzer(1000, 100ms);
 }
 
 void Follower::beep_failure(void)
 {
-  beep_buzzer(500, 100ms);
+  for (int i=0; i<4; i++) {
+    beep_buzzer(500, 100ms);
+    rclcpp::sleep_for(100ms);
+  }
 }
-
-
 
 CallbackReturn Follower::on_configure(const rclcpp_lifecycle::State &)
 {
