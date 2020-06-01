@@ -72,18 +72,25 @@ void Follower::on_cmd_vel_timer()
   // Reset
   switches_ = raspimouse_msgs::msg::Switches();
 
-  RCLCPP_INFO(this->get_logger(), "Line values: L:%d, ML:%d, MR:%d, R:%d",
-    sensor_line_values_[LEFT],
-    sensor_line_values_[MID_LEFT],
-    sensor_line_values_[MID_RIGHT],
-    sensor_line_values_[RIGHT]
-    );
+  // RCLCPP_INFO(this->get_logger(), "Line values: L:%d, ML:%d, MR:%d, R:%d",
+  //   sensor_line_values_[LEFT],
+  //   sensor_line_values_[MID_LEFT],
+  //   sensor_line_values_[MID_RIGHT],
+  //   sensor_line_values_[RIGHT]
+  //   );
 
-  RCLCPP_INFO(this->get_logger(), "Field values: L:%d, ML:%d, MR:%d, R:%d",
-    sensor_field_values_[LEFT],
-    sensor_field_values_[MID_LEFT],
-    sensor_field_values_[MID_RIGHT],
-    sensor_field_values_[RIGHT]
+  // RCLCPP_INFO(this->get_logger(), "Field values: L:%d, ML:%d, MR:%d, R:%d",
+  //   sensor_field_values_[LEFT],
+  //   sensor_field_values_[MID_LEFT],
+  //   sensor_field_values_[MID_RIGHT],
+  //   sensor_field_values_[RIGHT]
+  //   );
+
+  RCLCPP_INFO(this->get_logger(), "Thresholds: L:%d, ML:%d, MR:%d, R:%d",
+    line_thresholds_[LEFT],
+    line_thresholds_[MID_LEFT],
+    line_thresholds_[MID_RIGHT],
+    line_thresholds_[RIGHT]
     );
 
   // RCLCPP_INFO(this->get_logger(), "Switches: %d, %d, %d",
@@ -158,6 +165,15 @@ void Follower::beep_failure(void)
   }
 }
 
+bool Follower::sampling_is_done(void)
+{
+  if (line_values_are_sampled_ && field_values_are_sampled_) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 void Follower::multisampling(void)
 {
   if (sampling_count_ < NUM_OF_SAMPLES) {
@@ -181,7 +197,32 @@ void Follower::multisampling(void)
     sampling_count_ = 0;
     sampling_values_ = SensorsType(SENSOR_NUM, 0);
     line_sampling_ = field_sampling_ = false;
+
+    set_line_thresholds();
     beep_success();
+  }
+}
+
+int Follower::median(const int value1, const int value2)
+{
+  int diff = std::abs(value1 - value2);
+
+  if (value1 < value2) {
+    return value1 + diff * 0.5;
+  } else {
+    return value2 + diff * 0.5;
+  }
+}
+
+void Follower::set_line_thresholds(void)
+{
+  if (sampling_is_done() == false){
+    return;
+  }
+
+  for (int sensor_i = 0; sensor_i < SENSOR_NUM; sensor_i++) {
+    line_thresholds_[sensor_i] = median(
+      sensor_line_values_[sensor_i], sensor_field_values_[sensor_i]);
   }
 }
 

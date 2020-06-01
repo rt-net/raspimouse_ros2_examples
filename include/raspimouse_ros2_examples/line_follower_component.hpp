@@ -85,7 +85,10 @@ private:
   void beep_start(void);
   void beep_success(void);
   void beep_failure(void);
+  bool sampling_is_done(void);
   void multisampling(void);
+  int median(const int value1, const int value2);
+  void set_line_thresholds(void);
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
   on_configure(const rclcpp_lifecycle::State &);
