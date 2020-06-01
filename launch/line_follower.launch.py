@@ -20,23 +20,11 @@ from launch_ros.descriptions import ComposableNode
 
 def generate_launch_description():
     """Generate launch description with multiple components."""
-    container = ComposableNodeContainer(
-            node_name='line_follower_container',
-            node_namespace='',
-            package='rclcpp_components',
-            node_executable='component_container',
-            composable_node_descriptions=[
-                ComposableNode(
-                    package='raspimouse_ros2_examples',
-                    node_plugin='line_follower::Follower',
-                    node_name='follower'),
-                ComposableNode(
-                    package='raspimouse',
-                    node_plugin='raspimouse::Raspimouse',
-                    node_name='raspimouse',
-                    parameters=[{'use_light_sensors': True}]),
-            ],
-            output='screen',
+    line_follower = Node(
+        # node_name='line_follower',
+        package='raspimouse_ros2_examples',
+        node_executable='line_follower',
+        output='screen',
     )
 
     manager = Node(
@@ -45,7 +33,6 @@ def generate_launch_description():
         node_executable='lifecycle_node_manager',
         output='screen',
         parameters=[{'components': ['raspimouse', 'follower']}]
-
     )
 
-    return launch.LaunchDescription([container, manager])
+    return launch.LaunchDescription([line_follower, manager])

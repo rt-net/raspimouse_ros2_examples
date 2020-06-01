@@ -28,6 +28,7 @@ find_package(lifecycle_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(raspimouse_msgs REQUIRED)
+find_package(raspimouse REQUIRED)
 
 
 include_directories(include)
@@ -66,6 +67,12 @@ ament_target_dependencies(lifecycle_node_manager
   rclcpp
   lifecycle_msgs)
 
+add_executable(line_follower src/line_follower.cpp)
+target_link_libraries(line_follower line_follower_component)
+ament_target_dependencies(line_follower
+  rclcpp
+  raspimouse)
+
 install(TARGETS
   object_tracking_component
   line_follower_component
@@ -74,6 +81,7 @@ install(TARGETS
   RUNTIME DESTINATION bin)
 install(TARGETS
   lifecycle_node_manager
+  line_follower
   DESTINATION lib/${PROJECT_NAME})
 
 # python scripts
