@@ -14,6 +14,7 @@
 
 #include "raspimouse_ros2_examples/line_follower_component.hpp"
 
+#include <algorithm>
 #include <memory>
 #include <chrono>
 #include <functional>
@@ -56,57 +57,30 @@ void Follower::on_cmd_vel_timer()
   }
 
   if (switches_.switch0) {
-    set_motor_power(true);
-    beep_start();
-
+    if (sampling_is_done() && can_publish_cmdvel_ == false) {
+      set_motor_power(true);
+      beep_success();
+      can_publish_cmdvel_ = true;
+    } else {
+      set_motor_power(false);
+      beep_failure();
+      can_publish_cmdvel_ = false;
+    }
   } else if (switches_.switch1) {
-    set_motor_power(false);
     beep_start();
     line_sampling_ = true;
 
   } else if (switches_.switch2) {
-    set_motor_power(true);
     beep_start();
     field_sampling_ = true;
   }
-  // Reset
-  switches_ = raspimouse_msgs::msg::Switches();
+  switches_ = raspimouse_msgs::msg::Switches();  // Reset values
+
+  if (can_publish_cmdvel_) {
+    publish_cmdvel_for_line_following();
+  }
+
   indicate_line_detections();
-
-  // RCLCPP_INFO(this->get_logger(), "Line values: L:%d, ML:%d, MR:%d, R:%d",
-  //   sensor_line_values_[LEFT],
-  //   sensor_line_values_[MID_LEFT],
-  //   sensor_line_values_[MID_RIGHT],
-  //   sensor_line_values_[RIGHT]
-  //   );
-
-  // RCLCPP_INFO(this->get_logger(), "Field values: L:%d, ML:%d, MR:%d, R:%d",
-  //   sensor_field_values_[LEFT],
-  //   sensor_field_values_[MID_LEFT],
-  //   sensor_field_values_[MID_RIGHT],
-  //   sensor_field_values_[RIGHT]
-  //   );
-
-  RCLCPP_INFO(this->get_logger(), "Thresholds: L:%d, ML:%d, MR:%d, R:%d",
-    line_thresholds_[LEFT],
-    line_thresholds_[MID_LEFT],
-    line_thresholds_[MID_RIGHT],
-    line_thresholds_[RIGHT]
-    );
-
-  // RCLCPP_INFO(this->get_logger(), "Switches: %d, %d, %d",
-  //   switches_.switch0, switches_.switch1, switches_.switch2);
-  cmd_vel_.linear.x = 0.0;
-  cmd_vel_.angular.z = 0.0;
-  auto msg = std::make_unique<geometry_msgs::msg::Twist>(cmd_vel_);
-
-  // RCLCPP_INFO(this->get_logger(), "Sensor values: L:%d, ML:%d, MR:%d, R:%d",
-  //   present_sensor_values[LEFT],
-  //   present_sensor_values[MID_LEFT],
-  //   present_sensor_values[MID_RIGHT],
-  //   present_sensor_values[RIGHT]
-  //   );
-  // cmd_vel_pub_->publish(std::move(msg));
 }
 
 void Follower::callback_light_sensors(const raspimouse_msgs::msg::LightSensors::SharedPtr msg)
@@ -135,6 +109,44 @@ void Follower::set_motor_power(const bool motor_on)
   auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
   request->data = motor_on;
   auto future_result = motor_power_client_->async_send_request(request);
+}
+
+void Follower::publish_cmdvel_for_line_following(void)
+{
+  const double VEL_LINEAR_X = 0.08;  // m/s
+  const double VEL_ANGULAR_Z = 0.8;  // rad/s
+  const double LOW_VEL_ANGULAR_Z = 0.5;  // rad/s
+
+  auto cmd_vel = std::make_unique<geometry_msgs::msg::Twist>();
+
+  bool detect_line = std::any_of(
+    line_is_detected_by_sensor_.begin(), line_is_detected_by_sensor_.end(),
+    [](bool detected){ return detected; });
+  bool detect_field = std::any_of(
+    line_is_detected_by_sensor_.begin(), line_is_detected_by_sensor_.end(),
+    [](bool detected){ return !detected; });
+
+  if (detect_line && detect_field) {
+    cmd_vel->linear.x = VEL_LINEAR_X;
+
+    if (line_is_detected_by_sensor_[LEFT]) {
+      cmd_vel->angular.z += VEL_ANGULAR_Z;
+    }
+
+    if (line_is_detected_by_sensor_[RIGHT]) {
+      cmd_vel->angular.z -= VEL_ANGULAR_Z;
+    }
+
+    if (line_is_detected_by_sensor_[MID_LEFT]) {
+      cmd_vel->angular.z += LOW_VEL_ANGULAR_Z;
+    }
+
+    if (line_is_detected_by_sensor_[MID_RIGHT]) {
+      cmd_vel->angular.z -= LOW_VEL_ANGULAR_Z;
+    }
+  }
+
+  cmd_vel_pub_->publish(std::move(cmd_vel));
 }
 
 void Follower::update_line_detection(void)
@@ -312,8 +324,6 @@ CallbackReturn Follower::on_deactivate(const rclcpp_lifecycle::State &)
   cmd_vel_pub_->on_deactivate();
   leds_pub_->on_deactivate();
   cmd_vel_timer_->cancel();
-
-  cmd_vel_ = geometry_msgs::msg::Twist();
 
   return CallbackReturn::SUCCESS;
 }

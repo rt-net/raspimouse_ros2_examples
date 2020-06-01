@@ -55,7 +55,6 @@ private:
 
   static const int NUM_OF_SAMPLES;
 
-  geometry_msgs::msg::Twist cmd_vel_;
   raspimouse_msgs::msg::Switches switches_;
   SensorsType present_sensor_values_;
   SensorsType sensor_line_values_;
@@ -83,6 +82,7 @@ private:
   void callback_switches(const raspimouse_msgs::msg::Switches::SharedPtr msg);
 
   void set_motor_power(const bool motor_on);
+  void publish_cmdvel_for_line_following(void);
   void update_line_detection(void);
   bool line_is_bright(void);
   void indicate_line_detections(void);
