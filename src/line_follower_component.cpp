@@ -71,6 +71,7 @@ void Follower::on_cmd_vel_timer()
   }
   // Reset
   switches_ = raspimouse_msgs::msg::Switches();
+  indicate_line_detections();
 
   // RCLCPP_INFO(this->get_logger(), "Line values: L:%d, ML:%d, MR:%d, R:%d",
   //   sensor_line_values_[LEFT],
@@ -118,6 +119,10 @@ void Follower::callback_light_sensors(const raspimouse_msgs::msg::LightSensors::
   if (line_sampling_ || field_sampling_) {
     multisampling();
   }
+
+  if (sampling_is_done()) {
+    update_line_detection();
+  }
 }
 
 void Follower::callback_switches(const raspimouse_msgs::msg::Switches::SharedPtr msg)
@@ -130,6 +135,40 @@ void Follower::set_motor_power(const bool motor_on)
   auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
   request->data = motor_on;
   auto future_result = motor_power_client_->async_send_request(request);
+}
+
+void Follower::update_line_detection(void)
+{
+  for (int sensor_i = 0; sensor_i < SENSOR_NUM; sensor_i++) {
+    bool is_positive = present_sensor_values_[sensor_i] > line_thresholds_[sensor_i];
+
+    if (line_is_bright() == is_positive) {
+      line_is_detected_by_sensor_[sensor_i] = true;
+    } else {
+      line_is_detected_by_sensor_[sensor_i] = false;
+    }
+  }
+
+}
+
+bool Follower::line_is_bright(void)
+{
+  const SensorIndex SAMPLE = RIGHT;
+  if (sensor_line_values_[SAMPLE] > sensor_field_values_[SAMPLE]) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void Follower::indicate_line_detections(void)
+{
+  auto msg = std::make_unique<raspimouse_msgs::msg::Leds>();
+  msg->led0 = line_is_detected_by_sensor_[RIGHT];
+  msg->led1 = line_is_detected_by_sensor_[MID_RIGHT];
+  msg->led2 = line_is_detected_by_sensor_[MID_LEFT];
+  msg->led3 = line_is_detected_by_sensor_[LEFT];
+  leds_pub_->publish(std::move(msg));
 }
 
 void Follower::beep_buzzer(const int freq, const std::chrono::nanoseconds & beep_time)
@@ -238,6 +277,7 @@ CallbackReturn Follower::on_configure(const rclcpp_lifecycle::State &)
 
   cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
   buzzer_pub_ = create_publisher<std_msgs::msg::Int16>("buzzer", 1);
+  leds_pub_ = create_publisher<raspimouse_msgs::msg::Leds>("leds", 1);
   light_sensors_sub_ = create_subscription<raspimouse_msgs::msg::LightSensors>(
     "light_sensors", 1, std::bind(&Follower::callback_light_sensors, this, _1));
   switches_sub_ = create_subscription<raspimouse_msgs::msg::Switches>(
@@ -258,6 +298,7 @@ CallbackReturn Follower::on_activate(const rclcpp_lifecycle::State &)
 
   buzzer_pub_->on_activate();
   cmd_vel_pub_->on_activate();
+  leds_pub_->on_activate();
   cmd_vel_timer_->reset();
 
   return CallbackReturn::SUCCESS;
@@ -269,6 +310,7 @@ CallbackReturn Follower::on_deactivate(const rclcpp_lifecycle::State &)
 
   buzzer_pub_->on_deactivate();
   cmd_vel_pub_->on_deactivate();
+  leds_pub_->on_deactivate();
   cmd_vel_timer_->cancel();
 
   cmd_vel_ = geometry_msgs::msg::Twist();
@@ -282,6 +324,7 @@ CallbackReturn Follower::on_cleanup(const rclcpp_lifecycle::State &)
 
   buzzer_pub_.reset();
   cmd_vel_pub_.reset();
+  leds_pub_.reset();
   cmd_vel_timer_.reset();
   light_sensors_sub_.reset();
   switches_sub_.reset();
@@ -295,6 +338,7 @@ CallbackReturn Follower::on_shutdown(const rclcpp_lifecycle::State &)
 
   buzzer_pub_.reset();
   cmd_vel_pub_.reset();
+  leds_pub_.reset();
   cmd_vel_timer_.reset();
   light_sensors_sub_.reset();
   switches_sub_.reset();
