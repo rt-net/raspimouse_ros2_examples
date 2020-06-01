@@ -39,14 +39,30 @@ Follower::Follower(const rclcpp::NodeOptions & options)
 
 void Follower::on_cmd_vel_timer()
 {
-  RCLCPP_INFO(this->get_logger(), "Switches: %d, %d, %d",
-    switches_.switch0, switches_.switch1, switches_.switch2);
-  RCLCPP_INFO(this->get_logger(), "Sensors: %d %d, %d, %d",
-    light_sensors_.left, light_sensors_.forward_l, light_sensors_.forward_r, light_sensors_.right);
+  if (switches_.switch0) {
+    set_motor_power(true);
+    beep_start();
+
+  } else if (switches_.switch1) {
+    set_motor_power(false);
+    beep_success();
+
+  } else if (switches_.switch2) {
+    set_motor_power(true);
+    beep_failure();
+
+  }
+  // Reset
+  switches_ = raspimouse_msgs::msg::Switches();
+
+  // RCLCPP_INFO(this->get_logger(), "Switches: %d, %d, %d",
+  //   switches_.switch0, switches_.switch1, switches_.switch2);
+  // RCLCPP_INFO(this->get_logger(), "Sensors: %d %d, %d, %d",
+  //   light_sensors_.left, light_sensors_.forward_l, light_sensors_.forward_r, light_sensors_.right);
   cmd_vel_.linear.x = 0.0;
   cmd_vel_.angular.z = 0.0;
   auto msg = std::make_unique<geometry_msgs::msg::Twist>(cmd_vel_);
-  cmd_vel_pub_->publish(std::move(msg));
+  // cmd_vel_pub_->publish(std::move(msg));
 }
 
 void Follower::callback_light_sensors(const raspimouse_msgs::msg::LightSensors::SharedPtr msg)
@@ -58,6 +74,43 @@ void Follower::callback_switches(const raspimouse_msgs::msg::Switches::SharedPtr
 {
   switches_ = *msg;
 }
+
+void Follower::set_motor_power(const bool motor_on)
+{
+  auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
+  request->data = motor_on;
+  auto future_result = motor_power_client_->async_send_request(request);
+}
+
+void Follower::beep_buzzer(const int freq, const std::chrono::nanoseconds & beep_time)
+{
+  auto msg = std::make_unique<std_msgs::msg::Int16>();
+  msg->data = freq;
+  buzzer_pub_->publish(std::move(msg));
+  this->one_off_timer = this->create_wall_timer(
+            beep_time, [this]() {
+              auto msg = std::make_unique<std_msgs::msg::Int16>();
+              msg->data = 0;
+              buzzer_pub_->publish(std::move(msg));
+              this->one_off_timer->cancel();
+            });
+}
+
+void Follower::beep_start(void)
+{
+  beep_buzzer(1000, 500ms);
+}
+
+void Follower::beep_success(void)
+{
+  beep_buzzer(1000, 500ms);
+}
+
+void Follower::beep_failure(void)
+{
+  beep_buzzer(500, 100ms);
+}
+
 
 
 CallbackReturn Follower::on_configure(const rclcpp_lifecycle::State &)
@@ -71,17 +124,11 @@ CallbackReturn Follower::on_configure(const rclcpp_lifecycle::State &)
   cmd_vel_timer_->cancel();
 
   cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
+  buzzer_pub_ = create_publisher<std_msgs::msg::Int16>("buzzer", 1);
   light_sensors_sub_ = create_subscription<raspimouse_msgs::msg::LightSensors>(
     "light_sensors", 1, std::bind(&Follower::callback_light_sensors, this, _1));
   switches_sub_ = create_subscription<raspimouse_msgs::msg::Switches>(
     "switches", 1, std::bind(&Follower::callback_switches, this, _1));
-
-  return CallbackReturn::SUCCESS;
-}
-
-CallbackReturn Follower::on_activate(const rclcpp_lifecycle::State &)
-{
-  RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
 
   motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
   if (!motor_power_client_->wait_for_service(5s)) {
@@ -89,10 +136,14 @@ CallbackReturn Follower::on_activate(const rclcpp_lifecycle::State &)
       "Service motor_power is not avaliable.");
     return CallbackReturn::FAILURE;
   }
-  auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
-  request->data = true;
-  auto future_result = motor_power_client_->async_send_request(request);
+  return CallbackReturn::SUCCESS;
+}
 
+CallbackReturn Follower::on_activate(const rclcpp_lifecycle::State &)
+{
+  RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
+
+  buzzer_pub_->on_activate();
   cmd_vel_pub_->on_activate();
   cmd_vel_timer_->reset();
 
@@ -102,6 +153,8 @@ CallbackReturn Follower::on_activate(const rclcpp_lifecycle::State &)
 CallbackReturn Follower::on_deactivate(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
+
+  buzzer_pub_->on_deactivate();
   cmd_vel_pub_->on_deactivate();
   cmd_vel_timer_->cancel();
 
@@ -114,6 +167,7 @@ CallbackReturn Follower::on_cleanup(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_cleanup() is called.");
 
+  buzzer_pub_.reset();
   cmd_vel_pub_.reset();
   cmd_vel_timer_.reset();
   light_sensors_sub_.reset();
@@ -126,6 +180,7 @@ CallbackReturn Follower::on_shutdown(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_shutdown() is called.");
 
+  buzzer_pub_.reset();
   cmd_vel_pub_.reset();
   cmd_vel_timer_.reset();
   light_sensors_sub_.reset();
