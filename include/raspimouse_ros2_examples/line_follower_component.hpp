@@ -17,6 +17,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "raspimouse_ros2_examples/visibility_control.h"
 #include "raspimouse_msgs/msg/switches.hpp"
@@ -45,7 +46,8 @@ protected:
 private:
   using SensorsType = std::vector<int>;
 
-  enum SensorIndex {
+  enum SensorIndex
+  {
     LEFT = 0,
     MID_LEFT,
     MID_RIGHT,

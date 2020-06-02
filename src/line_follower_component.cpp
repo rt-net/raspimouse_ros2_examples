@@ -58,23 +58,27 @@ void Follower::on_cmd_vel_timer()
 
   if (switches_.switch0) {
     if (sampling_is_done() && can_publish_cmdvel_ == false) {
+      RCLCPP_INFO(this->get_logger(), "Start following.");
       set_motor_power(true);
       beep_success();
       can_publish_cmdvel_ = true;
     } else {
+      RCLCPP_INFO(this->get_logger(), "Stop following.");
       set_motor_power(false);
       beep_failure();
       can_publish_cmdvel_ = false;
     }
   } else if (switches_.switch1) {
+    RCLCPP_INFO(this->get_logger(), "line sampling:");
     beep_start();
     line_sampling_ = true;
 
   } else if (switches_.switch2) {
+    RCLCPP_INFO(this->get_logger(), "field sampling:");
     beep_start();
     field_sampling_ = true;
   }
-  switches_ = raspimouse_msgs::msg::Switches();  // Reset values
+  switches_ = raspimouse_msgs::msg::Switches();  // Reset switch values
 
   if (can_publish_cmdvel_) {
     publish_cmdvel_for_line_following();
@@ -85,6 +89,7 @@ void Follower::on_cmd_vel_timer()
 
 void Follower::callback_light_sensors(const raspimouse_msgs::msg::LightSensors::SharedPtr msg)
 {
+  // The order of the front distance sensors and the line following sensors are not same
   present_sensor_values_[LEFT] = msg->forward_r;
   present_sensor_values_[MID_LEFT] = msg->right;
   present_sensor_values_[MID_RIGHT] = msg->left;
@@ -121,10 +126,10 @@ void Follower::publish_cmdvel_for_line_following(void)
 
   bool detect_line = std::any_of(
     line_is_detected_by_sensor_.begin(), line_is_detected_by_sensor_.end(),
-    [](bool detected){ return detected; });
+    [](bool detected) {return detected;});
   bool detect_field = std::any_of(
     line_is_detected_by_sensor_.begin(), line_is_detected_by_sensor_.end(),
-    [](bool detected){ return !detected; });
+    [](bool detected) {return !detected;});
 
   if (detect_line && detect_field) {
     cmd_vel->linear.x = VEL_LINEAR_X;
@@ -160,7 +165,6 @@ void Follower::update_line_detection(void)
       line_is_detected_by_sensor_[sensor_i] = false;
     }
   }
-
 }
 
 bool Follower::line_is_bright(void)
@@ -210,7 +214,7 @@ void Follower::beep_success(void)
 
 void Follower::beep_failure(void)
 {
-  for (int i=0; i<4; i++) {
+  for (int i = 0; i < 4; i++) {
     beep_buzzer(500, 100ms);
     rclcpp::sleep_for(100ms);
   }
@@ -249,6 +253,10 @@ void Follower::multisampling(void)
     sampling_values_ = SensorsType(SENSOR_NUM, 0);
     line_sampling_ = field_sampling_ = false;
 
+    RCLCPP_INFO(this->get_logger(), "L:%d, ML:%d, MR:%d, R:%d",
+      sampling_values_[LEFT], sampling_values_[MID_LEFT],
+      sampling_values_[MID_RIGHT], sampling_values_[RIGHT]);
+
     set_line_thresholds();
     beep_success();
   }
@@ -267,7 +275,7 @@ int Follower::median(const int value1, const int value2)
 
 void Follower::set_line_thresholds(void)
 {
-  if (sampling_is_done() == false){
+  if (sampling_is_done() == false) {
     return;
   }
 
@@ -275,6 +283,10 @@ void Follower::set_line_thresholds(void)
     line_thresholds_[sensor_i] = median(
       sensor_line_values_[sensor_i], sensor_field_values_[sensor_i]);
   }
+
+  RCLCPP_INFO(this->get_logger(), "line_thresholds: L:%d, ML:%d, MR:%d, R:%d",
+    line_thresholds_[LEFT], line_thresholds_[MID_LEFT],
+    line_thresholds_[MID_RIGHT], line_thresholds_[RIGHT]);
 }
 
 CallbackReturn Follower::on_configure(const rclcpp_lifecycle::State &)
