@@ -73,12 +73,37 @@ ament_target_dependencies(line_follower
   rclcpp
   raspimouse)
 
+ament_export_interfaces(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
+
+ament_export_dependencies(rclcpp)
+ament_export_dependencies(rclcpp_components)
+ament_export_dependencies(rclcpp_lifecycle)
+ament_export_dependencies(sensor_msgs)
+ament_export_dependencies(std_msgs)
+ament_export_dependencies(std_srvs)
+ament_export_dependencies(geometry_msgs)
+ament_export_dependencies(raspimouse_msgs)
+ament_export_dependencies(OpenCV)
+
+ament_export_include_directories(include)
+ament_export_libraries(
+  object_tracking_component
+  line_follower_component)
+
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
+
 install(TARGETS
   object_tracking_component
   line_follower_component
+  EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin)
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include)
+
 install(TARGETS
   lifecycle_node_manager
   line_follower
