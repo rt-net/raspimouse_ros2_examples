@@ -55,6 +55,7 @@ $ source ~/ros2_ws/install/setup.bash
 
 - [joystick_control](#joystick_control)
 - [object_tracking](#object_tracking)
+- [line_follower](#line_follower)
 
 ---
 
@@ -183,6 +184,64 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
 #### Videos
 
 [![object_tracking](http://img.youtube.com/vi/U6_BuvrjyFc/sddefault.jpg)](https://youtu.be/U6_BuvrjyFc)
+
+[back to example list](#how-to-use-examples)
+
+--- 
+
+### line_follower
+
+<img src="https://github.com/rt-net/raspimouse_ros_examples/blob/images/mouse_with_line_trace_sensor.JPG" width=500 />
+
+ライントレースのコード例です。
+
+#### Requirements
+
+- ライントレースセンサ
+  - [Raspberry Pi Mouse オプションキット No.3 \[ライントレース\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3591)
+- フィールドとライン (Optional)
+
+#### Installation
+
+Raspberry Pi Mouseにライントレースセンサを取り付けます。
+
+#### How to use
+
+次のコマンドでノードを起動します。
+
+```sh
+$ ros2 launch raspimouse_ros2_examples line_follower.launch.py
+```
+
+Raspberry Pi Mouseをフィールドに置き、SW2を押してフィールド上のセンサ値をサンプリングします。
+
+<img src="https://github.com/rt-net/raspimouse_ros_examples/blob/images/field_calibration.JPG" width=500 />
+
+次に、センサとラインが重なるようにRaspberry Pi Mouseを置き、SW1を押してライン上のセンサ値をサンプリングします。
+
+<img src="https://github.com/rt-net/raspimouse_ros_examples/blob/images/line_calibration.JPG" width=500 />
+
+最後に、ライン上にRaspberry Pi Mouseを置き、SW0を押してライントレースを開始します。
+
+<img src="https://github.com/rt-net/raspimouse_ros_examples/blob/images/start_trace.JPG" width=500 />
+
+もう一度SW0を押すとライントレースを停止します。
+
+#### Configure
+
+走行速度を変更するには[`./src/line_follower_component.cpp`](./src/line_follower_component.cpp)を編集します。
+
+```cpp
+void Follower::publish_cmdvel_for_line_following(void)
+{
+  const double VEL_LINEAR_X = 0.08;  // m/s
+  const double VEL_ANGULAR_Z = 0.8;  // rad/s
+  const double LOW_VEL_ANGULAR_Z = 0.5;  // rad/s
+```
+
+#### Videos
+
+[![line_follower](http://img.youtube.com/vi/oPm0sW2V_tY/sddefault.jpg)](https://youtu.be/oPm0sW2V_tY)
 
 [back to example list](#how-to-use-examples)
 
