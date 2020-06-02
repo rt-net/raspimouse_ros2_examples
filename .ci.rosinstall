@@ -1,0 +1,4 @@
+- git:
+    local-name: raspimouse2
+    uri: https://github.com/rt-net/raspimouse2
+    version: master

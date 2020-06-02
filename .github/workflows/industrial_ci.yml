@@ -18,6 +18,9 @@ jobs:
       matrix:
         env:
           - { ROS_DISTRO: dashing, ROS_REPO: ros }
+
+    env:
+      UPSTREAM_WORKSPACE: .ci.rosinstall
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
