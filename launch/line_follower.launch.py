@@ -23,6 +23,7 @@ def generate_launch_description():
         package='raspimouse_ros2_examples',
         node_executable='line_follower',
         output='screen',
+        parameters=[{'use_pulse_counters': False}]
     )
 
     manager = Node(
