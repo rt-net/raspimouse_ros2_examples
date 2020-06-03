@@ -27,6 +27,8 @@ find_package(sensor_msgs REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
+find_package(raspimouse_msgs REQUIRED)
+find_package(raspimouse REQUIRED)
 
 
 include_directories(include)
@@ -46,18 +48,65 @@ ament_target_dependencies(object_tracking_component
   OpenCV)
 rclcpp_components_register_nodes(object_tracking_component "object_tracking::Tracker")
 
+add_library(line_follower_component SHARED
+  src/line_follower_component.cpp)
+target_compile_definitions(line_follower_component
+  PRIVATE "RASPIMOUSE_ROS2_EXAMPLES_BUILDING_DLL")
+ament_target_dependencies(line_follower_component
+  rclcpp
+  rclcpp_components
+  rclcpp_lifecycle
+  std_msgs
+  std_srvs
+  geometry_msgs
+  raspimouse_msgs)
+rclcpp_components_register_nodes(line_follower_component "line_follower::Follower")
+
 add_executable(lifecycle_node_manager src/lifecycle_node_manager.cpp)
 ament_target_dependencies(lifecycle_node_manager
   rclcpp
   lifecycle_msgs)
 
+add_executable(line_follower src/line_follower.cpp)
+target_link_libraries(line_follower line_follower_component)
+ament_target_dependencies(line_follower
+  rclcpp
+  raspimouse)
+
+ament_export_interfaces(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
+
+ament_export_dependencies(rclcpp)
+ament_export_dependencies(rclcpp_components)
+ament_export_dependencies(rclcpp_lifecycle)
+ament_export_dependencies(sensor_msgs)
+ament_export_dependencies(std_msgs)
+ament_export_dependencies(std_srvs)
+ament_export_dependencies(geometry_msgs)
+ament_export_dependencies(raspimouse_msgs)
+ament_export_dependencies(OpenCV)
+
+ament_export_include_directories(include)
+ament_export_libraries(
+  object_tracking_component
+  line_follower_component)
+
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
+
 install(TARGETS
   object_tracking_component
+  line_follower_component
+  EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin)
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include)
+
 install(TARGETS
   lifecycle_node_manager
+  line_follower
   DESTINATION lib/${PROJECT_NAME})
 
 # python scripts
