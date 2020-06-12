@@ -74,13 +74,16 @@ $ source ~/ros2_ws/install/setup.bash
 次のコマンドでノードを起動します。
 
 ```sh
-$ ros2 launch raspimouse_ros2_examples teleop_joy_with_mouse.launch.py joydev:="/dev/input/js0"
+$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=f710 mouse:=true
+
+# Use DUALSHOCK 3
+$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=dualshock3 mouse:=true
 
 # Control from remote computer
 ## on RaspberryPiMouse
 $ ros2 run raspimouse raspimouse
 ## on remote computer
-$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py
+$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
 ```
 
 デフォルトのキー割り当てはこちらです。
@@ -88,14 +91,6 @@ $ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py
 ![joystick_control_keyconfig](https://github.com/rt-net/raspimouse_ros_exapmles/blob/images/joystick_control_keyconfig.png)
 
 #### Configure
-
-[./launch/teleop_joy.launch.py](./launch/teleop_joy.launch.py)を編集してコンフィグファイルを切り替えます。
-
-```python
-def generate_launch_description():
-    config_file_name = 'joy_dualshock3.yml'
-    # config_file_name = 'joy_f710.yml'
-```
 
 [./config/joy_f710.yml](./config/joy_f710.yml)、[./config/joy_dualshock3.yml](./config/joy_dualshock3.yml)
 のキー番号を編集することで、キー割り当てを変更できます。
