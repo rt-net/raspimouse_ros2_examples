@@ -73,13 +73,16 @@ This is an example to use joystick controller to control a Raspberry Pi Mouse.
 Launch nodes with the following command:
 
 ```sh
-$ ros2 launch raspimouse_ros2_examples teleop_joy_with_mouse.launch.py joydev:="/dev/input/js0"
+$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=f710 mouse:=true
+
+# Use DUALSHOCK 3
+$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=dualshock3 mouse:=true
 
 # Control from remote computer
 ## on RaspberryPiMouse
 $ ros2 run raspimouse raspimouse
 ## on remote computer
-$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py
+$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
 ```
 
 This picture shows the default key configuration.
@@ -87,14 +90,6 @@ This picture shows the default key configuration.
 ![joystick_control_keyconfig](https://github.com/rt-net/raspimouse_ros_exapmles/blob/images/joystick_control_keyconfig.png)
 
 #### Configure
-
-Edit [./launch/teleop_joy.launch.py](./launch/teleop_joy.launch.py) to switch key config files.
-
-```python
-def generate_launch_description():
-    config_file_name = 'joy_dualshock3.yml'
-    # config_file_name = 'joy_f710.yml'
-```
 
 Key assignments can be edited with key numbers in [./config/joy_f710.yml](./config/joy_f710.yml) or
 [./config/joy_dualshock3.yml](./config/joy_dualshock3.yml).
