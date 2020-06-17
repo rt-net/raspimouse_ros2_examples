@@ -22,7 +22,7 @@ def generate_launch_description():
         node_name='async_slam',
         package='slam_toolbox', node_executable='async_slam_toolbox_node', output='screen',
         parameters=[
-            get_package_share_directory("slam_toolbox") + '/config/mapper_params_online_async.yaml'
+            get_package_share_directory("raspimouse_ros2_examples") + '/config/mapper_params_online_async.yaml'
         ],
         )
 
