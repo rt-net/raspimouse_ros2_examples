@@ -73,6 +73,7 @@ This is an example to use joystick controller to control a Raspberry Pi Mouse.
 Launch nodes with the following command:
 
 ```sh
+# Use F710
 $ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=f710 mouse:=true
 
 # Use DUALSHOCK 3
@@ -86,6 +87,8 @@ $ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
 ```
 
 This picture shows the default key configuration.
+
+To use Logicool Wireless Gamepad F710, set the input mode to  __D__ (DirectInput Mode).
 
 ![joystick_control_keyconfig](https://github.com/rt-net/raspimouse_ros_exapmles/blob/images/joystick_control_keyconfig.png)
 
