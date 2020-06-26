@@ -24,7 +24,7 @@ def generate_launch_description():
             node_name='object_tracking_container',
             node_namespace='',
             package='rclcpp_components',
-            node_executable='component_container',
+            node_executable='component_container_mt',
             composable_node_descriptions=[
                 ComposableNode(
                     package='raspimouse_ros2_examples',
