@@ -178,7 +178,7 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
 
 #### Videos
 
-[![object_tracking](http://img.youtube.com/vi/U6_BuvrjyFc/sddefault.jpg)](https://youtu.be/U6_BuvrjyFc)
+[![object_tracking](http://img.youtube.com/vi/8lgmSTScP98/sddefault.jpg)](https://youtu.be/8lgmSTScP98)
 
 [back to example list](#how-to-use-examples)
 
