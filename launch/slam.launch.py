@@ -17,16 +17,32 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
+
 def generate_launch_description():
     slam_node = Node(
-        node_name='async_slam',
         package='slam_toolbox', node_executable='async_slam_toolbox_node', output='screen',
         parameters=[
-            get_package_share_directory("raspimouse_ros2_examples") + '/config/mapper_params_online_async.yaml'
+            get_package_share_directory(
+                "raspimouse_ros2_examples") + '/config/mapper_params_online_async.yaml'
         ],
-        )
+    )
+
+    rviz2_node = Node(
+        node_name='rviz2',
+        package='rviz2', node_executable='rviz2', output='screen',
+        arguments=[
+            '-d', get_package_share_directory("raspimouse_ros2_examples") + '/config/default.rviz'],
+    )
+
+    static_transform_publisher_node = Node(
+        package='tf2_ros', node_executable='static_transform_publisher', output='screen',
+        arguments=["0", "0", "0.01", "0", "3.14",
+                   "3.14", "base_footprint", "laser"],
+    )
 
     ld = LaunchDescription()
     ld.add_action(slam_node)
+    ld.add_action(rviz2_node)
+    ld.add_action(static_transform_publisher_node)
 
     return ld
