@@ -74,6 +74,7 @@ $ source ~/ros2_ws/install/setup.bash
 次のコマンドでノードを起動します。
 
 ```sh
+# Use F710
 $ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=f710 mouse:=true
 
 # Use DUALSHOCK 3
@@ -87,6 +88,8 @@ $ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
 ```
 
 デフォルトのキー割り当てはこちらです。
+
+Logicool Wireless Gamepad F710を使う場合はモード切替スイッチを __D__ (DirectInput Mode)に設定します。
 
 ![joystick_control_keyconfig](https://github.com/rt-net/raspimouse_ros_exapmles/blob/images/joystick_control_keyconfig.png)
 
