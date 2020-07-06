@@ -25,7 +25,7 @@ from launch_ros.actions import LifecycleNode
 
 def generate_launch_description():
     declare_lidar = DeclareLaunchArgument(
-        'lidar', default_value="lds",
+        'lidar', default_value='lds',
         description='LiDAR: urg, lds,'
     )
 
@@ -37,10 +37,11 @@ def generate_launch_description():
             )
 
     def func_launch_lidar_node(context):
-        if context.launch_configurations['lidar'] == "lds":
+        if context.launch_configurations['lidar'] == 'lds':
             return [IncludeLaunchDescription(
                 PythonLaunchDescriptionSource([os.path.join(
-                    get_package_share_directory('hls_lfcd_lds_driver'), 'launch'),
+                    get_package_share_directory('hls_lfcd_lds_driver'),
+                    'launch'),
                     '/hlds_laser.launch.py'
                     ]),)]
     launch_lidar_node = OpaqueFunction(function=func_launch_lidar_node)
