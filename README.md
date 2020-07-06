@@ -241,3 +241,73 @@ void Follower::publish_cmdvel_for_line_following(void)
 [back to example list](#how-to-use-examples)
 
 --- 
+
+### SLAM
+
+<img src="https://github.com/rt-net/raspimouse_ros2_examples/blob/images/slam_toolbox.png" width=500 />
+
+LiDARと[slam_toolbox](https://github.com/SteveMacenski/slam_toolbox)
+を使ってSLAM（自己位置推定と地図作成）を行うサンプルです。
+
+#### Requirements 
+
+- LiDAR
+  <!-- - [~URG-04LX-UG01~](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1348_1296&products_id=2816)
+  - [RPLIDAR A1](https://www.slamtec.com/en/Lidar/A1) -->
+  - [LDS-01](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1348_5&products_id=3676)
+- [LiDAR Mount](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3867)
+- Joystick Controller (Optional)
+  
+#### Installation
+
+Raspberry Pi MouseにLiDARを取り付けます。
+
+<!-- - URG-04LX-UG01
+  - <img src="https://github.com/rt-net/raspimouse_ros_examples/blob/images/mouse_with_urg.JPG" width=500 />
+- RPLIDAR A1
+  - <img src="https://github.com/rt-net/raspimouse_ros_examples/blob/images/mouse_with_rplidar.png" width=500 /> -->
+- LDS-01
+  - <img src="https://github.com/rt-net/raspimouse_ros_examples/blob/images/mouse_with_lds01.JPG" width=500 />
+  
+#### How to use
+
+Raspberry Pi Mouse上で次のコマンドでノードを起動します。
+
+```sh
+# LDS
+$ ros2 launch raspimouse_ros2_examples mouse_with_lidar.launch.py lidar:=lds
+```
+
+Raspberry Pi Mouseを動かすため`teleop_joy.launch.py`を起動します
+
+```sh
+# Use DUALSHOCK 3
+$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=dualshock3 mouse:=false
+```
+
+次のコマンドでslam_toolboxパッケージを起動します。（Remote computerでの実行推奨）
+
+```sh
+$ ros2 launch raspimouse_ros2_examples slam.launch.py
+```
+
+Raspberry Pi Mouseを動かして地図を作成します。
+
+次のコマンドで作成した地図を保存します。
+
+```sh
+$ mkdir ~/maps
+$ ros2 run nav2_map_server map_saver -f ~/maps/mymap
+```
+
+#### Configure
+
+[./config/mapper_params_offline.yaml](./config/mapper_params_offline.yaml)で[slam_toolbox](https://github.com/SteveMacenski/slam_toolbox)パッケージのパラメータを調節します。
+
+<!-- #### Videos
+
+[![slam_urg](http://img.youtube.com/vi/gWozU47UqVE/sddefault.jpg)](https://youtu.be/gWozU47UqVE)
+
+[![slam_urg](http://img.youtube.com/vi/hV68UqAntfo/sddefault.jpg)](https://youtu.be/hV68UqAntfo) -->
+
+[back to example list](#how-to-use-examples)

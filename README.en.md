@@ -237,3 +237,70 @@ void Follower::publish_cmdvel_for_line_following(void)
 [back to example list](#how-to-use-examples)
 
 --- 
+
+### SLAM
+
+<img src="https://github.com/rt-net/raspimouse_ros2_examples/blob/images/slam_toolbox.png" width=500 />
+
+This is an example to use LiDAR and [slam_toolbox](https://github.com/SteveMacenski/slam_toolbox) for SLAM (Simultaneous Localization And Mapping).
+
+#### Requirements 
+
+- LiDAR
+  <!-- - [URG-04LX-UG01](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1348_1296&products_id=2816&language=en)
+  - [RPLIDAR A1](https://www.slamtec.com/en/Lidar/A1) -->
+  - [LDS-01](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1348_5&products_id=3676&language=en)
+- [LiDAR Mount](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3867&language=en)
+- Joystick Controller (Optional)
+  
+#### Installation
+
+Install a LiDAR to the Raspberry Pi Mouse.
+
+<!-- - URG-04LX-UG01
+  - <img src="https://github.com/rt-net/raspimouse_ros_examples/blob/images/mouse_with_urg.JPG" width=500 />
+- RPLIDAR A1
+  - <img src="https://github.com/rt-net/raspimouse_ros_examples/blob/images/mouse_with_rplidar.png" width=500 /> -->
+- LDS-01
+  - <img src="https://github.com/rt-net/raspimouse_ros_examples/blob/images/mouse_with_lds01.JPG" width=500 />
+  
+#### How to use
+
+Launch nodes on Raspberry Pi Mouse with the following command:
+
+```sh
+# LDS
+$ ros2 launch raspimouse_ros2_examples mouse_with_lidar.launch.py lidar:=lds
+```
+
+Next, launch `teleop_joy.launch.py` to control Raspberry Pi Mouse with the following command:
+
+```sh
+# Use DUALSHOCK 3
+$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=dualshock3 mouse:=false
+```
+
+Then, launch the slam_toolbox package (on a remote computer recommend) with the following command:
+
+```sh
+$ ros2 launch raspimouse_ros2_examples slam.launch.py
+```
+
+After moving Raspberry Pi Mouse and making a map, run a node to save the map with the following command:
+
+```sh
+$ mkdir ~/maps
+$ ros2 run nav2_map_server map_saver -f ~/maps/mymap
+```
+
+#### Configure
+
+Edit [./config/mapper_params_offline.yaml](./config/mapper_params_offline.yaml) to configure parameters of [slam_toolbox](https://github.com/SteveMacenski/slam_toolbox) package.
+
+<!-- #### Videos
+
+[![slam_urg](http://img.youtube.com/vi/gWozU47UqVE/sddefault.jpg)](https://youtu.be/gWozU47UqVE)
+
+[![slam_urg](http://img.youtube.com/vi/hV68UqAntfo/sddefault.jpg)](https://youtu.be/hV68UqAntfo) -->
+
+[back to example list](#how-to-use-examples)
