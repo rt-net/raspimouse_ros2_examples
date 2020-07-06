@@ -144,6 +144,15 @@ Visualization Manager:
                 {}
       Update Interval: 0
       Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: MarkerArray
+      Namespaces:
+        slam_toolbox: true
+      Queue Size: 10
+      Topic: /graph_visualization
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -170,16 +179,16 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 6.309802532196045
+      Distance: 5.783888339996338
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.18580353260040283
-        Y: -0.017911307513713837
-        Z: 1.0195174581895117e-5
+        X: 0.5275734663009644
+        Y: 0.047242965549230576
+        Z: -4.810763130080886e-5
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false

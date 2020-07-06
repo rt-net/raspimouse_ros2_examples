@@ -20,10 +20,10 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     slam_node = Node(
-        package='slam_toolbox', node_executable='async_slam_toolbox_node', output='screen',
+        package='slam_toolbox', node_executable='sync_slam_toolbox_node', output='screen',
         parameters=[
             get_package_share_directory(
-                "raspimouse_ros2_examples") + '/config/mapper_params_online_async.yaml'
+                "raspimouse_ros2_examples") + '/config/mapper_params_offline.yaml'
         ],
     )
 
@@ -36,7 +36,7 @@ def generate_launch_description():
 
     static_transform_publisher_node = Node(
         package='tf2_ros', node_executable='static_transform_publisher', output='screen',
-        arguments=["0", "0", "0.01", "0", "3.14",
+        arguments=["0", "0", "0.1", "0", "3.14",
                    "3.14", "base_footprint", "laser"],
     )
 
