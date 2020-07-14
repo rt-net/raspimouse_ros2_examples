@@ -23,6 +23,7 @@ from geometry_msgs.msg import Twist
 from lifecycle_msgs.msg import Transition
 from lifecycle_msgs.srv import ChangeState
 from lifecycle_msgs.srv import GetState
+from raspimouse_msgs.msg import Leds
 from raspimouse_msgs.msg import LightSensors
 from raspimouse_msgs.msg import Switches
 
@@ -117,6 +118,7 @@ class JoyWrapper(Node):
 
         self._pub_cmdvel = self.create_publisher(Twist, 'cmd_vel', 1)
         self._pub_buzzer = self.create_publisher(Int16, 'buzzer', 1)
+        self._pub_leds = self.create_publisher(Leds, 'leds', 1)
 
         self._sub_joy = self.create_subscription(
             Joy, 'joy', self._callback_joy, 1)
@@ -176,6 +178,7 @@ class JoyWrapper(Node):
         self._joy_buzzer_freq(msg)
         self._joy_lightsensor_sound(msg)
         self._joy_velocity_config(msg)
+        self._joy_leds(msg)
         self._joy_shutdown(msg)
 
     def _callback_lightsensors(self, msg):
@@ -187,6 +190,7 @@ class JoyWrapper(Node):
     def _joy_shutdown(self, joy_msg):
         if joy_msg.buttons[self._BUTTON_SHUTDOWN_1] and\
                 joy_msg.buttons[self._BUTTON_SHUTDOWN_2]:
+            self._pub_leds.publish(Leds())
             self._motor_off()
             self._set_mouse_lifecycle_state(Transition.TRANSITION_DEACTIVATE)
             self.destroy_node()
@@ -369,6 +373,23 @@ class JoyWrapper(Node):
             output = upperlimit
 
         return output
+
+    def _joy_leds(self, joy_msg):
+        leds = Leds()
+
+        if joy_msg.buttons[self._BUTTON_CMD_ENABLE]:
+            leds.led3 = True
+
+        if joy_msg.buttons[self._BUTTON_BUZZER_ENABLE]:
+            leds.led2 = True
+
+        if joy_msg.buttons[self._BUTTON_SENSOR_SOUND_EN]:
+            leds.led1 = True
+
+        if joy_msg.buttons[self._BUTTON_CONFIG_ENABLE]:
+            leds.led0 = True
+
+        self._pub_leds.publish(leds)
 
 
 def main(args=None):
