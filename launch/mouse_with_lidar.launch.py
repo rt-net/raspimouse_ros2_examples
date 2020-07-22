@@ -26,7 +26,7 @@ from launch_ros.actions import LifecycleNode
 def generate_launch_description():
     declare_lidar = DeclareLaunchArgument(
         'lidar', default_value='lds',
-        description='LiDAR: urg, lds,'
+        description='LiDAR: lds only, for now.'
     )
 
     mouse_node = LifecycleNode(
