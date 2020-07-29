@@ -56,6 +56,7 @@ $ source ~/ros2_ws/install/setup.bash
 - [joystick_control](#joystick_control)
 - [object_tracking](#object_tracking)
 - [line_follower](#line_follower)
+- [SLAM](#slam)
 
 ---
 

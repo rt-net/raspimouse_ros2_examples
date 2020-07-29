@@ -55,6 +55,7 @@ This repository is licensed under the Apache 2.0, see [LICENSE](./LICENSE) for d
 - [joystick_control](#joystick_control)
 - [object_tracking](#object_tracking)
 - [line_follower](#line_follower)
+- [SLAM](#slam)
 
 ---
 
