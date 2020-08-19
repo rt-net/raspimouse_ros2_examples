@@ -1,0 +1,63 @@
+// Copyright 2020 RT Corporation
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#ifndef RASPIMOUSE_ROS2_EXAMPLES__DIRECTION_CONTROL_COMPONENT_HPP_
+#define RASPIMOUSE_ROS2_EXAMPLES__DIRECTION_CONTROL_COMPONENT_HPP_
+
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "raspimouse_ros2_examples/visibility_control.h"
+#include "raspimouse_msgs/msg/switches.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/int16.hpp"
+#include "std_msgs/msg/string.hpp"
+#include "std_srvs/srv/set_bool.hpp"
+#include "geometry_msgs/msg/twist.hpp"
+
+namespace direction_controller
+{
+
+class Controller : public rclcpp::Node
+{
+public:
+  RASPIMOUSE_ROS2_EXAMPLES_PUBLIC
+  explicit Controller(const rclcpp::NodeOptions & options);
+
+protected:
+  void on_cmd_vel_timer();
+
+private:
+  raspimouse_msgs::msg::Switches switches_;
+
+  rclcpp::Publisher<std_msgs::msg::Int16>::SharedPtr buzzer_pub_;
+  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
+  rclcpp::Subscription<raspimouse_msgs::msg::Switches>::SharedPtr switches_sub_;
+  rclcpp::Client<std_srvs::srv::SetBool>::SharedPtr motor_power_client_;
+
+  rclcpp::TimerBase::SharedPtr cmd_vel_timer_;
+
+  void callback_switches(const raspimouse_msgs::msg::Switches::SharedPtr msg);
+
+  void set_motor_power(const bool motor_on);
+  void beep_buzzer(const int freq, const std::chrono::nanoseconds & beep_time);
+  void beep_start(void);
+  void beep_success(void);
+  void beep_failure(void);
+};
+
+}  // namespace direction_controller
+
+#endif  // RASPIMOUSE_ROS2_EXAMPLES__DIRECTION_CONTROL_COMPONENT_HPP_
