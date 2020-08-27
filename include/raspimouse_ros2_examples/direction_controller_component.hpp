@@ -102,6 +102,8 @@ private:
   double omega_bias_;
   double heading_angle_;
   double prev_heading_calculation_time_;
+  double target_angle_;
+  bool increase_target_angle_;
 
   void callback_switches(const raspimouse_msgs::msg::Switches::SharedPtr msg);
   void callback_imu_data_raw(const sensor_msgs::msg::Imu::SharedPtr msg);
@@ -112,6 +114,7 @@ private:
   bool omega_calibration(const double omega);
   void calculate_heading_angle(const double omega, const double current_time);
   void angle_control(const double target_angle);
+  void rotation(void);
   void beep_buzzer(const int freq, const std::chrono::nanoseconds & beep_time);
   void beep_start(void);
   void beep_success(void);

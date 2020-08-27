@@ -15,6 +15,7 @@
 #include "raspimouse_ros2_examples/direction_controller_component.hpp"
 
 #include <chrono>
+#include <cmath>
 #include <memory>
 #include <numeric>
 
@@ -63,12 +64,14 @@ Controller::Controller(const rclcpp::NodeOptions & options)
   omega_bias_ = 0.0;
   heading_angle_ = 0.0;
   prev_heading_calculation_time_ = this->now().seconds();
+  target_angle_ = 0.0;
+  increase_target_angle_ = true;
 }
 
 void Controller::on_cmd_vel_timer()
 {
   if(switches_.switch0 || switches_.switch1 || switches_.switch2){
-    if(control_mode_ == MODE_KEEP_ZERO_RADIAN){
+    if(control_mode_ == MODE_KEEP_ZERO_RADIAN || control_mode_ == MODE_ROTATION){
       control_mode_ = MODE_NONE;
       set_motor_power(false);
       beep_failure();
@@ -91,12 +94,16 @@ void Controller::on_cmd_vel_timer()
       control_mode_ = MODE_KEEP_ZERO_RADIAN;
     } else if (switches_.switch2) {
       RCLCPP_INFO(this->get_logger(), "SW2 pressed.");
-      beep_failure();
+      beep_success();
+      set_motor_power(true);
+      control_mode_ = MODE_ROTATION;
     }
     switches_ = raspimouse_msgs::msg::Switches();  // Reset switch values
 
   }else if(control_mode_ == MODE_KEEP_ZERO_RADIAN){
     angle_control(0.0);
+  }else if(control_mode_ == MODE_ROTATION){
+    rotation();
   }
 }
 
@@ -199,6 +206,29 @@ void Controller::angle_control(const double target_angle)
   cmd_vel->angular.z = SIGN * omega_pid_controller_.update(heading_angle_, target_angle);
 
   cmd_vel_pub_->publish(std::move(cmd_vel));
+}
+
+void Controller::rotation(void)
+{
+  const double ADD_ANGLE = 2.0 * M_PI / 180.0;
+  const double START_ANGLE = -M_PI * 0.5;
+  const double END_ANGLE = M_PI * 0.5;
+
+  if(increase_target_angle_){
+    target_angle_ += ADD_ANGLE;
+  }else{
+    target_angle_ -= ADD_ANGLE;
+  }
+
+  if(target_angle_ >= END_ANGLE){
+    target_angle_ = END_ANGLE;
+    increase_target_angle_ = false;
+  }else if(target_angle_ <= START_ANGLE){
+    target_angle_ = START_ANGLE;
+    increase_target_angle_ = true;
+  }
+
+  angle_control(target_angle_);
 }
 
 void Controller::beep_buzzer(const int freq, const std::chrono::nanoseconds & beep_time)
