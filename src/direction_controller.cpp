@@ -28,8 +28,8 @@ int main(int argc, char * argv[])
   auto direction_controller = std::make_shared<direction_controller::Controller>(options);
   auto imu_driver = std::make_shared<rt_usb_9axisimu_driver::Driver>(options);
   exec.add_node(raspimouse->get_node_base_interface());
-  exec.add_node(direction_controller->get_node_base_interface());
   exec.add_node(imu_driver->get_node_base_interface());
+  exec.add_node(direction_controller->get_node_base_interface());
   exec.spin();
   rclcpp::shutdown();
 }
