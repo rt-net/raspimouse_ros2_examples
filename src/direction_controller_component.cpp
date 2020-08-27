@@ -70,7 +70,8 @@ Controller::Controller(const rclcpp::NodeOptions & options)
 
 void Controller::on_cmd_vel_timer()
 {
-  if(switches_.switch0 || switches_.switch1 || switches_.switch2){
+  if(switches_.switch0 || switches_.switch1 || switches_.switch2
+    || filtered_acc_.z > 0.0){
     if(control_mode_ == MODE_KEEP_ZERO_RADIAN || control_mode_ == MODE_ROTATION){
       control_mode_ = MODE_NONE;
       set_motor_power(false);
@@ -127,6 +128,8 @@ void Controller::callback_imu_data_raw(const sensor_msgs::msg::Imu::SharedPtr ms
       beep_success();
     }
   }
+
+  filter_acceleration(imu_data_raw_.linear_acceleration);
 }
 
 bool Controller::set_motor_power(const bool motor_on)
@@ -197,11 +200,21 @@ void Controller::calculate_heading_angle(const double omega, const double curren
   prev_heading_calculation_time_ = current_time;
 }
 
+void Controller::filter_acceleration(const geometry_msgs::msg::Vector3 acc)
+{
+  const double ALPHA = 0.1;
+
+  // Simple low pass filter
+  filtered_acc_.x = ALPHA * acc.x + (1.0 - ALPHA) * prev_acc_.x;
+  filtered_acc_.y = ALPHA * acc.y + (1.0 - ALPHA) * prev_acc_.y;
+  filtered_acc_.z = ALPHA * acc.z + (1.0 - ALPHA) * prev_acc_.z;
+  prev_acc_ = filtered_acc_;
+}
+
 void Controller::angle_control(const double target_angle)
 {
   const double SIGN = 1.0;
 
-  RCLCPP_INFO(this->get_logger(), "heading_angle_:%f", heading_angle_);
   auto cmd_vel = std::make_unique<geometry_msgs::msg::Twist>();
   cmd_vel->angular.z = SIGN * omega_pid_controller_.update(heading_angle_, target_angle);
 

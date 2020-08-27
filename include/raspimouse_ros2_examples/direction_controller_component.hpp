@@ -28,6 +28,7 @@
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/set_bool.hpp"
 #include "geometry_msgs/msg/twist.hpp"
+#include "geometry_msgs/msg/vector3.hpp"
 
 namespace direction_controller
 {
@@ -104,6 +105,8 @@ private:
   double prev_heading_calculation_time_;
   double target_angle_;
   bool increase_target_angle_;
+  geometry_msgs::msg::Vector3 filtered_acc_;
+  geometry_msgs::msg::Vector3 prev_acc_;
 
   void callback_switches(const raspimouse_msgs::msg::Switches::SharedPtr msg);
   void callback_imu_data_raw(const sensor_msgs::msg::Imu::SharedPtr msg);
@@ -111,6 +114,7 @@ private:
   bool set_motor_power(const bool motor_on);
   bool change_mouse_state(const std::uint8_t transition);
   bool change_imu_state(const std::uint8_t transition);
+  void filter_acceleration(const geometry_msgs::msg::Vector3 acc);
   bool omega_calibration(const double omega);
   void calculate_heading_angle(const double omega, const double current_time);
   void angle_control(const double target_angle);
