@@ -51,14 +51,6 @@ Controller::Controller(const rclcpp::NodeOptions & options)
 
   motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
 
-  change_mouse_state_client_ = 
-    create_client<lifecycle_msgs::srv::ChangeState>("raspimouse/change_state");
-  change_imu_state_client_ =
-    create_client<lifecycle_msgs::srv::ChangeState>("rt_usb_9axisimu_driver/change_state");
-
-  change_mouse_state(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
-  change_mouse_state(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE);
-
   control_mode_ = MODE_NONE;
   omega_pid_controller_.set_gain(10, 0, 20);
   omega_bias_ = 0.0;
@@ -84,8 +76,6 @@ void Controller::on_cmd_vel_timer()
   if(control_mode_ == MODE_NONE){
     if (switches_.switch0) {
       RCLCPP_INFO(this->get_logger(), "SW0 pressed.");
-      change_imu_state(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
-      change_imu_state(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE);
       beep_success();
       control_mode_ = MODE_CALIBRATION;
     } else if (switches_.switch1) {
@@ -142,34 +132,6 @@ bool Controller::set_motor_power(const bool motor_on)
   auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
   request->data = motor_on;
   auto future_result = motor_power_client_->async_send_request(request);
-  return true;
-}
-
-bool Controller::change_mouse_state(const std::uint8_t transition)
-{
-  if (!change_mouse_state_client_->wait_for_service(5s)) {
-    RCLCPP_ERROR(this->get_logger(),
-      "Service %s is not avaliable.", change_mouse_state_client_->get_service_name());
-    return false;
-  }
-  auto request = std::make_shared<lifecycle_msgs::srv::ChangeState::Request>();
-  request->transition.id = transition;
-  auto future_result = change_mouse_state_client_->async_send_request(request);
-
-  return true;
-}
-
-bool Controller::change_imu_state(const std::uint8_t transition)
-{
-  if (!change_imu_state_client_->wait_for_service(5s)) {
-    RCLCPP_ERROR(this->get_logger(),
-      "Service %s is not avaliable.", change_imu_state_client_->get_service_name());
-    return false;
-  }
-  auto request = std::make_shared<lifecycle_msgs::srv::ChangeState::Request>();
-  request->transition.id = transition;
-  auto future_result = change_imu_state_client_->async_send_request(request);
-
   return true;
 }
 

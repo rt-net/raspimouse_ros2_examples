@@ -19,7 +19,6 @@
 #include <string>
 #include <vector>
 
-#include "lifecycle_msgs/srv/change_state.hpp"
 #include "raspimouse_ros2_examples/visibility_control.h"
 #include "raspimouse_msgs/msg/switches.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -92,8 +91,6 @@ private:
   rclcpp::Subscription<raspimouse_msgs::msg::Switches>::SharedPtr switches_sub_;
   rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_data_raw_sub_;
   rclcpp::Client<std_srvs::srv::SetBool>::SharedPtr motor_power_client_;
-  rclcpp::Client<lifecycle_msgs::srv::ChangeState>::SharedPtr change_mouse_state_client_;
-  rclcpp::Client<lifecycle_msgs::srv::ChangeState>::SharedPtr change_imu_state_client_;
 
   rclcpp::TimerBase::SharedPtr cmd_vel_timer_;
 
@@ -112,8 +109,6 @@ private:
   void callback_imu_data_raw(const sensor_msgs::msg::Imu::SharedPtr msg);
 
   bool set_motor_power(const bool motor_on);
-  bool change_mouse_state(const std::uint8_t transition);
-  bool change_imu_state(const std::uint8_t transition);
   void filter_acceleration(const geometry_msgs::msg::Vector3 acc);
   bool omega_calibration(const double omega);
   void calculate_heading_angle(const double omega, const double current_time);

@@ -22,13 +22,9 @@
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::executors::MultiThreadedExecutor exec;
+  rclcpp::executors::SingleThreadedExecutor exec;
   rclcpp::NodeOptions options;
-  auto raspimouse = std::make_shared<raspimouse::Raspimouse>(options);
   auto direction_controller = std::make_shared<direction_controller::Controller>(options);
-  auto imu_driver = std::make_shared<rt_usb_9axisimu_driver::Driver>(options);
-  exec.add_node(raspimouse->get_node_base_interface());
-  exec.add_node(imu_driver->get_node_base_interface());
   exec.add_node(direction_controller->get_node_base_interface());
   exec.spin();
   rclcpp::shutdown();
