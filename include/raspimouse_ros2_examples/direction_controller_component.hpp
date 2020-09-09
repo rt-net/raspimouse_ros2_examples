@@ -24,6 +24,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/imu.hpp"
 #include "std_msgs/msg/int16.hpp"
+#include "std_msgs/msg/float64.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/set_bool.hpp"
 #include "geometry_msgs/msg/twist.hpp"
@@ -64,6 +65,13 @@ public:
     d_gain_ = d_gain;
   }
 
+  void reset_output_and_errors()
+  {
+    error1_ = 0.0;
+    error2_ = 0.0;
+    output_ = 0.0;
+  }
+
 private:
   double p_gain_;
   double i_gain_;
@@ -88,12 +96,14 @@ private:
 
   rclcpp::Publisher<std_msgs::msg::Int16>::SharedPtr buzzer_pub_;
   rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
+  rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr heading_angle_pub_;
   rclcpp::Subscription<raspimouse_msgs::msg::Switches>::SharedPtr switches_sub_;
   rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_data_raw_sub_;
   rclcpp::Client<std_srvs::srv::SetBool>::SharedPtr motor_power_client_;
 
   rclcpp::TimerBase::SharedPtr cmd_vel_timer_;
 
+  int pressed_switch_number_;
   int control_mode_;
   PIDController omega_pid_controller_;
   std::vector<double> omega_samples_;

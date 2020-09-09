@@ -44,6 +44,7 @@ Controller::Controller(const rclcpp::NodeOptions & options)
 
   cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
   buzzer_pub_ = create_publisher<std_msgs::msg::Int16>("buzzer", 1);
+  heading_angle_pub_ = create_publisher<std_msgs::msg::Float64>("heading_angle", 1);
   switches_sub_ = create_subscription<raspimouse_msgs::msg::Switches>(
     "switches", 1, std::bind(&Controller::callback_switches, this, _1));
   imu_data_raw_sub_ = create_subscription<sensor_msgs::msg::Imu>(
@@ -51,8 +52,33 @@ Controller::Controller(const rclcpp::NodeOptions & options)
 
   motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
 
+  rcl_interfaces::msg::FloatingPointRange range;
+  rcl_interfaces::msg::ParameterDescriptor descriptor;
+  range.from_value = -M_PI;
+  range.to_value = M_PI;
+  descriptor.floating_point_range.push_back(range);
+  this->declare_parameter("target_angle", 0.0, descriptor);
+
+  range.from_value = 0.0;
+  range.to_value = 30.0;
+  descriptor.floating_point_range[0] = range;
+  this->declare_parameter("p_gain", 10.0, descriptor);
+
+  range.to_value = 5.0;
+  descriptor.floating_point_range[0] = range;
+  this->declare_parameter("i_gain", 0.0, descriptor);
+
+  range.to_value = 30.0;
+  descriptor.floating_point_range[0] = range;
+  this->declare_parameter("d_gain", 20.0, descriptor);
+
+  omega_pid_controller_.set_gain(
+    this->get_parameter("p_gain").as_double(),
+    this->get_parameter("i_gain").as_double(),
+    this->get_parameter("d_gain").as_double());
+
+  pressed_switch_number_ = -1;
   control_mode_ = MODE_NONE;
-  omega_pid_controller_.set_gain(10, 0, 20);
   omega_bias_ = 0.0;
   heading_angle_ = 0.0;
   prev_heading_calculation_time_ = this->now().seconds();
@@ -62,37 +88,54 @@ Controller::Controller(const rclcpp::NodeOptions & options)
 
 void Controller::on_cmd_vel_timer()
 {
-  if(switches_.switch0 || switches_.switch1 || switches_.switch2
-    || filtered_acc_.z > 0.0){
+  int released_switch_number = -1; 
+  if(switches_.switch0){
+    pressed_switch_number_ = 0;
+  }else if(switches_.switch1){
+    pressed_switch_number_ = 1;
+  }else if(switches_.switch2){
+    pressed_switch_number_ = 2;
+  }else{
+    // All switched have released.
+    if(pressed_switch_number_ != -1){
+      released_switch_number = pressed_switch_number_;
+      pressed_switch_number_ = -1;
+    }
+  }
+
+  omega_pid_controller_.set_gain(
+    this->get_parameter("p_gain").as_double(),
+    this->get_parameter("i_gain").as_double(),
+    this->get_parameter("d_gain").as_double());
+
+  if(released_switch_number != -1 || filtered_acc_.z > 0.0){
     if(control_mode_ == MODE_KEEP_ZERO_RADIAN || control_mode_ == MODE_ROTATION){
       control_mode_ = MODE_NONE;
       set_motor_power(false);
-      beep_failure();
-      rclcpp::sleep_for(100ms);
-      switches_ = raspimouse_msgs::msg::Switches();  // Reset switch values
+      return;
     }
   }
 
   if(control_mode_ == MODE_NONE){
-    if (switches_.switch0) {
+    if (released_switch_number == 0) {
       RCLCPP_INFO(this->get_logger(), "SW0 pressed.");
-      beep_success();
       control_mode_ = MODE_CALIBRATION;
-    } else if (switches_.switch1) {
+
+    } else if (released_switch_number == 1) {
       RCLCPP_INFO(this->get_logger(), "SW1 pressed.");
-      beep_success();
       set_motor_power(true);
+      omega_pid_controller_.reset_output_and_errors();
       control_mode_ = MODE_KEEP_ZERO_RADIAN;
-    } else if (switches_.switch2) {
+
+    } else if (released_switch_number == 2) {
       RCLCPP_INFO(this->get_logger(), "SW2 pressed.");
-      beep_success();
       set_motor_power(true);
+      omega_pid_controller_.reset_output_and_errors();
       control_mode_ = MODE_ROTATION;
     }
-    switches_ = raspimouse_msgs::msg::Switches();  // Reset switch values
 
   }else if(control_mode_ == MODE_KEEP_ZERO_RADIAN){
-    angle_control(0.0);
+    angle_control(this->get_parameter("target_angle").as_double());
   }else if(control_mode_ == MODE_ROTATION){
     rotation();
   }
@@ -108,6 +151,9 @@ void Controller::callback_imu_data_raw(const sensor_msgs::msg::Imu::SharedPtr ms
   imu_data_raw_ = *msg;
 
   calculate_heading_angle(imu_data_raw_.angular_velocity.z, this->now().seconds());
+  auto heading_angle_msg = std::make_unique<std_msgs::msg::Float64>();
+  heading_angle_msg->data = heading_angle_;
+  heading_angle_pub_->publish(std::move(heading_angle_msg));
 
   if(control_mode_ == MODE_CALIBRATION){
     if(omega_calibration(imu_data_raw_.angular_velocity.z)){
