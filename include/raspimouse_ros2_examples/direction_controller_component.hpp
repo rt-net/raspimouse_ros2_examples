@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RASPIMOUSE_ROS2_EXAMPLES__DIRECTION_CONTROL_COMPONENT_HPP_
-#define RASPIMOUSE_ROS2_EXAMPLES__DIRECTION_CONTROL_COMPONENT_HPP_
+#ifndef RASPIMOUSE_ROS2_EXAMPLES__DIRECTION_CONTROLLER_COMPONENT_HPP_
+#define RASPIMOUSE_ROS2_EXAMPLES__DIRECTION_CONTROLLER_COMPONENT_HPP_
 
 #include <memory>
 #include <string>
@@ -37,9 +37,9 @@ class PIDController
 {
 public:
   PIDController()
-    : p_gain_(0.0), i_gain_(0.0), d_gain_(0.0),
-      error1_(0.0), error2_(0.0), output_(0.0){
-
+  : p_gain_(0.0), i_gain_(0.0), d_gain_(0.0),
+    error1_(0.0), error2_(0.0), output_(0.0)
+  {
   }
 
   double update(const double current, const double target)
@@ -132,4 +132,4 @@ private:
 
 }  // namespace direction_controller
 
-#endif  // RASPIMOUSE_ROS2_EXAMPLES__DIRECTION_CONTROL_COMPONENT_HPP_
+#endif  // RASPIMOUSE_ROS2_EXAMPLES__DIRECTION_CONTROLLER_COMPONENT_HPP_

@@ -18,6 +18,7 @@
 #include <cmath>
 #include <memory>
 #include <numeric>
+#include <utility>
 
 #include "rclcpp/rclcpp.hpp"
 
@@ -37,7 +38,6 @@ enum CONTROL_MODE
 Controller::Controller(const rclcpp::NodeOptions & options)
 : Node("direction_controller", options)
 {
-
   using namespace std::placeholders;  // for _1, _2, _3...
 
   cmd_vel_timer_ = create_wall_timer(16ms, std::bind(&Controller::on_cmd_vel_timer, this));
@@ -88,16 +88,16 @@ Controller::Controller(const rclcpp::NodeOptions & options)
 
 void Controller::on_cmd_vel_timer()
 {
-  int released_switch_number = -1; 
-  if(switches_.switch0){
+  int released_switch_number = -1;
+  if (switches_.switch0) {
     pressed_switch_number_ = 0;
-  }else if(switches_.switch1){
+  } else if (switches_.switch1) {
     pressed_switch_number_ = 1;
-  }else if(switches_.switch2){
+  } else if (switches_.switch2) {
     pressed_switch_number_ = 2;
-  }else{
+  } else {
     // All switched have released.
-    if(pressed_switch_number_ != -1){
+    if (pressed_switch_number_ != -1) {
       released_switch_number = pressed_switch_number_;
       pressed_switch_number_ = -1;
     }
@@ -108,15 +108,15 @@ void Controller::on_cmd_vel_timer()
     this->get_parameter("i_gain").as_double(),
     this->get_parameter("d_gain").as_double());
 
-  if(released_switch_number != -1 || filtered_acc_.z > 0.0){
-    if(control_mode_ == MODE_KEEP_ZERO_RADIAN || control_mode_ == MODE_ROTATION){
+  if (released_switch_number != -1 || filtered_acc_.z > 0.0) {
+    if (control_mode_ == MODE_KEEP_ZERO_RADIAN || control_mode_ == MODE_ROTATION) {
       control_mode_ = MODE_NONE;
       set_motor_power(false);
       return;
     }
   }
 
-  if(control_mode_ == MODE_NONE){
+  if (control_mode_ == MODE_NONE) {
     if (released_switch_number == 0) {
       RCLCPP_INFO(this->get_logger(), "SW0 pressed.");
       control_mode_ = MODE_CALIBRATION;
@@ -133,10 +133,9 @@ void Controller::on_cmd_vel_timer()
       omega_pid_controller_.reset_output_and_errors();
       control_mode_ = MODE_ROTATION;
     }
-
-  }else if(control_mode_ == MODE_KEEP_ZERO_RADIAN){
+  } else if (control_mode_ == MODE_KEEP_ZERO_RADIAN) {
     angle_control(this->get_parameter("target_angle").as_double());
-  }else if(control_mode_ == MODE_ROTATION){
+  } else if (control_mode_ == MODE_ROTATION) {
     rotation();
   }
 }
@@ -155,8 +154,8 @@ void Controller::callback_imu_data_raw(const sensor_msgs::msg::Imu::SharedPtr ms
   heading_angle_msg->data = heading_angle_;
   heading_angle_pub_->publish(std::move(heading_angle_msg));
 
-  if(control_mode_ == MODE_CALIBRATION){
-    if(omega_calibration(imu_data_raw_.angular_velocity.z)){
+  if (control_mode_ == MODE_CALIBRATION) {
+    if (omega_calibration(imu_data_raw_.angular_velocity.z)) {
       control_mode_ = MODE_NONE;
       heading_angle_ = 0.0;
       prev_heading_calculation_time_ = this->now().seconds();
@@ -188,8 +187,9 @@ bool Controller::omega_calibration(const double omega)
 
   omega_samples_.push_back(omega);
 
-  if(omega_samples_.size() >= SAMPLE_NUM){
-    omega_bias_ = std::accumulate(std::begin(omega_samples_), std::end(omega_samples_), 0.0) / omega_samples_.size();
+  if (omega_samples_.size() >= SAMPLE_NUM) {
+    omega_bias_ = std::accumulate(std::begin(omega_samples_),
+        std::end(omega_samples_), 0.0) / omega_samples_.size();
     omega_samples_.clear();
     complete = true;
   }
@@ -235,16 +235,16 @@ void Controller::rotation(void)
   const double START_ANGLE = -M_PI * 0.5;
   const double END_ANGLE = M_PI * 0.5;
 
-  if(increase_target_angle_){
+  if (increase_target_angle_) {
     target_angle_ += ADD_ANGLE;
-  }else{
+  } else {
     target_angle_ -= ADD_ANGLE;
   }
 
-  if(target_angle_ >= END_ANGLE){
+  if (target_angle_ >= END_ANGLE) {
     target_angle_ = END_ANGLE;
     increase_target_angle_ = false;
-  }else if(target_angle_ <= START_ANGLE){
+  } else if (target_angle_ <= START_ANGLE) {
     target_angle_ = START_ANGLE;
     increase_target_angle_ = true;
   }

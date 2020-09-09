@@ -24,7 +24,7 @@ def generate_launch_description():
         package='raspimouse',
         node_executable='raspimouse',
         output='screen',
-        parameters=[{ 'use_light_sensors': False, }]
+        parameters=[{'use_light_sensors': False, }]
     )
 
     imu_driver = LifecycleNode(
@@ -32,7 +32,7 @@ def generate_launch_description():
         package='rt_usb_9axisimu_driver',
         node_executable='rt_usb_9axisimu_driver',
         output='screen',
-        parameters=[{ 'port': '/dev/ttyACM0', }]
+        parameters=[{'port': '/dev/ttyACM0', }]
     )
 
     direction_controller = Node(
