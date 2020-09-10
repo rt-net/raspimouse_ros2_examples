@@ -393,6 +393,11 @@ Set parameter successful
   - Target angle for the SW1 control mode.
   - default: 0.0, min:-π, max:+π
   - type: double
+  
+#### Publish topics
+- heading_angle
+  - Heading angle of the robot that calculated from the IMU module sensor values.
+  - type: std_msgs/Float64
 
 #### Videos
 
