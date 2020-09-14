@@ -355,7 +355,6 @@ Then, press SW0 ~ SW2 to change the control mode as following,
 
 #### Configure
 
-パラメータで角度制御に使うPIDゲインを変更できます
 
 Set parameters to configure gains of a PID controller for the direction control.
 
