@@ -330,7 +330,7 @@ IMUセンサを使用した角度制御のコード例です。
 #### Requirements
 
 - [USB出力9軸IMUセンサモジュール](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1348_1&products_id=3416&language=ja)
-- [LiDAR Mount](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3867)
+- LiDAR Mount ([Raspberry Pi Mouse オプションキットNo.8 [マルチLiDARマウント]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3867))
 - RT-USB-9axisIMU ROS Package (`dashing-devel` branch).
   - https://github.com/rt-net/rt_usb_9axisimu_driver
 
