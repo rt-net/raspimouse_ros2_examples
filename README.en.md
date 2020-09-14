@@ -36,6 +36,8 @@ $ cd ~/ros2_ws/src
 # Clone package
 $ git clone https://github.com/rt-net/raspimouse_ros2_examples
 $ git clone https://github.com/rt-net/raspimouse2
+# For direction controller example
+$ git clone -b dashing-devel https://github.com/rt-net/rt_usb_9axisimu_driver
 
 # Install dependencies
 $ rosdep install -r -y --from-paths . --ignore-src
@@ -56,6 +58,7 @@ This repository is licensed under the Apache 2.0, see [LICENSE](./LICENSE) for d
 - [object_tracking](#object_tracking)
 - [line_follower](#line_follower)
 - [SLAM](#slam)
+- [direction_controller](#direction_controller)
 
 ---
 
@@ -306,5 +309,92 @@ Edit [./config/mapper_params_offline.yaml](./config/mapper_params_offline.yaml) 
 [![slam_urg](http://img.youtube.com/vi/gWozU47UqVE/sddefault.jpg)](https://youtu.be/gWozU47UqVE)
 
 [![slam_urg](http://img.youtube.com/vi/hV68UqAntfo/sddefault.jpg)](https://youtu.be/hV68UqAntfo) -->
+
+[back to example list](#how-to-use-examples)
+
+---
+
+### direction_controller
+
+<img src=https://www.rt-net.jp/wp-content/uploads/2018/02/img-usb9s_01.png width=500 />
+
+This is an example to use an IMU sensor for direction control.
+
+#### Requirements
+
+- [USB output 9 degrees IMU sensor module](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1348_1&products_id=3416&language=en)
+- [LiDAR Mount](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3867)
+- RT-USB-9axisIMU ROS Package.
+  - https://github.com/rt-net/rt_usb_9axisimu_driver
+
+#### Installation
+
+Install the IMU sensor module to the LiDAR mount.
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_2.JPG width=500 />
+
+Install the LiDAR mount to the Raspberry Pi Mouse.
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_1.JPG width=500 />
+
+#### How to use
+
+Launch nodes on Raspberry Pi Mouse with the following command:
+
+```sh
+$ ros2 launch raspimouse_ros2_examples direction_controller.launch.py
+```
+
+Then, press SW0 ~ SW2 to change the control mode as following,
+
+- SW0: Calibrate the gyroscope bias and reset a heading angle of Raspberry Pi Mouse to 0 rad.
+- SW1: Start a direction control to keep the heading angle to 0 rad.
+  - Press SW0 ~ SW2 or tilt the body to sideways to finish the control.
+- SW2: Start a direction control to change the heading angle to `-π ~ π rad`.
+  - Press SW0 ~ SW2 or tilt the body to sideways to finish the control.
+
+#### Configure
+
+
+Set parameters to configure gains of a PID controller for the direction control.
+
+```sh
+$ ros2 param set /direction_controller p_gain 10.0
+Set parameter successful
+
+$ ros2 param set /direction_controller i_gain 0.5
+Set parameter successful
+
+$ ros2 param set /direction_controller d_gain 0.0
+Set parameter successful
+```
+#### Parameters
+
+- p_gain
+  - Proportional gain of a PID controller for the direction control
+  - default: 10.0, min:0.0, max:30.0
+  - type: double
+- i_gain
+  - Integral gain of a PID controller for the direction control
+  - default: 0.0, min:0.0, max:5.0
+  - type: double
+- d_gain
+  - Derivative gain of a PID controller for the direction control
+  - default: 20.0, min:0.0, max:30.0
+  - type: double
+- target_angle
+  - Target angle for the SW1 control mode.
+  - default: 0.0, min:-π, max:+π
+  - type: double
+
+#### Publish topics
+
+- heading_angle
+  - Heading angle of the robot that calculated from the IMU module sensor values.
+  - type: std_msgs/Float64
+
+#### Videos
+
+[![](http://img.youtube.com/vi/ghcCYOh9_MM/sddefault.jpg)](https://youtu.be/ghcCYOh9_MM)
 
 [back to example list](#how-to-use-examples)

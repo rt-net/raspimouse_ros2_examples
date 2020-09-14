@@ -36,6 +36,8 @@ $ cd ~/ros2_ws/src
 # Clone package
 $ git clone https://github.com/rt-net/raspimouse_ros2_examples
 $ git clone https://github.com/rt-net/raspimouse2
+# For direction controller example
+$ git clone -b dashing-devel https://github.com/rt-net/rt_usb_9axisimu_driver
 
 # Install dependencies
 $ rosdep install -r -y --from-paths . --ignore-src
@@ -57,6 +59,7 @@ $ source ~/ros2_ws/install/setup.bash
 - [object_tracking](#object_tracking)
 - [line_follower](#line_follower)
 - [SLAM](#slam)
+- [direction_controller](#direction_controller)
 
 ---
 
@@ -313,5 +316,91 @@ $ ros2 run nav2_map_server map_saver -f ~/maps/mymap
 [![slam_urg](http://img.youtube.com/vi/gWozU47UqVE/sddefault.jpg)](https://youtu.be/gWozU47UqVE)
 
 [![slam_urg](http://img.youtube.com/vi/hV68UqAntfo/sddefault.jpg)](https://youtu.be/hV68UqAntfo) -->
+
+[back to example list](#how-to-use-examples)
+
+---
+
+### direction_controller
+
+<img src=https://www.rt-net.jp/wp-content/uploads/2018/02/img-usb9s_01.png width=500 />
+
+IMUセンサを使用した角度制御のコード例です。
+
+#### Requirements
+
+- [USB出力9軸IMUセンサモジュール](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1348_1&products_id=3416&language=ja)
+- LiDAR Mount ([Raspberry Pi Mouse オプションキットNo.8 [マルチLiDARマウント]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3867))
+- RT-USB-9axisIMU ROS Package (`dashing-devel` branch).
+  - https://github.com/rt-net/rt_usb_9axisimu_driver
+
+#### Installation
+
+LiDAR MountにIMUセンサモジュールを取り付けます。
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_2.JPG width=500 />
+
+Raspberry Pi Mouse にLiDAR Mountを取り付けます。
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_1.JPG width=500 />
+
+#### How to use
+
+次のコマンドでノードを起動します。
+
+```sh
+$ ros2 launch raspimouse_ros2_examples direction_controller.launch.py
+```
+
+SW0 ~ SW2を押して動作モードを切り替えます。
+
+- SW0: ジャイロセンサのバイアスをキャリブレーションし、ラズパイマウスの方位角を`0 rad`にリセットします
+- SW1: 方位角を`0 rad`に維持する角度制御を開始します
+  - SW0 ~ SW2を押すか、ラズパイマウス本体を横に傾けると終了します
+- SW2: 方位角を`-π ~ π rad`に変化させる角度制御を開始します
+  - SW0 ~ SW2を押すか、ラズパイマウス本体を横に傾けると終了します
+
+#### Configure
+
+パラメータで角度制御に使うPIDゲインを変更できます。
+
+```sh
+$ ros2 param set /direction_controller p_gain 10.0
+Set parameter successful
+
+$ ros2 param set /direction_controller i_gain 0.5
+Set parameter successful
+
+$ ros2 param set /direction_controller d_gain 0.0
+Set parameter successful
+```
+
+#### Parameters
+
+- p_gain
+  - Proportional gain of a PID controller for the direction control
+  - default: 10.0, min:0.0, max:30.0
+  - type: double
+- i_gain
+  - Integral gain of a PID controller for the direction control
+  - default: 0.0, min:0.0, max:5.0
+  - type: double
+- d_gain
+  - Derivative gain of a PID controller for the direction control
+  - default: 20.0, min:0.0, max:30.0
+  - type: double
+- target_angle
+  - Target angle for the SW1 control mode.
+  - default: 0.0, min:-π, max:+π
+  - type: double
+  
+#### Publish topics
+- heading_angle
+  - Heading angle of the robot that calculated from the IMU module sensor values.
+  - type: std_msgs/Float64
+
+#### Videos
+
+[![](http://img.youtube.com/vi/ghcCYOh9_MM/sddefault.jpg)](https://youtu.be/ghcCYOh9_MM)
 
 [back to example list](#how-to-use-examples)
