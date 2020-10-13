@@ -45,6 +45,7 @@ $ source ~/ros2_ws/install/setup.bash
 
 # Install raspimouse_ros2_examples
 ## Clone packages
+$ cd ~/ros2_ws/src
 $ git clone https://github.com/rt-net/raspimouse_ros2_examples
 $ git clone https://github.com/rt-net/raspimouse2
 ## Install dependencies
