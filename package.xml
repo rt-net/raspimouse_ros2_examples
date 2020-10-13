@@ -17,6 +17,7 @@
   <depend>rclcpp_lifecycle</depend>
   <depend>raspimouse</depend>
   <depend>raspimouse_msgs</depend>
+  <depend>rt_usb_9axisimu_driver</depend>
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
   <depend>std_srvs</depend>
