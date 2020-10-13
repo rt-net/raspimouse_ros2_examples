@@ -32,17 +32,24 @@ ROS1 examples is [here](https://github.com/rt-net/raspimouse_ros_examples).
 ## Installation
 
 ```sh
+# Install rt_usb_9axisimu_driver for direction controller example
+## Clone package
 $ cd ~/ros2_ws/src
-# Clone package
+$ git clone -b dashing-devel https://github.com/rt-net/rt_usb_9axisimu_driver
+## Install dependencies
+$ rosdep install -r -y --from-paths . --ignore-src
+## Build & Install
+$ cd ~/ros2_ws
+$ colcon build --symlink-install
+$ source ~/ros2_ws/install/setup.bash
+
+# Install raspimouse_ros2_examples
+## Clone packages
 $ git clone https://github.com/rt-net/raspimouse_ros2_examples
 $ git clone https://github.com/rt-net/raspimouse2
-# For direction controller example
-$ git clone -b dashing-devel https://github.com/rt-net/rt_usb_9axisimu_driver
-
-# Install dependencies
+## Install dependencies
 $ rosdep install -r -y --from-paths . --ignore-src
-
-# Build & Install
+## Build & Install
 $ cd ~/ros2_ws
 $ colcon build --symlink-install
 $ source ~/ros2_ws/install/setup.bash
