@@ -34,10 +34,7 @@ ROS1 examples is [here](https://github.com/rt-net/raspimouse_ros_examples).
 ```sh
 $ cd ~/ros2_ws/src
 # Clone package
-$ git clone https://github.com/rt-net/raspimouse_ros2_examples
-$ git clone https://github.com/rt-net/raspimouse2
-# For direction controller example
-$ git clone -b dashing-devel https://github.com/rt-net/rt_usb_9axisimu_driver
+$ git clone -b dashing-devel https://github.com/rt-net/raspimouse_ros2_examples
 
 # Install dependencies
 $ rosdep install -r -y --from-paths . --ignore-src
