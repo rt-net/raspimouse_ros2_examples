@@ -15,6 +15,7 @@ on:
 jobs:
   industrial_ci:
     strategy:
+      fail-fast: false
       matrix:
         env:
           - { ROS_DISTRO: dashing, ROS_REPO: ros }
