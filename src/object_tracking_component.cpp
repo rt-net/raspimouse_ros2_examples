@@ -157,10 +157,12 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
     object_is_detected_ = true;
 
     std::string text = "Area:" + std::to_string(object_normalized_area_ * 100) + "%";
-    cv::drawContours(result_frame, contours, max_area_index,
+    cv::drawContours(
+      result_frame, contours, max_area_index,
       cv::Scalar(0, 255, 0), 2, cv::LINE_4, hierarchy);
     cv::circle(result_frame, mt_point, 30, cv::Scalar(0, 0, 255), 2, cv::LINE_4);
-    cv::putText(result_frame, text, cv::Point(0, 30),
+    cv::putText(
+      result_frame, text, cv::Point(0, 30),
       cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 0, 0), 2);
   } else {
     object_is_detected_ = false;
@@ -199,7 +201,8 @@ CallbackReturn Tracker::on_activate(const rclcpp_lifecycle::State &)
 
   motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
   if (!motor_power_client_->wait_for_service(5s)) {
-    RCLCPP_ERROR(this->get_logger(),
+    RCLCPP_ERROR(
+      this->get_logger(),
       "Service motor_power is not avaliable.");
     return CallbackReturn::FAILURE;
   }

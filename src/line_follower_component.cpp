@@ -253,7 +253,8 @@ void Follower::multisampling(void)
     sampling_values_ = SensorsType(SENSOR_NUM, 0);
     line_sampling_ = field_sampling_ = false;
 
-    RCLCPP_INFO(this->get_logger(), "L:%d, ML:%d, MR:%d, R:%d",
+    RCLCPP_INFO(
+      this->get_logger(), "L:%d, ML:%d, MR:%d, R:%d",
       sampling_values_[LEFT], sampling_values_[MID_LEFT],
       sampling_values_[MID_RIGHT], sampling_values_[RIGHT]);
 
@@ -284,7 +285,8 @@ void Follower::set_line_thresholds(void)
       sensor_line_values_[sensor_i], sensor_field_values_[sensor_i]);
   }
 
-  RCLCPP_INFO(this->get_logger(), "line_thresholds: L:%d, ML:%d, MR:%d, R:%d",
+  RCLCPP_INFO(
+    this->get_logger(), "line_thresholds: L:%d, ML:%d, MR:%d, R:%d",
     line_thresholds_[LEFT], line_thresholds_[MID_LEFT],
     line_thresholds_[MID_RIGHT], line_thresholds_[RIGHT]);
 }
@@ -309,7 +311,8 @@ CallbackReturn Follower::on_configure(const rclcpp_lifecycle::State &)
 
   motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
   if (!motor_power_client_->wait_for_service(5s)) {
-    RCLCPP_ERROR(this->get_logger(),
+    RCLCPP_ERROR(
+      this->get_logger(),
       "Service motor_power is not avaliable.");
     return CallbackReturn::FAILURE;
   }

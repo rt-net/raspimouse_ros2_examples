@@ -170,7 +170,8 @@ void Controller::callback_imu_data_raw(const sensor_msgs::msg::Imu::SharedPtr ms
 bool Controller::set_motor_power(const bool motor_on)
 {
   if (!motor_power_client_->wait_for_service(5s)) {
-    RCLCPP_ERROR(this->get_logger(),
+    RCLCPP_ERROR(
+      this->get_logger(),
       "Service motor_power is not avaliable.");
     return false;
   }
@@ -188,8 +189,9 @@ bool Controller::omega_calibration(const double omega)
   omega_samples_.push_back(omega);
 
   if (omega_samples_.size() >= SAMPLE_NUM) {
-    omega_bias_ = std::accumulate(std::begin(omega_samples_),
-        std::end(omega_samples_), 0.0) / omega_samples_.size();
+    omega_bias_ = std::accumulate(
+      std::begin(omega_samples_),
+      std::end(omega_samples_), 0.0) / omega_samples_.size();
     omega_samples_.clear();
     complete = true;
   }
