@@ -18,6 +18,7 @@ jobs:
       matrix:
         env:
           - { ROS_DISTRO: dashing, ROS_REPO: ros }
+          - { ROS_DISTRO: foxy, ROS_REPO: ros }
 
     runs-on: ubuntu-latest
     steps:
