@@ -23,6 +23,7 @@
   <depend>std_srvs</depend>
   <depend>v4l-utils</depend>
   <depend>hls_lfcd_lds_driver</depend>
+  <depend>urg_node</depend>
   <depend>nav2_map_server</depend>
   <depend>slam_toolbox</depend>
 
