@@ -15,10 +15,17 @@
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
 
 
 def generate_launch_description():
+    declare_lidar = DeclareLaunchArgument(
+        'lidar', default_value='lds',
+        description='Set LiDAR name: [lds, urg]'
+    )
+
     slam_node = Node(
         package='slam_toolbox', node_executable='sync_slam_toolbox_node',
         output='screen',
@@ -38,16 +45,26 @@ def generate_launch_description():
             + '/config/default.rviz'],
     )
 
-    static_transform_publisher_node = Node(
-        package='tf2_ros',
-        node_executable='static_transform_publisher', output='screen',
-        arguments=['0', '0', '0.1', '0', '3.14',
-                   '3.14', 'base_footprint', 'laser'],
-    )
+    def run_transform_publisher(context):
+        if context.launch_configurations['lidar'] == 'lds':
+            return [Node(
+                package='tf2_ros',
+                node_executable='static_transform_publisher', output='screen',
+                arguments=['0', '0', '0.1', '0', '3.14', '3.14',
+                           'base_footprint', 'laser'])]
+        elif context.launch_configurations['lidar'] == 'urg':
+            return [Node(
+                package='tf2_ros',
+                node_executable='static_transform_publisher', output='screen',
+                arguments=['0', '0', '0.14', '0', '0', '0',
+                           'base_footprint', 'laser'])]
+
+    transform_node = OpaqueFunction(function=run_transform_publisher)
 
     ld = LaunchDescription()
+    ld.add_action(declare_lidar)
     ld.add_action(slam_node)
     ld.add_action(rviz2_node)
-    ld.add_action(static_transform_publisher_node)
+    ld.add_action(transform_node)
 
     return ld

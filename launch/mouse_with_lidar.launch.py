@@ -19,14 +19,17 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.actions import IncludeLaunchDescription
 from launch.actions import OpaqueFunction
+from launch.actions import SetLaunchConfiguration
+from launch_ros.actions import Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import LifecycleNode
+from launch.substitutions import LaunchConfiguration
 
 
 def generate_launch_description():
     declare_lidar = DeclareLaunchArgument(
         'lidar', default_value='lds',
-        description='LiDAR: lds only, for now.'
+        description='Set LiDAR name: [lds, urg]'
     )
 
     mouse_node = LifecycleNode(
@@ -44,6 +47,21 @@ def generate_launch_description():
                     'launch'),
                     '/hlds_laser.launch.py'
                     ]),)]
+
+        elif context.launch_configurations['lidar'] == 'urg':
+            param_file = os.path.join(
+                get_package_share_directory('raspimouse_ros2_examples'),
+                'config',
+                'urg_config.yml')
+
+            return [
+                SetLaunchConfiguration('param', param_file),
+                Node(
+                    package='urg_node',
+                    node_executable='urg_node_driver',
+                    output='screen',
+                    parameters=[LaunchConfiguration('param')]
+                )]
     launch_lidar_node = OpaqueFunction(function=func_launch_lidar_node)
 
     ld = LaunchDescription()
