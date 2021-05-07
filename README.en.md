@@ -303,7 +303,7 @@ Edit [./config/mapper_params_offline.yaml](./config/mapper_params_offline.yaml) 
 
 #### Configure Odometry calculation
 
-Edit  [mouse.yml](./config/mouse.yml) to set `use_pulse_counters` to `true` then the `raspimouse` node calculate the odometry (`/odom`) from motor control pulse counts.
+Edit  [mouse.yml](./config/mouse.yml) to set `use_pulse_counters` to `true` (default: `false`) then the `raspimouse` node calculate the odometry (`/odom`) from motor control pulse counts.
 
 This improves the accuracy of self-localization.
 
