@@ -310,7 +310,7 @@ $ ros2 run nav2_map_server map_saver -f ~/maps/mymap
 
 #### Configure Odometry calculation
 
-下記のように[mouse.yml](./config/mouse.yml)を編集し、`use_pulse_counters`を`true`にすることで、
+下記のように[mouse.yml](./config/mouse.yml)を編集し、`use_pulse_counters`を`true`に（初期値: `false`）することで、
 `raspimouse`ノードがモータの制御パルス数からオドメトリ（`/odom`）を計算します。
 
 これは自己位置推定の精度を向上させます。
