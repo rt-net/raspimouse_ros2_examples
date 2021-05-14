@@ -20,32 +20,31 @@ from launch_ros.actions import LifecycleNode
 def generate_launch_description():
     """Generate launch description with multiple components."""
     mouse_node = LifecycleNode(
-        node_name='raspimouse',
+        name='raspimouse',
         package='raspimouse',
-        node_executable='raspimouse',
+        executable='raspimouse',
         output='screen',
         parameters=[{'use_light_sensors': False, }]
     )
 
     imu_driver = LifecycleNode(
-        node_name='rt_usb_9axisimu_driver',
+        name='rt_usb_9axisimu_driver',
         package='rt_usb_9axisimu_driver',
-        node_executable='rt_usb_9axisimu_driver',
+        executable='rt_usb_9axisimu_driver',
         output='screen',
         parameters=[{'port': '/dev/ttyACM0', }]
     )
 
     direction_controller = Node(
-        # node_name='line_follower',
         package='raspimouse_ros2_examples',
-        node_executable='direction_controller',
+        executable='direction_controller',
         output='screen',
     )
 
     manager = Node(
-        node_name='manager',
+        name='manager',
         package='raspimouse_ros2_examples',
-        node_executable='lifecycle_node_manager',
+        executable='lifecycle_node_manager',
         output='screen',
         parameters=[{'components': ['raspimouse', 'rt_usb_9axisimu_driver']}]
     )

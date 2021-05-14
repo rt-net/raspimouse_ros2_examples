@@ -19,17 +19,16 @@ from launch_ros.actions import Node
 def generate_launch_description():
     """Generate launch description with multiple components."""
     line_follower = Node(
-        # node_name='line_follower',
         package='raspimouse_ros2_examples',
-        node_executable='line_follower',
+        executable='line_follower',
         output='screen',
         parameters=[{'use_pulse_counters': False}]
     )
 
     manager = Node(
-        node_name='manager',
+        name='manager',
         package='raspimouse_ros2_examples',
-        node_executable='lifecycle_node_manager',
+        executable='lifecycle_node_manager',
         output='screen',
         parameters=[{'components': ['raspimouse', 'follower']}]
     )
