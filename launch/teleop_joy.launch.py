@@ -58,21 +58,21 @@ def generate_launch_description():
 
     joy_node = Node(
         package='joy_linux',
-        node_executable='joy_linux_node',
+        executable='joy_linux_node',
         parameters=[{'dev': joydev}]
     )
 
     joystick_control_node = Node(
         package='raspimouse_ros2_examples',
-        node_executable='joystick_control.py',
+        executable='joystick_control.py',
         parameters=[LaunchConfiguration('joyconfig_filename')]
     )
 
     def func_launch_mouse_node(context):
         if context.launch_configurations['mouse'] == "true":
             return [LifecycleNode(
-                node_name='raspimouse',
-                package='raspimouse', node_executable='raspimouse', output='screen',
+                name='raspimouse',
+                package='raspimouse', executable='raspimouse', output='screen',
                 parameters=[os.path.join(get_package_share_directory(
                     'raspimouse_ros2_examples'), 'config', 'mouse.yml')]
             )]

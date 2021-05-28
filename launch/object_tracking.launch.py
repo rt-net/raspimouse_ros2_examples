@@ -21,28 +21,28 @@ from launch_ros.descriptions import ComposableNode
 def generate_launch_description():
     """Generate launch description with multiple components."""
     container = ComposableNodeContainer(
-            node_name='object_tracking_container',
-            node_namespace='',
+            name='object_tracking_container',
+            namespace='',
             package='rclcpp_components',
-            node_executable='component_container_mt',
+            executable='component_container_mt',
             composable_node_descriptions=[
                 ComposableNode(
                     package='raspimouse_ros2_examples',
-                    node_plugin='object_tracking::Tracker',
-                    node_name='tracker'),
+                    plugin='object_tracking::Tracker',
+                    name='tracker'),
                 ComposableNode(
                     package='raspimouse',
-                    node_plugin='raspimouse::Raspimouse',
-                    node_name='raspimouse',
+                    plugin='raspimouse::Raspimouse',
+                    name='raspimouse',
                     parameters=[{'use_light_sensors': False}]),
             ],
             output='screen',
     )
 
     manager = Node(
-        node_name='manager',
+        name='manager',
         package='raspimouse_ros2_examples',
-        node_executable='lifecycle_node_manager',
+        executable='lifecycle_node_manager',
         output='screen',
         parameters=[{'components': ['raspimouse', 'tracker']}]
 

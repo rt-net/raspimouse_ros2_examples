@@ -30,8 +30,8 @@ def generate_launch_description():
     )
 
     mouse_node = LifecycleNode(
-        node_name='raspimouse',
-        package='raspimouse', node_executable='raspimouse', output='screen',
+        name='raspimouse',
+        package='raspimouse', executable='raspimouse', output='screen',
         parameters=[os.path.join(get_package_share_directory(
             'raspimouse_ros2_examples'), 'config', 'mouse.yml')]
             )
