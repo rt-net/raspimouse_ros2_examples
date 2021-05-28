@@ -297,9 +297,24 @@ $ mkdir ~/maps
 $ ros2 run nav2_map_server map_saver -f ~/maps/mymap
 ```
 
-#### Configure
+#### Configure SLAM parameters
 
 Edit [./config/mapper_params_offline.yaml](./config/mapper_params_offline.yaml) to configure parameters of [slam_toolbox](https://github.com/SteveMacenski/slam_toolbox) package.
+
+#### Configure Odometry calculation
+
+Edit  [mouse.yml](./config/mouse.yml) to set `use_pulse_counters` to `true` (default: `false`) then the `raspimouse` node calculate the odometry (`/odom`) from motor control pulse counts.
+
+This improves the accuracy of self-localization.
+
+```yaml
+raspimouse:
+  ros__parameters:
+    odometry_scale_left_wheel : 1.0
+    odometry_scale_right_wheel: 1.0
+    use_light_sensors         : true
+    use_pulse_counters        : true
+```
 
 <!-- #### Videos
 

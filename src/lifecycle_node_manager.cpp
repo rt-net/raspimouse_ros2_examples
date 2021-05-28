@@ -41,7 +41,8 @@ std::uint8_t state_of(
   auto client = node->create_client<SrvGetState>(service_name);
 
   if (!client->wait_for_service(time_out)) {
-    RCLCPP_ERROR(node->get_logger(),
+    RCLCPP_ERROR(
+      node->get_logger(),
       "Service %s is not avaliable.", service_name.c_str());
     return MsgState::PRIMARY_STATE_UNKNOWN;
   }
@@ -50,7 +51,8 @@ std::uint8_t state_of(
   auto future_status = rclcpp::spin_until_future_complete(node, future_result, time_out);
 
   if (future_status != rclcpp::executor::FutureReturnCode::SUCCESS) {
-    RCLCPP_ERROR(node->get_logger(),
+    RCLCPP_ERROR(
+      node->get_logger(),
       "Service %s time out while getting current state.", service_name.c_str());
     return MsgState::PRIMARY_STATE_UNKNOWN;
   }
@@ -62,30 +64,33 @@ bool all_nodes_are_unconfigured(
   rclcpp::Node::SharedPtr node,
   const std::vector<std::string> & target_node_names)
 {
-  return std::all_of(target_node_names.begin(), target_node_names.end(),
-           [&](std::string s) {
-             return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_UNCONFIGURED;
-           });
+  return std::all_of(
+    target_node_names.begin(), target_node_names.end(),
+    [&](std::string s) {
+      return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_UNCONFIGURED;
+    });
 }
 
 bool all_nodes_are_inactive(
   rclcpp::Node::SharedPtr node,
   const std::vector<std::string> & target_node_names)
 {
-  return std::all_of(target_node_names.begin(), target_node_names.end(),
-           [&](std::string s) {
-             return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_INACTIVE;
-           });
+  return std::all_of(
+    target_node_names.begin(), target_node_names.end(),
+    [&](std::string s) {
+      return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_INACTIVE;
+    });
 }
 
 bool all_nodes_are_active(
   rclcpp::Node::SharedPtr node,
   const std::vector<std::string> & target_node_names)
 {
-  return std::all_of(target_node_names.begin(), target_node_names.end(),
-           [&](std::string s) {
-             return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_ACTIVE;
-           });
+  return std::all_of(
+    target_node_names.begin(), target_node_names.end(),
+    [&](std::string s) {
+      return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_ACTIVE;
+    });
 }
 
 bool change_state(
@@ -99,7 +104,8 @@ bool change_state(
   auto client = node->create_client<SrvChangeState>(service_name);
 
   if (!client->wait_for_service(time_out)) {
-    RCLCPP_ERROR(node->get_logger(),
+    RCLCPP_ERROR(
+      node->get_logger(),
       "Service %s is not avaliable.", service_name.c_str());
     return false;
   }
@@ -108,7 +114,8 @@ bool change_state(
   auto future_status = rclcpp::spin_until_future_complete(node, future_result, time_out);
 
   if (future_status != rclcpp::executor::FutureReturnCode::SUCCESS) {
-    RCLCPP_ERROR(node->get_logger(),
+    RCLCPP_ERROR(
+      node->get_logger(),
       "Service %s time out while changing current state.", service_name.c_str());
     return false;
   }
@@ -120,20 +127,22 @@ bool configure_all_nodes(
   rclcpp::Node::SharedPtr node,
   const std::vector<std::string> & target_node_names)
 {
-  return std::all_of(target_node_names.begin(), target_node_names.end(),
-           [&](std::string s) {
-             return change_state(s, node, MsgTransition::TRANSITION_CONFIGURE, 10s);
-           });
+  return std::all_of(
+    target_node_names.begin(), target_node_names.end(),
+    [&](std::string s) {
+      return change_state(s, node, MsgTransition::TRANSITION_CONFIGURE, 10s);
+    });
 }
 
 bool activate_all_nodes(
   rclcpp::Node::SharedPtr node,
   const std::vector<std::string> & target_node_names)
 {
-  return std::all_of(target_node_names.begin(), target_node_names.end(),
-           [&](std::string s) {
-             return change_state(s, node, MsgTransition::TRANSITION_ACTIVATE, 10s);
-           });
+  return std::all_of(
+    target_node_names.begin(), target_node_names.end(),
+    [&](std::string s) {
+      return change_state(s, node, MsgTransition::TRANSITION_ACTIVATE, 10s);
+    });
 }
 
 

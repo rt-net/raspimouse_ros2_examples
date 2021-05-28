@@ -57,8 +57,8 @@ def generate_launch_description():
     get_joyconfig_file_name = OpaqueFunction(function=func_get_joyconfig_file_name)
 
     joy_node = Node(
-        package='joy',
-        node_executable='joy_node',
+        package='joy_linux',
+        node_executable='joy_linux_node',
         parameters=[{'dev': joydev}]
     )
 
