@@ -15,17 +15,17 @@ ROS1 examples is [here](https://github.com/rt-net/raspimouse_ros_examples).
 - Raspberry Pi Mouse
   - https://rt-net.jp/products/raspberrypimousev3/
   - Linux OS
-    - Ubuntu server 18.04
-    - https://wiki.ubuntu.com/ARM/RaspberryPi
+    - Ubuntu server 20.04
+    - https://ubuntu.com/download/raspberry-pi
   - Device Driver
     - [rt-net/RaspberryPiMouse](https://github.com/rt-net/RaspberryPiMouse)
   - ROS
-    - [Dashing Diademata](https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Install-Debians/)
+    - [Foxy Fitzroy](https://docs.ros.org/en/foxy/Installation/Ubuntu-Install-Debians.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 - Remote Computer (Optional)
   - ROS
-    - [Dashing Diademata](https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Install-Debians/)
+    - [Foxy Fitzroy](https://docs.ros.org/en/foxy/Installation/Ubuntu-Install-Debians.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 
@@ -34,7 +34,7 @@ ROS1 examples is [here](https://github.com/rt-net/raspimouse_ros_examples).
 ```sh
 $ cd ~/ros2_ws/src
 # Clone package
-$ git clone -b dashing-devel https://github.com/rt-net/raspimouse_ros2_examples
+$ git clone -b $ROS_DISTRO-devel https://github.com/rt-net/raspimouse_ros2_examples
 
 # Install dependencies
 $ rosdep install -r -y --from-paths . --ignore-src
