@@ -20,12 +20,12 @@ ROS1のサンプルコード集は[こちら](https://github.com/rt-net/raspimou
   - Device Driver
     - [rt-net/RaspberryPiMouse](https://github.com/rt-net/RaspberryPiMouse)
   - ROS
-    - [Dashing Diademata](https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Install-Debians/)
+    - [Foxy Fitzroy](https://docs.ros.org/en/foxy/Installation/Ubuntu-Install-Debians.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 - Remote Computer (Optional)
   - ROS
-    - [Dashing Diademata](https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Install-Debians/)
+    - [Foxy Fitzroy](https://docs.ros.org/en/foxy/Installation/Ubuntu-Install-Debians.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 
@@ -34,7 +34,7 @@ ROS1のサンプルコード集は[こちら](https://github.com/rt-net/raspimou
 ```sh
 $ cd ~/ros2_ws/src
 # Clone package
-$ git clone -b dashing-devel https://github.com/rt-net/raspimouse_ros2_examples
+$ git clone -b $ROS_DISTRO-devel https://github.com/rt-net/raspimouse_ros2_examples
 
 # Install dependencies
 $ rosdep install -r -y --from-paths . --ignore-src
@@ -344,7 +344,7 @@ IMUセンサを使用した角度制御のコード例です。
 
 - [USB出力9軸IMUセンサモジュール](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1348_1&products_id=3416&language=ja)
 - LiDAR Mount ([Raspberry Pi Mouse オプションキットNo.8 [マルチLiDARマウント]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3867))
-- RT-USB-9axisIMU ROS Package (`dashing-devel` branch).
+- RT-USB-9axisIMU ROS Package
   - https://github.com/rt-net/rt_usb_9axisimu_driver
 
 #### Installation
