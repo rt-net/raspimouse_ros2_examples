@@ -301,7 +301,7 @@ Raspberry Pi Mouseを動かして地図を作成します。
 
 ```sh
 $ mkdir ~/maps
-$ ros2 run nav2_map_server map_saver_cli -f ~/maps/mymap
+$ ros2 run nav2_map_server map_saver_cli -f ~/maps/mymap --ros-args -p save_map_timeout:=10000
 ```
 
 #### Configure SLAM parameters
