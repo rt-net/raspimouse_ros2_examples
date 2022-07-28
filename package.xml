@@ -4,8 +4,13 @@
   <name>raspimouse_ros2_examples</name>
   <version>1.0.0</version>
   <description>Raspberry Pi Mouse examples</description>
-  <maintainer email="s.aoki@rt-net.jp">ShotaAk</maintainer>
+  <maintainer email="shop@rt-net.jp">RT Corporation</maintainer>
+
   <license>Apache License 2.0</license>
+
+  <author email="s.aoki@rt-net.jp">ShotaAk</author>
+  <author email="daisuke.sato@rt-net.jp">Daisuke Sato</author>
+  <author email="kozasa@rt-net.jp">Shuhei Kozasa</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
