@@ -34,4 +34,4 @@ Changelog for package raspimouse_ros2_examples
 * Add industrial_ci test settings (`#3 <https://github.com/rt-net/raspimouse_ros2_examples/issues/3>`_)
 * Fix teleop.launch for flake8 check (`#2 <https://github.com/rt-net/raspimouse_ros2_examples/issues/2>`_)
 * Add github workflow (`#1 <https://github.com/rt-net/raspimouse_ros2_examples/issues/1>`_)
-* Contributors: Daisuke Sato, Shota Aoki, ShotaAk, Shuhei Kozasa
+* Contributors: Daisuke Sato, Shota Aoki, Shuhei Kozasa
