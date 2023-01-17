@@ -50,7 +50,7 @@ std::uint8_t state_of(
   auto future_result = client->async_send_request(request);
   auto future_status = rclcpp::spin_until_future_complete(node, future_result, time_out);
 
-  if (future_status != rclcpp::executor::FutureReturnCode::SUCCESS) {
+  if (future_status != rclcpp::FutureReturnCode::SUCCESS) {
     RCLCPP_ERROR(
       node->get_logger(),
       "Service %s time out while getting current state.", service_name.c_str());
@@ -113,7 +113,7 @@ bool change_state(
   auto future_result = client->async_send_request(request);
   auto future_status = rclcpp::spin_until_future_complete(node, future_result, time_out);
 
-  if (future_status != rclcpp::executor::FutureReturnCode::SUCCESS) {
+  if (future_status != rclcpp::FutureReturnCode::SUCCESS) {
     RCLCPP_ERROR(
       node->get_logger(),
       "Service %s time out while changing current state.", service_name.c_str());
