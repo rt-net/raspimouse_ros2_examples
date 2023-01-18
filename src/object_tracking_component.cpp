@@ -14,7 +14,6 @@
 
 #include "raspimouse_ros2_examples/object_tracking_component.hpp"
 
-#include <opencv2/opencv.hpp>
 #include <memory>
 #include <chrono>
 #include <iostream>
@@ -22,6 +21,7 @@
 #include <string>
 #include <vector>
 
+#include <opencv2/opencv.hpp>
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "lifecycle_msgs/srv/change_state.hpp"
