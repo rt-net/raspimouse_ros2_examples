@@ -20,7 +20,7 @@ from launch_ros.actions import LifecycleNode
 def generate_launch_description():
     """Generate launch description with multiple components."""
     mouse_node = LifecycleNode(
-        name='raspimouse',
+        name='raspimouse', namespace="",
         package='raspimouse',
         executable='raspimouse',
         output='screen',
@@ -28,7 +28,7 @@ def generate_launch_description():
     )
 
     imu_driver = LifecycleNode(
-        name='rt_usb_9axisimu_driver',
+        name='rt_usb_9axisimu_driver', namespace="",
         package='rt_usb_9axisimu_driver',
         executable='rt_usb_9axisimu_driver',
         output='screen',
