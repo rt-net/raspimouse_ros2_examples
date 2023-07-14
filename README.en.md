@@ -368,6 +368,11 @@ Then, press SW0 ~ SW2 to change the control mode as following,
 - SW2: Start a direction control to change the heading angle to `-π ~ π rad`.
   - Press SW0 ~ SW2 or tilt the body to sideways to finish the control.
 
+### Troubleshooting
+
+The IMU might not be connected correctly.  
+Reconnect the USB cable several times and re-execute the above command.  
+
 #### Configure
 
 
