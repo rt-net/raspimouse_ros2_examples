@@ -36,7 +36,8 @@ ROS1 examples is [here](https://github.com/rt-net/raspimouse_ros_examples).
 ```sh
 $ cd ~/ros2_ws/src
 # Clone package
-$ git clone -b $ROS_DISTRO-devel https://github.com/rt-net/raspimouse_ros2_examples
+$ git clone -b $ROS_DISTRO-devel https://github.com/rt-net/raspimouse_ros2_examples.git
+$ git clone -b $ROS_DISTRO-devel https://github.com/rt-net/rt_usb_9axisimu_driver.git
 
 # Install dependencies
 $ rosdep install -r -y --from-paths . --ignore-src
