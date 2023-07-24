@@ -15,18 +15,16 @@ ROS1 examples is [here](https://github.com/rt-net/raspimouse_ros_examples).
 - Raspberry Pi Mouse
   - https://rt-net.jp/products/raspberrypimousev3/
   - Linux OS
-    - Ubuntu server 20.04
+    - Ubuntu server 22.04
     - https://ubuntu.com/download/raspberry-pi
   - Device Driver
     - [rt-net/RaspberryPiMouse](https://github.com/rt-net/RaspberryPiMouse)
   - ROS
-    - [Foxy Fitzroy](https://docs.ros.org/en/foxy/Installation/Ubuntu-Install-Debians.html)
     - [Humble Hawksbill](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 - Remote Computer (Optional)
   - ROS
-    - [Foxy Fitzroy](https://docs.ros.org/en/foxy/Installation/Ubuntu-Install-Debians.html)
     - [Humble Hawksbill](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
