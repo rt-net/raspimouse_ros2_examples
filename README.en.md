@@ -10,6 +10,11 @@ ROS1 examples is [here](https://github.com/rt-net/raspimouse_ros_examples).
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/raspberry_pi_mouse.JPG width=500 />
 
+## Supported ROS 2 distributions
+
+- [Foxy](https://github.com/rt-net/raspimouse_ros2_examples/tree/foxy-devel)
+- Humble (This repository)
+
 ## Requirements
 
 - Raspberry Pi Mouse
