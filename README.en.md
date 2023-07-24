@@ -13,7 +13,7 @@ ROS1 examples is [here](https://github.com/rt-net/raspimouse_ros_examples).
 ## Supported ROS 2 distributions
 
 - [Foxy](https://github.com/rt-net/raspimouse_ros2_examples/tree/foxy-devel)
-- Humble (This repository)
+- Humble (This branch)
 
 ## Requirements
 
