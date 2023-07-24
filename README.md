@@ -10,22 +10,27 @@ ROS1のサンプルコード集は[こちら](https://github.com/rt-net/raspimou
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/raspberry_pi_mouse.JPG width=500 />
 
+## Supported ROS 2 distributions
+
+- [Foxy](https://github.com/rt-net/raspimouse_ros2_examples/tree/foxy-devel)
+- Humble (This branch)
+
 ## Requirements
 
 - Raspberry Pi Mouse
   - https://rt-net.jp/products/raspberrypimousev3/
   - Linux OS
-    - Ubuntu server 20.04
+    - Ubuntu server 22.04
     - https://ubuntu.com/download/raspberry-pi
   - Device Driver
     - [rt-net/RaspberryPiMouse](https://github.com/rt-net/RaspberryPiMouse)
   - ROS
-    - [Foxy Fitzroy](https://docs.ros.org/en/foxy/Installation/Ubuntu-Install-Debians.html)
+    - [Humble Hawksbill](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 - Remote Computer (Optional)
   - ROS
-    - [Foxy Fitzroy](https://docs.ros.org/en/foxy/Installation/Ubuntu-Install-Debians.html)
+    - [Humble Hawksbill](https://dcs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 
@@ -34,7 +39,7 @@ ROS1のサンプルコード集は[こちら](https://github.com/rt-net/raspimou
 ```sh
 $ cd ~/ros2_ws/src
 # Clone package
-$ git clone -b $ROS_DISTRO-devel https://github.com/rt-net/raspimouse_ros2_examples
+$ git clone -b $ROS_DISTRO-devel https://github.com/rt-net/raspimouse_ros2_examples.git
 
 # Install dependencies
 $ rosdep install -r -y --from-paths . --ignore-src
@@ -301,7 +306,7 @@ Raspberry Pi Mouseを動かして地図を作成します。
 
 ```sh
 $ mkdir ~/maps
-$ ros2 run nav2_map_server map_saver_cli -f ~/maps/mymap --ros-args -p save_map_timeout:=10000
+$ ros2 run nav2_map_server map_saver_cli -f ~/maps/mymap --ros-args -p save_map_timeout:=10000.0
 ```
 
 #### Configure SLAM parameters
@@ -372,6 +377,12 @@ SW0 ~ SW2を押して動作モードを切り替えます。
   - SW0 ~ SW2を押すか、ラズパイマウス本体を横に傾けると終了します
 - SW2: 方位角を`-π ~ π rad`に変化させる角度制御を開始します
   - SW0 ~ SW2を押すか、ラズパイマウス本体を横に傾けると終了します
+
+### Troubleshooting
+
+IMUの接続が正常に行われない場合があります。  
+その時は、IMUのUSBケーブルを抜き差ししてください。  
+抜き差し実施後は、コマンドを再度実行してください。  
 
 #### Configure
 

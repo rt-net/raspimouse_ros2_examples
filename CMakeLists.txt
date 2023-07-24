@@ -71,6 +71,7 @@ ament_target_dependencies(direction_controller_component
   rclcpp
   rclcpp_components
   std_msgs
+  sensor_msgs
   std_srvs
   geometry_msgs
   raspimouse_msgs)
