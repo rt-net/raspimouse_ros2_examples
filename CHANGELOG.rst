@@ -2,8 +2,8 @@
 Changelog for package raspimouse_ros2_examples
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.0 (2023-08-03)
+------------------
 * Humble対応 (`#41 <https://github.com/rt-net/raspimouse_ros2_examples/issues/41>`_)
 * Contributors: Shuhei Kozasa
 
