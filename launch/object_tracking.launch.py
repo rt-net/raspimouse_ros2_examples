@@ -30,11 +30,11 @@ def generate_launch_description():
                     package='raspimouse_ros2_examples',
                     plugin='object_tracking::Tracker',
                     name='tracker'),
-                ComposableNode(
-                    package='raspimouse',
-                    plugin='raspimouse::Raspimouse',
-                    name='raspimouse',
-                    parameters=[{'use_light_sensors': False}]),
+#                ComposableNode(
+#                    package='raspimouse',
+#                    plugin='raspimouse::Raspimouse',
+#                    name='raspimouse',
+#                    parameters=[{'use_light_sensors': False}]),
             ],
             output='screen',
     )
