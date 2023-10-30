@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import launch
-from ament_index_python.packages import get_package_share_directory
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch.conditions import IfCondition
@@ -42,7 +41,8 @@ def generate_launch_description():
 
     """Generate launch description with multiple components."""
     mouse_node = LifecycleNode(
-        name='raspimouse', namespace="",
+        name='raspimouse',
+        namespace="",
         package='raspimouse',
         executable='raspimouse',
         output='screen',
@@ -72,19 +72,17 @@ def generate_launch_description():
         parameters=[{'components': ['raspimouse', 'tracker']}]
     )
 
-    camera_info_file = 'file://' + get_package_share_directory(
-        'raspimouse_ros2_examples') + '/config/camera_info.yaml'
     usb_cam_node = Node(
-            package='usb_cam',
-            executable='usb_cam_node_exe',
-            parameters=[
-                {'video_device': LaunchConfiguration('video_device')},
-                {'frame_id': 'camera_color_optical_frame'},
-                {'camera_info_url': camera_info_file},
-                {'pixel_format': 'yuyv2rgb'}
-            ],
-            condition=IfCondition(LaunchConfiguration('use_camera_node'))
-        )
+        package='usb_cam',
+        executable='usb_cam_node_exe',
+        remappings=[('image_raw', 'camera/color/image_raw')],
+        parameters=[
+            {'video_device': LaunchConfiguration('video_device')},
+            {'frame_id': 'camera_color_optical_frame'},
+            {'pixel_format': 'yuyv2rgb'}
+        ],
+        condition=IfCondition(LaunchConfiguration('use_camera_node'))
+    )
 
     return launch.LaunchDescription([
         declare_mouse,
