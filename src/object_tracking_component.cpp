@@ -66,8 +66,8 @@ void Tracker::on_cmd_vel_timer()
 {
   const double LINEAR_VEL = -0.5;  // unit: m/s
   const double ANGULAR_VEL = -0.8;  // unit: rad/s
-  const double TARGET_AREA = 0.3;  // 0.0 ~ 1.0
-  const double OBJECT_AREA_THRESHOLD = 0.06;  // 0.0 ~ 1.0
+  const double TARGET_AREA = 0.1;  // 0.0 ~ 1.0
+  const double OBJECT_AREA_THRESHOLD = 0.01;  // 0.0 ~ 1.0
 
   // Detects an object and tracks it
   // when the number of pixels of the object is greater than the threshold.
