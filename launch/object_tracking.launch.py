@@ -18,7 +18,6 @@ from launch.substitutions import LaunchConfiguration
 from launch.conditions import IfCondition
 from launch_ros.actions import ComposableNodeContainer
 from launch_ros.actions import Node
-from launch_ros.actions import LifecycleNode
 from launch_ros.descriptions import ComposableNode
 
 
@@ -40,16 +39,6 @@ def generate_launch_description():
     )
 
     """Generate launch description with multiple components."""
-    mouse_node = LifecycleNode(
-        name='raspimouse',
-        namespace="",
-        package='raspimouse',
-        executable='raspimouse',
-        output='screen',
-        parameters=[{'use_light_sensors': False, }],
-        condition=IfCondition(LaunchConfiguration('mouse'))
-    )
-
     container = ComposableNodeContainer(
             name='object_tracking_container',
             namespace='',
@@ -60,6 +49,12 @@ def generate_launch_description():
                     package='raspimouse_ros2_examples',
                     plugin='object_tracking::Tracker',
                     name='tracker'),
+                ComposableNode(
+                    package='raspimouse',
+                    plugin='raspimouse::Raspimouse',
+                    name='raspimouse',
+                    parameters=[{'use_light_sensors': False}],
+                    condition=IfCondition(LaunchConfiguration('mouse'))),
             ],
             output='screen',
     )
@@ -88,7 +83,6 @@ def generate_launch_description():
         declare_mouse,
         declare_use_camera_node,
         declare_video_device,
-        mouse_node,
         container,
         manager,
         usb_cam_node
