@@ -48,12 +48,14 @@ def generate_launch_description():
                 ComposableNode(
                     package='raspimouse_ros2_examples',
                     plugin='object_tracking::Tracker',
-                    name='tracker'),
+                    name='tracker',
+                    extra_arguments=[{'use_intra_process_comms': True}]),
                 ComposableNode(
                     package='raspimouse',
                     plugin='raspimouse::Raspimouse',
                     name='raspimouse',
                     parameters=[{'use_light_sensors': False}],
+                    extra_arguments=[{'use_intra_process_comms': True}],
                     condition=IfCondition(LaunchConfiguration('mouse'))),
                 ComposableNode(
                     package='usb_cam',
@@ -65,6 +67,7 @@ def generate_launch_description():
                         {'frame_id': 'camera_color_optical_frame'},
                         {'pixel_format': 'yuyv2rgb'}
                     ],
+                    extra_arguments=[{'use_intra_process_comms': True}],
                     condition=IfCondition(LaunchConfiguration('use_camera_node'))),
             ],
             output='screen',
