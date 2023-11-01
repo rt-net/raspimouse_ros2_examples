@@ -160,12 +160,6 @@ $ ./configure_camera.bash
 $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/dev/video0
 ```
 
-Gazeboの場合は次のコマンドでノードを起動します。
-
-```sh
-$ ros2 launch raspimouse_ros2_examples object_tracking.launch.py mouse:=false use_camera_node:=false
-```
-
 カメラ画像は`camera/color/image_raw`、物体検出画像は`result_image`というトピックとして発行されます。
 これらの画像は[RViz](https://index.ros.org/r/rviz/)
 や[rqt_image_view](https://index.ros.org/doc/ros2/Tutorials/RQt-Overview-Usage/)

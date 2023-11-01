@@ -158,11 +158,6 @@ Then, launch nodes with the following command:
 $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/dev/video0
 ```
 
-For Gazebo, launch nodes with the following command:
-```sh
-$ ros2 launch raspimouse_ros2_examples object_tracking.launch.py mouse:=false use_camera_node:=false
-```
-
 This sample publishes two topics: `camera/color/image_raw` for the camera image and `result_image` for the object detection image.
 These images can be viewed with [RViz](https://index.ros.org/r/rviz/)
 or [rqt_image_view](https://index.ros.org/doc/ros2/Tutorials/RQt-Overview-Usage/).
