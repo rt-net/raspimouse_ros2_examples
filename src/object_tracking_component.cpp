@@ -54,9 +54,6 @@ void Tracker::image_callback(const sensor_msgs::msg::Image::SharedPtr msg_image)
     tracking(frame, result_frame);
     convert_frame_to_message(result_frame, *result_msg);
     result_image_pub_->publish(std::move(result_msg));
-
-    convert_frame_to_message(frame, *msg);
-    image_pub_->publish(std::move(msg));
   }
 }
 
@@ -178,7 +175,6 @@ CallbackReturn Tracker::on_configure(const rclcpp_lifecycle::State &)
   // Don't actually start publishing data until activated
   cmd_vel_timer_->cancel();
 
-  image_pub_ = create_publisher<sensor_msgs::msg::Image>("raw_image", 1);
   result_image_pub_ = create_publisher<sensor_msgs::msg::Image>("result_image", 1);
   cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
   image_sub_ = create_subscription<sensor_msgs::msg::Image>(
@@ -203,7 +199,6 @@ CallbackReturn Tracker::on_activate(const rclcpp_lifecycle::State &)
   request->data = true;
   auto future_result = motor_power_client_->async_send_request(request);
 
-  image_pub_->on_activate();
   result_image_pub_->on_activate();
   cmd_vel_pub_->on_activate();
   cmd_vel_timer_->reset();
@@ -214,7 +209,6 @@ CallbackReturn Tracker::on_activate(const rclcpp_lifecycle::State &)
 CallbackReturn Tracker::on_deactivate(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
-  image_pub_->on_deactivate();
   result_image_pub_->on_deactivate();
   cmd_vel_pub_->on_deactivate();
   cmd_vel_timer_->cancel();
@@ -229,7 +223,6 @@ CallbackReturn Tracker::on_cleanup(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_cleanup() is called.");
 
-  image_pub_.reset();
   result_image_pub_.reset();
   cmd_vel_pub_.reset();
   cmd_vel_timer_.reset();
@@ -242,7 +235,6 @@ CallbackReturn Tracker::on_shutdown(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_shutdown() is called.");
 
-  image_pub_.reset();
   result_image_pub_.reset();
   cmd_vel_pub_.reset();
   cmd_vel_timer_.reset();
