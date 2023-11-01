@@ -26,7 +26,6 @@
 #include "std_msgs/msg/string.hpp"
 #include "lifecycle_msgs/srv/change_state.hpp"
 #include "cv_bridge/cv_bridge.h"
-using std::placeholders::_1;
 
 using namespace std::chrono_literals;
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
@@ -184,7 +183,7 @@ CallbackReturn Tracker::on_configure(const rclcpp_lifecycle::State &)
   cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
   image_sub_ = create_subscription<sensor_msgs::msg::Image>(
     "camera/color/image_raw", rclcpp::SensorDataQoS(),
-    std::bind(&Tracker::image_callback, this, _1));
+    std::bind(&Tracker::image_callback, this, std::placeholders::_1));
 
   return CallbackReturn::SUCCESS;
 }
