@@ -183,7 +183,8 @@ CallbackReturn Tracker::on_configure(const rclcpp_lifecycle::State &)
   result_image_pub_ = create_publisher<sensor_msgs::msg::Image>("result_image", 1);
   cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
   image_sub_ = create_subscription<sensor_msgs::msg::Image>(
-    "camera/color/image_raw", 1, std::bind(&Tracker::image_callback, this, _1));
+    "camera/color/image_raw", rclcpp::SensorDataQoS(),
+    std::bind(&Tracker::image_callback, this, _1));
 
   return CallbackReturn::SUCCESS;
 }
