@@ -52,7 +52,6 @@ private:
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::Twist>> cmd_vel_pub_;
   std::shared_ptr<rclcpp::Client<std_srvs::srv::SetBool>> motor_power_client_;
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
-  // rclcpp::TimerBase::SharedPtr image_timer_;
   rclcpp::TimerBase::SharedPtr cmd_vel_timer_;
 
   std::string mat_type2encoding(int mat_type);
