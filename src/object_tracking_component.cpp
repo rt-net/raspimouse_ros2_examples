@@ -40,7 +40,7 @@ Tracker::Tracker(const rclcpp::NodeOptions & options)
 {
 }
 
-void Tracker::on_image_timer(const sensor_msgs::msg::Image::SharedPtr msg_image)
+void Tracker::image_callback(const sensor_msgs::msg::Image::SharedPtr msg_image)
 {
   auto cv_img = cv_bridge::toCvShare(msg_image, msg_image->encoding);
   auto msg = std::make_unique<sensor_msgs::msg::Image>();
@@ -183,7 +183,7 @@ CallbackReturn Tracker::on_configure(const rclcpp_lifecycle::State &)
   result_image_pub_ = create_publisher<sensor_msgs::msg::Image>("result_image", 1);
   cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
   image_sub_ = create_subscription<sensor_msgs::msg::Image>(
-    "camera/color/image_raw", 1, std::bind(&Tracker::on_image_timer, this, _1));
+    "camera/color/image_raw", 1, std::bind(&Tracker::image_callback, this, _1));
 
   return CallbackReturn::SUCCESS;
 }

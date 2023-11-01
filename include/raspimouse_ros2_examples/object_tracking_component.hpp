@@ -38,7 +38,7 @@ public:
   explicit Tracker(const rclcpp::NodeOptions & options);
 
 protected:
-  void on_image_timer(const sensor_msgs::msg::Image::SharedPtr msg_image);
+  void image_callback(const sensor_msgs::msg::Image::SharedPtr msg_image);
   void on_cmd_vel_timer();
 
 private:
