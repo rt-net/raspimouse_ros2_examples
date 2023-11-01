@@ -43,9 +43,6 @@ protected:
 
 private:
   cv::VideoCapture cap_;
-  int device_index_;
-  double image_width_;
-  double image_height_;
   bool object_is_detected_;
   cv::Point2d object_normalized_point_;
   double object_normalized_area_;

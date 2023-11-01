@@ -36,7 +36,6 @@ namespace object_tracking
 
 Tracker::Tracker(const rclcpp::NodeOptions & options)
 : rclcpp_lifecycle::LifecycleNode("tracker", options),
-  device_index_(0), image_width_(320), image_height_(240),
   object_is_detected_(false)
 {
 }
