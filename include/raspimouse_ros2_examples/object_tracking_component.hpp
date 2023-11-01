@@ -38,23 +38,19 @@ public:
   explicit Tracker(const rclcpp::NodeOptions & options);
 
 protected:
-  void on_image_timer();
+  void image_callback(const sensor_msgs::msg::Image::SharedPtr msg_image);
   void on_cmd_vel_timer();
 
 private:
   cv::VideoCapture cap_;
-  int device_index_;
-  double image_width_;
-  double image_height_;
   bool object_is_detected_;
   cv::Point2d object_normalized_point_;
   double object_normalized_area_;
   geometry_msgs::msg::Twist cmd_vel_;
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> image_pub_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> result_image_pub_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::Twist>> cmd_vel_pub_;
   std::shared_ptr<rclcpp::Client<std_srvs::srv::SetBool>> motor_power_client_;
-  rclcpp::TimerBase::SharedPtr image_timer_;
+  rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
   rclcpp::TimerBase::SharedPtr cmd_vel_timer_;
 
   std::string mat_type2encoding(int mat_type);
