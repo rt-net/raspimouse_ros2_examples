@@ -6,7 +6,9 @@
 
 Raspberry Pi MouseのROS 2サンプルコード集です。
 
-ROS1のサンプルコード集は[こちら](https://github.com/rt-net/raspimouse_ros_examples)。
+ROS1のサンプルコード集は[こちら](https://github.com/rt-net/raspimouse_ros_examples/blob/master/README.md)。
+
+Gazebo（シミュレータ）でも動作します。詳細は[こちら](https://github.com/rt-net/raspimouse_sim/blob/ros2/README.md)。
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/raspberry_pi_mouse.JPG width=500 />
 
