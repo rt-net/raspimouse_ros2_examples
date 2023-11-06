@@ -8,7 +8,7 @@ ROS 2 examples for Raspberry Pi Mouse.
 
 ROS1 examples is [here](https://github.com/rt-net/raspimouse_ros_examples/blob/master/README.en.md).
 
-To run on Gazebo, click [here](https://github.com/rt-net/raspimouse_sim/tree/ros2).
+To run on Gazebo, click [here](https://github.com/rt-net/raspimouse_sim/blob/ros2/README.en.md).
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/raspberry_pi_mouse.JPG width=500 />
 
