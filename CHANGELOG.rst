@@ -2,8 +2,8 @@
 Changelog for package raspimouse_ros2_examples
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.0 (2023-11-07)
+------------------
 * READMEにGazeboでも実行できることを追記 (`#44 <https://github.com/rt-net/raspimouse_ros2_examples/issues/44>`_)
 * object_trackingにおいて画像トピックをサブスクライブするように変更 (`#43 <https://github.com/rt-net/raspimouse_ros2_examples/issues/43>`_)
 * Contributors: YusukeKato
