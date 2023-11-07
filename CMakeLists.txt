@@ -30,6 +30,7 @@ find_package(OpenCV REQUIRED)
 find_package(raspimouse_msgs REQUIRED)
 find_package(raspimouse REQUIRED)
 find_package(rt_usb_9axisimu_driver REQUIRED)
+find_package(cv_bridge REQUIRED)
 
 
 include_directories(include)
@@ -46,7 +47,8 @@ ament_target_dependencies(object_tracking_component
   std_srvs
   sensor_msgs
   geometry_msgs
-  OpenCV)
+  OpenCV
+  cv_bridge)
 rclcpp_components_register_nodes(object_tracking_component "object_tracking::Tracker")
 
 add_library(line_follower_component SHARED

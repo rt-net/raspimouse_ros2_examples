@@ -6,7 +6,9 @@
 
 ROS 2 examples for Raspberry Pi Mouse.
 
-ROS1 examples is [here](https://github.com/rt-net/raspimouse_ros_examples).
+ROS1 examples is [here](https://github.com/rt-net/raspimouse_ros_examples/blob/master/README.en.md).
+
+To run on Gazebo, click [here](https://github.com/rt-net/raspimouse_sim/blob/ros2/README.en.md).
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/raspberry_pi_mouse.JPG width=500 />
 
@@ -155,10 +157,10 @@ $ ./configure_camera.bash
 Then, launch nodes with the following command:
 
 ```sh
-$ ros2 launch raspimouse_ros2_examples object_tracking.launch.py
+$ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/dev/video0
 ```
 
-This sample publishes two topics: `raw_image` for the camera image and `result_image` for the object detection image.
+This sample publishes two topics: `camera/color/image_raw` for the camera image and `result_image` for the object detection image.
 These images can be viewed with [RViz](https://index.ros.org/r/rviz/)
 or [rqt_image_view](https://index.ros.org/doc/ros2/Tutorials/RQt-Overview-Usage/).
 

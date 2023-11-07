@@ -25,6 +25,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "lifecycle_msgs/srv/change_state.hpp"
+#include "cv_bridge/cv_bridge.h"
 
 using namespace std::chrono_literals;
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
@@ -34,28 +35,25 @@ namespace object_tracking
 
 Tracker::Tracker(const rclcpp::NodeOptions & options)
 : rclcpp_lifecycle::LifecycleNode("tracker", options),
-  device_index_(0), image_width_(320), image_height_(240),
   object_is_detected_(false)
 {
 }
 
-void Tracker::on_image_timer()
+void Tracker::image_callback(const sensor_msgs::msg::Image::SharedPtr msg_image)
 {
+  auto cv_img = cv_bridge::toCvShare(msg_image, msg_image->encoding);
   auto msg = std::make_unique<sensor_msgs::msg::Image>();
   auto result_msg = std::make_unique<sensor_msgs::msg::Image>();
   msg->is_bigendian = false;
   result_msg->is_bigendian = false;
 
   cv::Mat frame, result_frame;
-  cap_ >> frame;
+  cv::cvtColor(cv_img->image, frame, CV_RGB2BGR);
 
   if (!frame.empty()) {
     tracking(frame, result_frame);
     convert_frame_to_message(result_frame, *result_msg);
     result_image_pub_->publish(std::move(result_msg));
-
-    convert_frame_to_message(frame, *msg);
-    image_pub_->publish(std::move(msg));
   }
 }
 
@@ -63,8 +61,8 @@ void Tracker::on_cmd_vel_timer()
 {
   const double LINEAR_VEL = -0.5;  // unit: m/s
   const double ANGULAR_VEL = -0.8;  // unit: rad/s
-  const double TARGET_AREA = 0.3;  // 0.0 ~ 1.0
-  const double OBJECT_AREA_THRESHOLD = 0.06;  // 0.0 ~ 1.0
+  const double TARGET_AREA = 0.1;  // 0.0 ~ 1.0
+  const double OBJECT_AREA_THRESHOLD = 0.01;  // 0.0 ~ 1.0
 
   // Detects an object and tracks it
   // when the number of pixels of the object is greater than the threshold.
@@ -117,7 +115,7 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
   cv::Mat hsv;
   cv::cvtColor(input_frame, hsv, cv::COLOR_BGR2HSV);
   cv::Mat extracted_bin;
-  cv::inRange(hsv, cv::Scalar(9, 100, 100), cv::Scalar(29, 255, 255), extracted_bin);  // Orange
+  cv::inRange(hsv, cv::Scalar(0, 100, 100), cv::Scalar(29, 255, 255), extracted_bin);  // Red-Orange
   // cv::inRange(hsv, cv::Scalar(60, 100, 100), cv::Scalar(80, 255, 255), extracted_bin);  // Green
   // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);  // Blue
   input_frame.copyTo(result_frame, extracted_bin);
@@ -173,24 +171,15 @@ CallbackReturn Tracker::on_configure(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_configure() is called.");
 
-  image_timer_ = create_wall_timer(100ms, std::bind(&Tracker::on_image_timer, this));
   cmd_vel_timer_ = create_wall_timer(50ms, std::bind(&Tracker::on_cmd_vel_timer, this));
   // Don't actually start publishing data until activated
-  image_timer_->cancel();
   cmd_vel_timer_->cancel();
 
-  image_pub_ = create_publisher<sensor_msgs::msg::Image>("raw_image", 1);
   result_image_pub_ = create_publisher<sensor_msgs::msg::Image>("result_image", 1);
   cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
-
-  // Initialize OpenCV video capture stream.
-  cap_.open(device_index_);
-  cap_.set(cv::CAP_PROP_FRAME_WIDTH, image_width_);
-  cap_.set(cv::CAP_PROP_FRAME_HEIGHT, image_height_);
-  if (!cap_.isOpened()) {
-    RCLCPP_ERROR(this->get_logger(), "Could not open video stream");
-    return CallbackReturn::FAILURE;
-  }
+  image_sub_ = create_subscription<sensor_msgs::msg::Image>(
+    "camera/color/image_raw", rclcpp::SensorDataQoS(),
+    std::bind(&Tracker::image_callback, this, std::placeholders::_1));
 
   return CallbackReturn::SUCCESS;
 }
@@ -210,10 +199,8 @@ CallbackReturn Tracker::on_activate(const rclcpp_lifecycle::State &)
   request->data = true;
   auto future_result = motor_power_client_->async_send_request(request);
 
-  image_pub_->on_activate();
   result_image_pub_->on_activate();
   cmd_vel_pub_->on_activate();
-  image_timer_->reset();
   cmd_vel_timer_->reset();
 
   return CallbackReturn::SUCCESS;
@@ -222,10 +209,8 @@ CallbackReturn Tracker::on_activate(const rclcpp_lifecycle::State &)
 CallbackReturn Tracker::on_deactivate(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
-  image_pub_->on_deactivate();
   result_image_pub_->on_deactivate();
   cmd_vel_pub_->on_deactivate();
-  image_timer_->cancel();
   cmd_vel_timer_->cancel();
 
   object_is_detected_ = false;
@@ -238,11 +223,10 @@ CallbackReturn Tracker::on_cleanup(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_cleanup() is called.");
 
-  image_pub_.reset();
   result_image_pub_.reset();
   cmd_vel_pub_.reset();
-  image_timer_.reset();
   cmd_vel_timer_.reset();
+  image_sub_.reset();
 
   return CallbackReturn::SUCCESS;
 }
@@ -251,11 +235,10 @@ CallbackReturn Tracker::on_shutdown(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_shutdown() is called.");
 
-  image_pub_.reset();
   result_image_pub_.reset();
   cmd_vel_pub_.reset();
-  image_timer_.reset();
   cmd_vel_timer_.reset();
+  image_sub_.reset();
 
   return CallbackReturn::SUCCESS;
 }
