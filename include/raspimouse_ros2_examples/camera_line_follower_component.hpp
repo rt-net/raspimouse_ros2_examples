@@ -18,6 +18,7 @@
 #include <memory>
 #include <string>
 
+#include "raspimouse_msgs/msg/switches.hpp"
 #include "raspimouse_ros2_examples/visibility_control.h"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
@@ -39,18 +40,22 @@ public:
 
 protected:
   void image_callback(const sensor_msgs::msg::Image::SharedPtr msg_image);
+  void callback_switches(const raspimouse_msgs::msg::Switches::SharedPtr msg);
   void on_cmd_vel_timer();
 
 private:
   cv::VideoCapture cap_;
   bool object_is_detected_;
+  bool can_publish_cmdvel_;
   cv::Point2d object_normalized_point_;
   double object_normalized_area_;
   geometry_msgs::msg::Twist cmd_vel_;
+  raspimouse_msgs::msg::Switches switches_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> result_image_pub_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::Twist>> cmd_vel_pub_;
   std::shared_ptr<rclcpp::Client<std_srvs::srv::SetBool>> motor_power_client_;
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
+  rclcpp::Subscription<raspimouse_msgs::msg::Switches>::SharedPtr switches_sub_;
   rclcpp::TimerBase::SharedPtr cmd_vel_timer_;
 
   std::string mat_type2encoding(int mat_type);

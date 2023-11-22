@@ -57,6 +57,11 @@ void Camera_Follower::image_callback(const sensor_msgs::msg::Image::SharedPtr ms
   }
 }
 
+void Camera_Follower::callback_switches(const raspimouse_msgs::msg::Switches::SharedPtr msg)
+{
+  switches_ = *msg;
+}
+
 void Camera_Follower::on_cmd_vel_timer()
 {
   const double LINEAR_VEL = 0.2;  // unit: m/s
@@ -73,6 +78,23 @@ void Camera_Follower::on_cmd_vel_timer()
     cmd_vel_.linear.x = 0.0;
     cmd_vel_.angular.z = 0.0;
   }
+
+  if (switches_.switch0) {
+    if (can_publish_cmdvel_) {
+      RCLCPP_INFO(this->get_logger(), "Start following.");
+      can_publish_cmdvel_ = false;
+    } else {
+      RCLCPP_INFO(this->get_logger(), "Stop following.");
+      can_publish_cmdvel_ = true;
+    }
+  }
+  switches_ = raspimouse_msgs::msg::Switches();  // Reset switch values
+
+  if (!can_publish_cmdvel_) {
+    cmd_vel_.linear.x = 0.0;
+    cmd_vel_.angular.z = 0.0;
+  }
+
   auto msg = std::make_unique<geometry_msgs::msg::Twist>(cmd_vel_);
   cmd_vel_pub_->publish(std::move(msg));
 }
@@ -178,6 +200,8 @@ CallbackReturn Camera_Follower::on_configure(const rclcpp_lifecycle::State &)
   image_sub_ = create_subscription<sensor_msgs::msg::Image>(
     "camera/color/image_raw", rclcpp::SensorDataQoS(),
     std::bind(&Camera_Follower::image_callback, this, std::placeholders::_1));
+  switches_sub_ = create_subscription<raspimouse_msgs::msg::Switches>(
+    "switches", 1, std::bind(&Camera_Follower::callback_switches, this, std::placeholders::_1));
 
   return CallbackReturn::SUCCESS;
 }
@@ -225,6 +249,7 @@ CallbackReturn Camera_Follower::on_cleanup(const rclcpp_lifecycle::State &)
   cmd_vel_pub_.reset();
   cmd_vel_timer_.reset();
   image_sub_.reset();
+  switches_sub_.reset();
 
   return CallbackReturn::SUCCESS;
 }
@@ -237,6 +262,7 @@ CallbackReturn Camera_Follower::on_shutdown(const rclcpp_lifecycle::State &)
   cmd_vel_pub_.reset();
   cmd_vel_timer_.reset();
   image_sub_.reset();
+  switches_sub_.reset();
 
   return CallbackReturn::SUCCESS;
 }
