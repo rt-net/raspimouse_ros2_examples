@@ -82,10 +82,9 @@ void Camera_Follower::on_cmd_vel_timer()
   if (switches_.switch0) {
     RCLCPP_INFO(this->get_logger(), "Stop following.");
     can_publish_cmdvel_ = false;
-  }
-  else if (switches_.switch2) {
-      RCLCPP_INFO(this->get_logger(), "Start following.");
-      can_publish_cmdvel_ = true;
+  } else if (switches_.switch2) {
+    RCLCPP_INFO(this->get_logger(), "Start following.");
+    can_publish_cmdvel_ = true;
   }
   switches_ = raspimouse_msgs::msg::Switches();  // Reset switch values
 
