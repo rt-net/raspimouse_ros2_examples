@@ -59,7 +59,7 @@ void Camera_Follower::image_callback(const sensor_msgs::msg::Image::SharedPtr ms
 
 void Camera_Follower::on_cmd_vel_timer()
 {
-  const double LINEAR_VEL = -0.5;  // unit: m/s
+  const double LINEAR_VEL = 0.2;  // unit: m/s
   const double ANGULAR_VEL = -0.8;  // unit: rad/s
   const double TARGET_AREA = 0.1;  // 0.0 ~ 1.0
   const double OBJECT_AREA_THRESHOLD = 0.01;  // 0.0 ~ 1.0
@@ -115,7 +115,7 @@ void Camera_Follower::following(const cv::Mat & input_frame, cv::Mat & result_fr
   cv::Mat gray;
   cv::cvtColor(input_frame, gray, cv::COLOR_BGR2GRAY);
   cv::Mat extracted_bin;
-  cv::inRange(gray, 0, 100, extracted_bin);
+  cv::inRange(gray, 0, 50, extracted_bin);
   input_frame.copyTo(result_frame, extracted_bin);
 
   // Remove noise with morphology transformation
