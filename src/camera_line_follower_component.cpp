@@ -51,7 +51,7 @@ void Camera_Follower::image_callback(const sensor_msgs::msg::Image::SharedPtr ms
   cv::cvtColor(cv_img->image, frame, CV_RGB2BGR);
 
   if (!frame.empty()) {
-    tracking(frame, result_frame);
+    following(frame, result_frame);
     convert_frame_to_message(result_frame, *result_msg);
     result_image_pub_->publish(std::move(result_msg));
   }
@@ -112,12 +112,10 @@ void Camera_Follower::convert_frame_to_message(
 void Camera_Follower::following(const cv::Mat & input_frame, cv::Mat & result_frame)
 {
   // Specific colors are extracted from the input image and converted to binary values.
-  cv::Mat hsv;
-  cv::cvtColor(input_frame, hsv, cv::COLOR_BGR2HSV);
+  cv::Mat gray;
+  cv::cvtColor(input_frame, gray, cv::COLOR_BGR2GRAY);
   cv::Mat extracted_bin;
-  cv::inRange(hsv, cv::Scalar(0, 100, 100), cv::Scalar(29, 255, 255), extracted_bin);  // Red-Orange
-  // cv::inRange(hsv, cv::Scalar(60, 100, 100), cv::Scalar(80, 255, 255), extracted_bin);  // Green
-  // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);  // Blue
+  cv::inRange(gray, 0, 100, extracted_bin);
   input_frame.copyTo(result_frame, extracted_bin);
 
   // Remove noise with morphology transformation

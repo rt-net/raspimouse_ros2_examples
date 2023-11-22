@@ -78,7 +78,7 @@ def generate_launch_description():
         package='raspimouse_ros2_examples',
         executable='lifecycle_node_manager',
         output='screen',
-        parameters=[{'components': ['raspimouse', 'tracker']}]
+        parameters=[{'components': ['raspimouse', 'camera_follower']}]
     )
 
     return launch.LaunchDescription([
