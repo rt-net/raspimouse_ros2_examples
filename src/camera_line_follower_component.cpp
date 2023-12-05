@@ -175,7 +175,7 @@ void Camera_Follower::detecting_line(const cv::Mat & input_frame, cv::Mat & resu
     cv::circle(result_frame, mt_point, 30, cv::Scalar(0, 0, 255), 2, cv::LINE_4);
     cv::putText(
       result_frame, text, cv::Point(0, 30),
-      cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 0, 0), 2);
+      cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
   } else {
     object_is_detected_ = false;
   }
