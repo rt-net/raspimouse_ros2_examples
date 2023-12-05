@@ -68,7 +68,7 @@ void Camera_Follower::on_cmd_vel_timer()
   constexpr double OBJECT_AREA_THRESHOLD = 0.01;  // 0.0 ~ 1.0
   geometry_msgs::msg::Twist cmd_vel;
 
-  // Detects an object and tracks it
+  // Detect and follow the line
   // when the number of pixels of the object is greater than the threshold.
   if (object_is_detected_ && object_normalized_area_ > OBJECT_AREA_THRESHOLD) {
     cmd_vel.linear.x = LINEAR_VEL * (object_normalized_area_ - TARGET_AREA);
