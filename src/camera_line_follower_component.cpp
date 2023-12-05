@@ -43,7 +43,6 @@ void Camera_Follower::image_callback(const sensor_msgs::msg::Image::SharedPtr ms
 {
   const auto cv_img = cv_bridge::toCvShare(msg_image, msg_image->encoding);
   auto result_msg = std::make_unique<sensor_msgs::msg::Image>();
-  result_msg->is_bigendian = false;
 
   cv::Mat frame, result_frame;
   cv::cvtColor(cv_img->image, frame, CV_RGB2BGR);
