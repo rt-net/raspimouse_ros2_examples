@@ -46,10 +46,9 @@ protected:
 private:
   cv::VideoCapture cap_;
   bool object_is_detected_;
-  bool can_publish_cmdvel_;
+  bool enable_following_;
   cv::Point2d object_normalized_point_;
   double object_normalized_area_;
-  raspimouse_msgs::msg::Switches switches_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> result_image_pub_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::Twist>> cmd_vel_pub_;
   std::shared_ptr<rclcpp::Client<std_srvs::srv::SetBool>> motor_power_client_;

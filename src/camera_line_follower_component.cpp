@@ -57,7 +57,13 @@ void Camera_Follower::image_callback(const sensor_msgs::msg::Image::SharedPtr ms
 
 void Camera_Follower::callback_switches(const raspimouse_msgs::msg::Switches::SharedPtr msg)
 {
-  switches_ = *msg;
+  if (msg->switch0) {
+    RCLCPP_INFO(this->get_logger(), "Stop following.");
+    enable_following_ = false;
+  } else if (msg->switch2) {
+    RCLCPP_INFO(this->get_logger(), "Start following.");
+    enable_following_ = true;
+  }
 }
 
 void Camera_Follower::on_cmd_vel_timer()
@@ -78,16 +84,7 @@ void Camera_Follower::on_cmd_vel_timer()
     cmd_vel.angular.z = 0.0;
   }
 
-  if (switches_.switch0) {
-    RCLCPP_INFO(this->get_logger(), "Stop following.");
-    can_publish_cmdvel_ = false;
-  } else if (switches_.switch2) {
-    RCLCPP_INFO(this->get_logger(), "Start following.");
-    can_publish_cmdvel_ = true;
-  }
-  switches_ = raspimouse_msgs::msg::Switches();  // Reset switch values
-
-  if (!can_publish_cmdvel_) {
+  if (!enable_following_) {
     cmd_vel.linear.x = 0.0;
     cmd_vel.angular.z = 0.0;
   }
