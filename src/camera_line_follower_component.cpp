@@ -24,6 +24,7 @@
 #include <opencv2/opencv.hpp>
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "geometry_msgs/msg/twist.hpp"
 #include "lifecycle_msgs/srv/change_state.hpp"
 #include "cv_bridge/cv_bridge.h"
 
@@ -65,15 +66,16 @@ void Camera_Follower::on_cmd_vel_timer()
   const double ANGULAR_VEL = -0.8;  // unit: rad/s
   const double TARGET_AREA = 0.1;  // 0.0 ~ 1.0
   const double OBJECT_AREA_THRESHOLD = 0.01;  // 0.0 ~ 1.0
+  geometry_msgs::msg::Twist cmd_vel;
 
   // Detects an object and tracks it
   // when the number of pixels of the object is greater than the threshold.
   if (object_is_detected_ && object_normalized_area_ > OBJECT_AREA_THRESHOLD) {
-    cmd_vel_.linear.x = LINEAR_VEL * (object_normalized_area_ - TARGET_AREA);
-    cmd_vel_.angular.z = ANGULAR_VEL * object_normalized_point_.x;
+    cmd_vel.linear.x = LINEAR_VEL * (object_normalized_area_ - TARGET_AREA);
+    cmd_vel.angular.z = ANGULAR_VEL * object_normalized_point_.x;
   } else {
-    cmd_vel_.linear.x = 0.0;
-    cmd_vel_.angular.z = 0.0;
+    cmd_vel.linear.x = 0.0;
+    cmd_vel.angular.z = 0.0;
   }
 
   if (switches_.switch0) {
@@ -86,11 +88,11 @@ void Camera_Follower::on_cmd_vel_timer()
   switches_ = raspimouse_msgs::msg::Switches();  // Reset switch values
 
   if (!can_publish_cmdvel_) {
-    cmd_vel_.linear.x = 0.0;
-    cmd_vel_.angular.z = 0.0;
+    cmd_vel.linear.x = 0.0;
+    cmd_vel.angular.z = 0.0;
   }
 
-  auto msg = std::make_unique<geometry_msgs::msg::Twist>(cmd_vel_);
+  auto msg = std::make_unique<geometry_msgs::msg::Twist>(cmd_vel);
   cmd_vel_pub_->publish(std::move(msg));
 }
 
@@ -231,7 +233,6 @@ CallbackReturn Camera_Follower::on_deactivate(const rclcpp_lifecycle::State &)
   cmd_vel_timer_->cancel();
 
   object_is_detected_ = false;
-  cmd_vel_ = geometry_msgs::msg::Twist();
 
   return CallbackReturn::SUCCESS;
 }

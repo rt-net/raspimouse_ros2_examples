@@ -49,7 +49,6 @@ private:
   bool can_publish_cmdvel_;
   cv::Point2d object_normalized_point_;
   double object_normalized_area_;
-  geometry_msgs::msg::Twist cmd_vel_;
   raspimouse_msgs::msg::Switches switches_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> result_image_pub_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::Twist>> cmd_vel_pub_;
