@@ -49,7 +49,7 @@ void Camera_Follower::image_callback(const sensor_msgs::msg::Image::SharedPtr ms
   cv::cvtColor(cv_img->image, frame, CV_RGB2BGR);
 
   if (!frame.empty()) {
-    following(frame, result_frame);
+    detecting_line(frame, result_frame);
     convert_frame_to_message(result_frame, *result_msg);
     result_image_pub_->publish(std::move(result_msg));
   }
@@ -125,7 +125,7 @@ void Camera_Follower::convert_frame_to_message(
   msg.header.frame_id = "camera_frame";
 }
 
-void Camera_Follower::following(const cv::Mat & input_frame, cv::Mat & result_frame)
+void Camera_Follower::detecting_line(const cv::Mat & input_frame, cv::Mat & result_frame)
 {
   // Specific colors are extracted from the input image and converted to binary values.
   cv::Mat gray;
