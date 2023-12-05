@@ -42,7 +42,6 @@ Camera_Follower::Camera_Follower(const rclcpp::NodeOptions & options)
 void Camera_Follower::image_callback(const sensor_msgs::msg::Image::SharedPtr msg_image)
 {
   auto cv_img = cv_bridge::toCvShare(msg_image, msg_image->encoding);
-  auto msg = std::make_unique<sensor_msgs::msg::Image>();
   auto result_msg = std::make_unique<sensor_msgs::msg::Image>();
   msg->is_bigendian = false;
   result_msg->is_bigendian = false;
