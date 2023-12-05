@@ -95,7 +95,7 @@ void Camera_Follower::on_cmd_vel_timer()
 }
 
 // Ref: https://github.com/ros2/demos/blob/dashing/image_tools/src/cam2image.cpp
-std::string Camera_Follower::mat_type2encoding(int mat_type)
+std::string Camera_Follower::mat_type2encoding(const int mat_type) const
 {
   switch (mat_type) {
     case CV_8UC1:
