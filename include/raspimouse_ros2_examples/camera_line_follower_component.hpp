@@ -58,7 +58,7 @@ private:
   rclcpp::Subscription<raspimouse_msgs::msg::Switches>::SharedPtr switches_sub_;
   rclcpp::TimerBase::SharedPtr cmd_vel_timer_;
 
-  std::string mat_type2encoding(int mat_type);
+  std::string mat_type2encoding(const int mat_type) const;
   void convert_frame_to_message(
     const cv::Mat & frame,
     sensor_msgs::msg::Image & msg);
