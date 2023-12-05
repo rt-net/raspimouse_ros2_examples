@@ -27,11 +27,11 @@
 #include "lifecycle_msgs/srv/change_state.hpp"
 #include "cv_bridge/cv_bridge.h"
 
-using namespace std::chrono_literals;
-using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
 namespace camera_line_follower
 {
+using namespace std::chrono_literals;
+using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
 Camera_Follower::Camera_Follower(const rclcpp::NodeOptions & options)
 : rclcpp_lifecycle::LifecycleNode("camera_follower", options),
@@ -43,7 +43,6 @@ void Camera_Follower::image_callback(const sensor_msgs::msg::Image::SharedPtr ms
 {
   auto cv_img = cv_bridge::toCvShare(msg_image, msg_image->encoding);
   auto result_msg = std::make_unique<sensor_msgs::msg::Image>();
-  msg->is_bigendian = false;
   result_msg->is_bigendian = false;
 
   cv::Mat frame, result_frame;
