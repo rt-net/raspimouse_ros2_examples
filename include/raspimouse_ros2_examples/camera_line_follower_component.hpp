@@ -59,7 +59,7 @@ private:
   std::string mat_type2encoding(const int mat_type) const;
   void convert_frame_to_message(
     const cv::Mat & frame,
-    sensor_msgs::msg::Image & msg);
+    sensor_msgs::msg::Image & msg) const;
 
   bool detecting_line(const cv::Mat & input_frame, cv::Mat & result_frame);
 

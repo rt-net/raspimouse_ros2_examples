@@ -112,7 +112,7 @@ std::string Camera_Follower::mat_type2encoding(const int mat_type) const
 
 // Ref: https://github.com/ros2/demos/blob/dashing/image_tools/src/cam2image.cpp
 void Camera_Follower::convert_frame_to_message(
-  const cv::Mat & frame, sensor_msgs::msg::Image & msg)
+  const cv::Mat & frame, sensor_msgs::msg::Image & msg) const
 {
   // copy cv information into ros message
   msg.height = frame.rows;
