@@ -61,7 +61,7 @@ private:
     const cv::Mat & frame,
     sensor_msgs::msg::Image & msg);
 
-  void detecting_line(const cv::Mat & input_frame, cv::Mat & result_frame);
+  bool detecting_line(const cv::Mat & input_frame, cv::Mat & result_frame);
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
   on_configure(const rclcpp_lifecycle::State &);

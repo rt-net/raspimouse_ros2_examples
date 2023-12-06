@@ -49,7 +49,7 @@ void Camera_Follower::image_callback(const sensor_msgs::msg::Image::SharedPtr ms
   cv::cvtColor(cv_img->image, frame, CV_RGB2BGR);
 
   if (!frame.empty()) {
-    detecting_line(frame, result_frame);
+    object_is_detected_ = detecting_line(frame, result_frame);
     convert_frame_to_message(result_frame, *result_msg);
     result_image_pub_->publish(std::move(result_msg));
   }
@@ -125,7 +125,7 @@ void Camera_Follower::convert_frame_to_message(
   msg.header.frame_id = "camera_frame";
 }
 
-void Camera_Follower::detecting_line(const cv::Mat & input_frame, cv::Mat & result_frame)
+bool Camera_Follower::detecting_line(const cv::Mat & input_frame, cv::Mat & result_frame)
 {
   // Specific colors are extracted from the input image and converted to binary values.
   cv::Mat gray;
@@ -166,7 +166,6 @@ void Camera_Follower::detecting_line(const cv::Mat & input_frame, cv::Mat & resu
     );
     // Normalize the the contour area to [0.0, 1.0].
     object_normalized_area_ = max_area / (input_frame.rows * input_frame.cols);
-    object_is_detected_ = true;
 
     std::string text = "Area:" + std::to_string(object_normalized_area_ * 100) + "%";
     cv::drawContours(
@@ -176,8 +175,9 @@ void Camera_Follower::detecting_line(const cv::Mat & input_frame, cv::Mat & resu
     cv::putText(
       result_frame, text, cv::Point(0, 30),
       cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
+    return true;
   } else {
-    object_is_detected_ = false;
+    return false;
   }
 }
 
