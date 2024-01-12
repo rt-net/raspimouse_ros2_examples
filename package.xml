@@ -31,6 +31,7 @@
   <depend>nav2_map_server</depend>
   <depend>slam_toolbox</depend>
   <depend>cv_bridge</depend>
+  <depend>usb_cam</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
