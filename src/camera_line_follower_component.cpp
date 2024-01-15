@@ -131,7 +131,7 @@ bool Camera_Follower::detecting_line(const cv::Mat & input_frame, cv::Mat & resu
   cv::Mat gray;
   cv::cvtColor(input_frame, gray, cv::COLOR_BGR2GRAY);
   cv::Mat extracted_bin;
-  cv::inRange(gray, 0, 50, extracted_bin);
+  cv::inRange(gray, 0, 100, extracted_bin);
   input_frame.copyTo(result_frame, extracted_bin);
 
   // Remove noise with morphology transformation
