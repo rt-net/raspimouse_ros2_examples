@@ -247,6 +247,54 @@ void Follower::publish_cmdvel_for_line_following(void)
 
 [back to example list](#how-to-use-examples)
 
+---
+
+### camera_line_follower
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace.png width=500 />
+
+This is an example for line following by RGB camera.
+
+#### Requirements 
+
+- Web camera
+  - [Logicool HD WEBCAM C310N](https://www.logicool.co.jp/ja-jp/product/hd-webcam-c310n)
+- Camera mount
+  - [Raspberry Pi Mouse Option kit No.4 \[Webcam mount\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3584&language=en)
+
+#### Installation
+
+Install a camera mount and a web camera to Raspberry Pi Mouse, then connect the camera to the Raspberry Pi．
+
+#### How to use
+
+Then, launch nodes with the following command:
+
+```sh
+$ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_device:=/dev/video0
+```
+
+This sample publishes two topics: `camera/color/image_raw` for the camera image and `result_image` for the object detection image.
+These images can be viewed with [RViz](https://index.ros.org/r/rviz/)
+or [rqt_image_view](https://index.ros.org/doc/ros2/Tutorials/RQt-Overview-Usage/).
+
+**Viewing an image may cause the node to behave unstable and not publish cmd_vel or image topics.**
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/camera_line_trace.png width=500 />
+
+#### Configure
+
+Edit [`./src/camera_line_follower_component.cpp`](./src/camera_line_follower_component.cpp)
+to change a color of tracking target.
+
+If the object detection accuracy is poor, adjust the camera exposure and parameters in the function
+
+```cpp
+cv::inRange(gray, 0, 100, extracted_bin);
+```
+
+[back to example list](#how-to-use-examples)
+
 --- 
 
 ### SLAM

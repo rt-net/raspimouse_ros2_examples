@@ -253,6 +253,56 @@ void Follower::publish_cmdvel_for_line_following(void)
 
 --- 
 
+### camera_line_follower
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace.png width=500 />
+
+RGBカメラによるライントレースのコード例です。
+
+#### Requirements 
+
+- Webカメラ
+  - [Logicool HD WEBCAM C310N](https://www.logicool.co.jp/ja-jp/product/hd-webcam-c310n)
+- カメラマウント
+  - [Raspberry Pi Mouse オプションキット No.4 \[Webカメラマウント\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3584)
+
+#### Installation
+
+Raspberry Pi Mouseにカメラマウントを取り付け、WebカメラをRaspberry Piに接続します。
+
+#### How to use
+
+次のコマンドでノードを起動します。
+
+```sh
+$ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_device:=/dev/video0
+```
+
+カメラ画像は`camera/color/image_raw`、物体検出画像は`result_image`というトピックとして発行されます。
+これらの画像は[RViz](https://index.ros.org/r/rviz/)
+や[rqt_image_view](https://index.ros.org/doc/ros2/Tutorials/RQt-Overview-Usage/)
+で表示できます。
+
+**画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。**
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/camera_line_trace.png width=500 />
+
+#### Configure
+
+追跡対象の色を変更するには
+[`./src/camera_line_follower_component.cpp`](./src/camera_line_follower_component.cpp)
+を編集します。
+
+物体検出精度が悪い時にはカメラの露光や関数内のパラメータを調整して下さい。
+
+```cpp
+cv::inRange(gray, 0, 100, extracted_bin);
+```
+
+[back to example list](#how-to-use-examples)
+
+--- 
+
 ### SLAM
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/slam_toolbox_ros2.png width=500 />
