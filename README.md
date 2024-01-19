@@ -255,7 +255,7 @@ void Follower::publish_cmdvel_for_line_following(void)
 
 ### camera_line_follower
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace.png width=500 />
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace_2.png width=500 />
 
 RGBカメラによるライントレースのコード例です。
 
