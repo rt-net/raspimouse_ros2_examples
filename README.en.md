@@ -275,6 +275,10 @@ Then, launch nodes with the following command:
 $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_device:=/dev/video0
 ```
 
+Place Raspberry Pi Mouse on the line and press SW2 to start line following.
+
+Press SW0 to stop the following.
+
 This sample publishes two topics: `camera/color/image_raw` for the camera image and `result_image` for the object detection image.
 These images can be viewed with [RViz](https://index.ros.org/r/rviz/)
 or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).

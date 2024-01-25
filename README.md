@@ -279,6 +279,9 @@ Raspberry Pi Mouseにカメラマウントを取り付け、WebカメラをRaspb
 $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_device:=/dev/video0
 ```
 
+ライン上にRaspberry Pi Mouseを置き、SW2を押してライントレースを開始します。
+停止させる場合はSW0を押します。
+
 カメラ画像は`camera/color/image_raw`、物体検出画像は`result_image`というトピックとして発行されます。
 これらの画像は[RViz](https://index.ros.org/r/rviz/)
 や[rqt_image_view](https://index.ros.org/p/rqt_image_view/)
