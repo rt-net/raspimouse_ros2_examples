@@ -66,7 +66,8 @@ def generate_launch_description():
                         {'video_device': LaunchConfiguration('video_device')},
                         {'frame_id': 'camera_color_optical_frame'},
                         {'pixel_format': 'yuyv2rgb'},
-                        {'framerate': 10.0}
+                        {'image_width': 320},
+                        {'image_height': 240}
                     ],
                     extra_arguments=[{'use_intra_process_comms': True}],
                     condition=IfCondition(LaunchConfiguration('use_camera_node'))),
