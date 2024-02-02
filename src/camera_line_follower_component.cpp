@@ -68,17 +68,16 @@ void Camera_Follower::callback_switches(const raspimouse_msgs::msg::Switches::Sh
 
 void Camera_Follower::on_cmd_vel_timer()
 {
-  constexpr double LINEAR_VEL = 0.2;  // unit: m/s
+  constexpr double LINEAR_VEL = 0.05;  // unit: m/s
   constexpr double ANGULAR_VEL = -0.8;  // unit: rad/s
-  constexpr double TARGET_AREA = 0.1;  // 0.0 ~ 1.0
   constexpr double OBJECT_AREA_THRESHOLD = 0.01;  // 0.0 ~ 1.0
   geometry_msgs::msg::Twist cmd_vel;
 
   // Follow the line
   // when the number of pixels of the object is greater than the threshold.
   if (object_is_detected_ && object_normalized_area_ > OBJECT_AREA_THRESHOLD) {
-    cmd_vel.linear.x = LINEAR_VEL * (object_normalized_area_ - TARGET_AREA);
-    cmd_vel.angular.z = ANGULAR_VEL * object_normalized_point_.x;
+    cmd_vel.linear.x = LINEAR_VEL;
+    cmd_vel.angular.z = ANGULAR_VEL * object_normalized_point_.x * 2.0;
   } else {
     cmd_vel.linear.x = 0.0;
     cmd_vel.angular.z = 0.0;
@@ -131,7 +130,7 @@ bool Camera_Follower::detecting_line(const cv::Mat & input_frame, cv::Mat & resu
   cv::Mat gray;
   cv::cvtColor(input_frame, gray, cv::COLOR_BGR2GRAY);
   cv::Mat extracted_bin;
-  cv::adaptiveThreshold(gray, extracted_bin, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY_INV, 51, 0);
+  cv::inRange(gray, 0, 80, extracted_bin);
   input_frame.copyTo(result_frame, extracted_bin);
 
   // Remove noise with morphology transformation
@@ -141,7 +140,7 @@ bool Camera_Follower::detecting_line(const cv::Mat & input_frame, cv::Mat & resu
   // Extracting contours
   std::vector<std::vector<cv::Point>> contours;
   std::vector<cv::Vec4i> hierarchy;
-  cv::findContours(morph_bin, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
+  cv::findContours(morph_bin, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
   // Extracting the largest contours
   double max_area = 0;
