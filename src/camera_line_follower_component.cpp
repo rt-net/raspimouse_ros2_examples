@@ -137,7 +137,6 @@ bool Camera_Follower::detecting_line(const cv::Mat & input_frame, cv::Mat & resu
               get_parameter(BRIGHTNESS_MIN_VAL_PARAM).get_value<int>(),
               get_parameter(BRIGHTNESS_MAX_VAL_PARAM).get_value<int>(),
 	      extracted_bin);
-  std::cout << get_parameter(BRIGHTNESS_MIN_VAL_PARAM).get_value<int>() << std::endl;
   input_frame.copyTo(result_frame, extracted_bin);
 
   // Remove noise with morphology transformation
