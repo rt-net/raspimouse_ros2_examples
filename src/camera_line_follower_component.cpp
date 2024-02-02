@@ -28,6 +28,9 @@
 #include "lifecycle_msgs/srv/change_state.hpp"
 #include "cv_bridge/cv_bridge.h"
 
+constexpr auto BRIGHTNESS_MIN_VAL_PARAM = "brightness_min_value";
+constexpr auto BRIGHTNESS_MAX_VAL_PARAM = "brightness_max_value";
+
 
 namespace camera_line_follower
 {
@@ -130,7 +133,11 @@ bool Camera_Follower::detecting_line(const cv::Mat & input_frame, cv::Mat & resu
   cv::Mat gray;
   cv::cvtColor(input_frame, gray, cv::COLOR_BGR2GRAY);
   cv::Mat extracted_bin;
-  cv::inRange(gray, 0, 80, extracted_bin);
+  cv::inRange(gray,
+              get_parameter(BRIGHTNESS_MIN_VAL_PARAM).get_value<int>(),
+              get_parameter(BRIGHTNESS_MAX_VAL_PARAM).get_value<int>(),
+	      extracted_bin);
+  std::cout << get_parameter(BRIGHTNESS_MIN_VAL_PARAM).get_value<int>() << std::endl;
   input_frame.copyTo(result_frame, extracted_bin);
 
   // Remove noise with morphology transformation
@@ -195,6 +202,10 @@ CallbackReturn Camera_Follower::on_configure(const rclcpp_lifecycle::State &)
     std::bind(&Camera_Follower::image_callback, this, std::placeholders::_1));
   switches_sub_ = create_subscription<raspimouse_msgs::msg::Switches>(
     "switches", 1, std::bind(&Camera_Follower::callback_switches, this, std::placeholders::_1));
+
+  // Set parameter defaults
+  declare_parameter(BRIGHTNESS_MIN_VAL_PARAM, 0);
+  declare_parameter(BRIGHTNESS_MAX_VAL_PARAM, 100);
 
   return CallbackReturn::SUCCESS;
 }
