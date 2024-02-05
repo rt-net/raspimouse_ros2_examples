@@ -62,6 +62,7 @@ $ source ~/ros2_ws/install/setup.bash
 - [joystick_control](#joystick_control)
 - [object_tracking](#object_tracking)
 - [line_follower](#line_follower)
+- [camera_line_follower](#camera_line_follower)
 - [SLAM](#slam)
 - [direction_controller](#direction_controller)
 
@@ -164,7 +165,7 @@ $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/
 
 カメラ画像は`camera/color/image_raw`、物体検出画像は`result_image`というトピックとして発行されます。
 これらの画像は[RViz](https://index.ros.org/r/rviz/)
-や[rqt_image_view](https://index.ros.org/doc/ros2/Tutorials/RQt-Overview-Usage/)
+や[rqt_image_view](https://index.ros.org/p/rqt_image_view/)
 で表示できます。
 
 **画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。**
@@ -248,6 +249,62 @@ void Follower::publish_cmdvel_for_line_following(void)
 #### Videos
 
 [![line_follower](http://img.youtube.com/vi/oPm0sW2V_tY/sddefault.jpg)](https://youtu.be/oPm0sW2V_tY)
+
+[back to example list](#how-to-use-examples)
+
+--- 
+
+### camera_line_follower
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace_2.png width=500 />
+
+RGBカメラによるライントレースのコード例です。
+
+#### Requirements 
+
+- Webカメラ
+  - [Logicool HD WEBCAM C310N](https://www.logicool.co.jp/ja-jp/product/hd-webcam-c310n)
+- カメラマウント
+  - [Raspberry Pi Mouse オプションキット No.4 \[Webカメラマウント\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3584)
+
+#### Installation
+
+Raspberry Pi Mouseにカメラマウントを取り付け、WebカメラをRaspberry Piに接続します。
+
+#### How to use
+
+次のコマンドでノードを起動します。
+
+```sh
+$ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_device:=/dev/video0
+```
+
+ライン上にRaspberry Pi Mouseを置き、SW2を押してライントレースを開始します。
+停止させる場合はSW0を押します。
+
+カメラ画像は`camera/color/image_raw`、物体検出画像は`result_image`というトピックとして発行されます。
+これらの画像は[RViz](https://index.ros.org/r/rviz/)
+や[rqt_image_view](https://index.ros.org/p/rqt_image_view/)
+で表示できます。
+
+**画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。**
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/camera_line_trace.png width=500 />
+
+#### Parameters
+
+- `brightness_max_value`
+  - Type: `int`
+  - Default: 90
+  - 画像の2値化のしきい値の最大値
+- `brightness_min_value`
+  - Type: `int`
+  - Default: 0
+  - 画像の2値化のしきい値の最小値
+
+```sh
+ros2 param set /camera_follower brightness_max_value 80
+```
 
 [back to example list](#how-to-use-examples)
 

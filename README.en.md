@@ -61,6 +61,7 @@ This repository is licensed under the Apache 2.0, see [LICENSE](./LICENSE) for d
 - [joystick_control](#joystick_control)
 - [object_tracking](#object_tracking)
 - [line_follower](#line_follower)
+- [camera_line_follower](#camera_line_follower)
 - [SLAM](#slam)
 - [direction_controller](#direction_controller)
 
@@ -162,7 +163,7 @@ $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/
 
 This sample publishes two topics: `camera/color/image_raw` for the camera image and `result_image` for the object detection image.
 These images can be viewed with [RViz](https://index.ros.org/r/rviz/)
-or [rqt_image_view](https://index.ros.org/doc/ros2/Tutorials/RQt-Overview-Usage/).
+or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
 
 **Viewing an image may cause the node to behave unstable and not publish cmd_vel or image topics.**
 
@@ -244,6 +245,62 @@ void Follower::publish_cmdvel_for_line_following(void)
 #### Videos
 
 [![line_follower](http://img.youtube.com/vi/oPm0sW2V_tY/sddefault.jpg)](https://youtu.be/oPm0sW2V_tY)
+
+[back to example list](#how-to-use-examples)
+
+---
+
+### camera_line_follower
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace_2.png width=500 />
+
+This is an example for line following by RGB camera.
+
+#### Requirements 
+
+- Web camera
+  - [Logicool HD WEBCAM C310N](https://www.logicool.co.jp/ja-jp/product/hd-webcam-c310n)
+- Camera mount
+  - [Raspberry Pi Mouse Option kit No.4 \[Webcam mount\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3584&language=en)
+
+#### Installation
+
+Install a camera mount and a web camera to Raspberry Pi Mouse, then connect the camera to the Raspberry Pi．
+
+#### How to use
+
+Then, launch nodes with the following command:
+
+```sh
+$ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_device:=/dev/video0
+```
+
+Place Raspberry Pi Mouse on the line and press SW2 to start line following.
+
+Press SW0 to stop the following.
+
+This sample publishes two topics: `camera/color/image_raw` for the camera image and `result_image` for the object detection image.
+These images can be viewed with [RViz](https://index.ros.org/r/rviz/)
+or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
+
+**Viewing an image may cause the node to behave unstable and not publish cmd_vel or image topics.**
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/camera_line_trace.png width=500 />
+
+#### Parameters
+
+- `brightness_max_value`
+  - Type: `int`
+  - Default: 90
+  - Maximum threshold value for image binarisation.
+- `brightness_min_value`
+  - Type: `int`
+  - Default: 0
+  - Minimum threshold value for image binarisation.
+
+```sh
+ros2 param set /camera_follower brightness_max_value 80
+```
 
 [back to example list](#how-to-use-examples)
 

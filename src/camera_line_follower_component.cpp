@@ -28,6 +28,9 @@
 #include "lifecycle_msgs/srv/change_state.hpp"
 #include "cv_bridge/cv_bridge.h"
 
+constexpr auto BRIGHTNESS_MIN_VAL_PARAM = "brightness_min_value";
+constexpr auto BRIGHTNESS_MAX_VAL_PARAM = "brightness_max_value";
+
 
 namespace camera_line_follower
 {
@@ -49,7 +52,7 @@ void Camera_Follower::image_callback(const sensor_msgs::msg::Image::SharedPtr ms
   cv::cvtColor(cv_img->image, frame, CV_RGB2BGR);
 
   if (!frame.empty()) {
-    object_is_detected_ = detecting_line(frame, result_frame);
+    object_is_detected_ = detect_line(frame, result_frame);
     convert_frame_to_message(result_frame, *result_msg);
     result_image_pub_->publish(std::move(result_msg));
   }
@@ -68,16 +71,15 @@ void Camera_Follower::callback_switches(const raspimouse_msgs::msg::Switches::Sh
 
 void Camera_Follower::on_cmd_vel_timer()
 {
-  constexpr double LINEAR_VEL = 0.2;  // unit: m/s
+  constexpr double LINEAR_VEL = 0.05;  // unit: m/s
   constexpr double ANGULAR_VEL = -0.8;  // unit: rad/s
-  constexpr double TARGET_AREA = 0.1;  // 0.0 ~ 1.0
   constexpr double OBJECT_AREA_THRESHOLD = 0.01;  // 0.0 ~ 1.0
   geometry_msgs::msg::Twist cmd_vel;
 
   // Follow the line
   // when the number of pixels of the object is greater than the threshold.
   if (object_is_detected_ && object_normalized_area_ > OBJECT_AREA_THRESHOLD) {
-    cmd_vel.linear.x = LINEAR_VEL * (object_normalized_area_ - TARGET_AREA);
+    cmd_vel.linear.x = LINEAR_VEL;
     cmd_vel.angular.z = ANGULAR_VEL * object_normalized_point_.x;
   } else {
     cmd_vel.linear.x = 0.0;
@@ -125,13 +127,17 @@ void Camera_Follower::convert_frame_to_message(
   msg.header.frame_id = "camera_frame";
 }
 
-bool Camera_Follower::detecting_line(const cv::Mat & input_frame, cv::Mat & result_frame)
+bool Camera_Follower::detect_line(const cv::Mat & input_frame, cv::Mat & result_frame)
 {
   // Specific colors are extracted from the input image and converted to binary values.
   cv::Mat gray;
   cv::cvtColor(input_frame, gray, cv::COLOR_BGR2GRAY);
   cv::Mat extracted_bin;
-  cv::inRange(gray, 0, 100, extracted_bin);
+  cv::inRange(
+    gray,
+    get_parameter(BRIGHTNESS_MIN_VAL_PARAM).get_value<int>(),
+    get_parameter(BRIGHTNESS_MAX_VAL_PARAM).get_value<int>(),
+    extracted_bin);
   input_frame.copyTo(result_frame, extracted_bin);
 
   // Remove noise with morphology transformation
@@ -141,7 +147,7 @@ bool Camera_Follower::detecting_line(const cv::Mat & input_frame, cv::Mat & resu
   // Extracting contours
   std::vector<std::vector<cv::Point>> contours;
   std::vector<cv::Vec4i> hierarchy;
-  cv::findContours(morph_bin, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
+  cv::findContours(morph_bin, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
   // Extracting the largest contours
   double max_area = 0;
@@ -196,6 +202,10 @@ CallbackReturn Camera_Follower::on_configure(const rclcpp_lifecycle::State &)
     std::bind(&Camera_Follower::image_callback, this, std::placeholders::_1));
   switches_sub_ = create_subscription<raspimouse_msgs::msg::Switches>(
     "switches", 1, std::bind(&Camera_Follower::callback_switches, this, std::placeholders::_1));
+
+  // Set parameter defaults
+  declare_parameter(BRIGHTNESS_MIN_VAL_PARAM, 0);
+  declare_parameter(BRIGHTNESS_MAX_VAL_PARAM, 90);
 
   return CallbackReturn::SUCCESS;
 }
