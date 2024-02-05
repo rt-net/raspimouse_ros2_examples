@@ -205,7 +205,7 @@ CallbackReturn Camera_Follower::on_configure(const rclcpp_lifecycle::State &)
 
   // Set parameter defaults
   declare_parameter(BRIGHTNESS_MIN_VAL_PARAM, 0);
-  declare_parameter(BRIGHTNESS_MAX_VAL_PARAM, 100);
+  declare_parameter(BRIGHTNESS_MAX_VAL_PARAM, 90);
 
   return CallbackReturn::SUCCESS;
 }

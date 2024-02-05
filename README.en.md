@@ -291,7 +291,7 @@ or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
 
 - `brightness_max_value`
   - Type: `int`
-  - Default: 100
+  - Default: 90
   - Maximum threshold value for image binarisation.
 - `brightness_min_value`
   - Type: `int`

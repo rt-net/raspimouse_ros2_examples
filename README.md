@@ -295,7 +295,7 @@ $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_devi
 
 - `brightness_max_value`
   - Type: `int`
-  - Default: 100
+  - Default: 90
   - 画像の2値化のしきい値の最大値
 - `brightness_min_value`
   - Type: `int`
