@@ -291,18 +291,6 @@ $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_devi
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/camera_line_trace.png width=500 />
 
-#### Configure
-
-追跡対象の色を変更するには
-[`./src/camera_line_follower_component.cpp`](./src/camera_line_follower_component.cpp)
-を編集します。
-
-物体検出精度が悪い時にはカメラの露光や関数内のパラメータを調整して下さい。
-
-```cpp
-cv::inRange(gray, 0, 100, extracted_bin);
-```
-
 #### Parameters
 
 - `brightness_max_value`

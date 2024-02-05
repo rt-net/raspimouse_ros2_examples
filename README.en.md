@@ -287,17 +287,6 @@ or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/camera_line_trace.png width=500 />
 
-#### Configure
-
-Edit [`./src/camera_line_follower_component.cpp`](./src/camera_line_follower_component.cpp)
-to change a color of tracking target.
-
-If the object detection accuracy is poor, adjust the camera exposure and parameters in the function
-
-```cpp
-cv::inRange(gray, 0, 100, extracted_bin);
-```
-
 #### Parameters
 
 - `brightness_max_value`
