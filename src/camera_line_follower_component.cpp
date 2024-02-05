@@ -80,7 +80,7 @@ void Camera_Follower::on_cmd_vel_timer()
   // when the number of pixels of the object is greater than the threshold.
   if (object_is_detected_ && object_normalized_area_ > OBJECT_AREA_THRESHOLD) {
     cmd_vel.linear.x = LINEAR_VEL;
-    cmd_vel.angular.z = ANGULAR_VEL * object_normalized_point_.x * 2.0;
+    cmd_vel.angular.z = ANGULAR_VEL * object_normalized_point_.x;
   } else {
     cmd_vel.linear.x = 0.0;
     cmd_vel.angular.z = 0.0;
