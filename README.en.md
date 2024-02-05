@@ -298,6 +298,21 @@ If the object detection accuracy is poor, adjust the camera exposure and paramet
 cv::inRange(gray, 0, 100, extracted_bin);
 ```
 
+#### Parameters
+
+- `brightness_max_value`
+  - Type: `int`
+  - Default: 100
+  - Maximum threshold value for image binarisation.
+- `brightness_min_value`
+  - Type: `int`
+  - Default: 0
+  - Minimum threshold value for image binarisation.
+
+```sh
+ros2 param set /camera_follower brightness_max_value 80
+```
+
 [back to example list](#how-to-use-examples)
 
 --- 

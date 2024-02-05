@@ -303,6 +303,21 @@ $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_devi
 cv::inRange(gray, 0, 100, extracted_bin);
 ```
 
+#### Parameters
+
+- `brightness_max_value`
+  - Type: `int`
+  - Default: 100
+  - 画像の2値化のしきい値の最大値
+- `brightness_min_value`
+  - Type: `int`
+  - Default: 0
+  - 画像の2値化のしきい値の最小値
+
+```sh
+ros2 param set /camera_follower brightness_max_value 80
+```
+
 [back to example list](#how-to-use-examples)
 
 --- 
