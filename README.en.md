@@ -289,14 +289,22 @@ or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
 
 #### Parameters
 
-- `brightness_max_value`
+- `max_brightness`
   - Type: `int`
   - Default: 90
   - Maximum threshold value for image binarisation.
-- `brightness_min_value`
+- `min_brightness`
   - Type: `int`
   - Default: 0
   - Minimum threshold value for image binarisation.
+- `max_linear_vel`
+  - Type: `double`
+  - Default: 0.05
+  - Maximum linear velocity.
+- `max_angular_vel`
+  - Type: `double`
+  - Default: 0.8
+  - Maximum angular velocity.
 
 ```sh
 ros2 param set /camera_follower brightness_max_value 80
