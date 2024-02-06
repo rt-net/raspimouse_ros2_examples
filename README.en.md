@@ -301,7 +301,7 @@ or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
   - Type: `double`
   - Default: 0.05
   - Maximum linear velocity.
-- `min_angular_vel`
+- `max_angular_vel`
   - Type: `double`
   - Default: 0.8
   - Maximum angular velocity.
