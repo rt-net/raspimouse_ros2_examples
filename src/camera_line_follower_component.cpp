@@ -28,10 +28,10 @@
 #include "lifecycle_msgs/srv/change_state.hpp"
 #include "cv_bridge/cv_bridge.h"
 
-constexpr auto BRIGHTNESS_MIN_VAL_PARAM = "brightness_min_value";
-constexpr auto BRIGHTNESS_MAX_VAL_PARAM = "brightness_max_value";
-constexpr auto LINEAR_VEL_PARAM = "linear_vel";
-constexpr auto ANGULAR_VEL_PARAM = "angular_vel";
+constexpr auto MIN_BRIGHTNESS_PARAM = "min_brightness";
+constexpr auto MAX_BRIGHTNESS_PARAM = "max_brightness";
+constexpr auto LINEAR_VEL_PARAM = "max_linear_vel";
+constexpr auto ANGULAR_VEL_PARAM = "max_angular_vel";
 
 
 namespace camera_line_follower
@@ -135,8 +135,8 @@ bool Camera_Follower::detect_line(const cv::Mat & input_frame, cv::Mat & result_
   cv::Mat extracted_bin;
   cv::inRange(
     gray,
-    get_parameter(BRIGHTNESS_MIN_VAL_PARAM).as_int(),
-    get_parameter(BRIGHTNESS_MAX_VAL_PARAM).as_int(),
+    get_parameter(MIN_BRIGHTNESS_PARAM).as_int(),
+    get_parameter(MAX_BRIGHTNESS_PARAM).as_int(),
     extracted_bin);
   input_frame.copyTo(result_frame, extracted_bin);
 
@@ -204,8 +204,8 @@ CallbackReturn Camera_Follower::on_configure(const rclcpp_lifecycle::State &)
     "switches", 1, std::bind(&Camera_Follower::callback_switches, this, std::placeholders::_1));
 
   // Set parameter defaults
-  declare_parameter(BRIGHTNESS_MIN_VAL_PARAM, 0);
-  declare_parameter(BRIGHTNESS_MAX_VAL_PARAM, 90);
+  declare_parameter(MIN_BRIGHTNESS_PARAM, 0);
+  declare_parameter(MAX_BRIGHTNESS_PARAM, 90);
   declare_parameter(LINEAR_VEL_PARAM, 0.05);
   declare_parameter(ANGULAR_VEL_PARAM, 0.8);
 
