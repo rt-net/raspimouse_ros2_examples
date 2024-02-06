@@ -30,6 +30,8 @@
 
 constexpr auto BRIGHTNESS_MIN_VAL_PARAM = "brightness_min_value";
 constexpr auto BRIGHTNESS_MAX_VAL_PARAM = "brightness_max_value";
+constexpr auto LINEAR_VEL_PARAM = "linear_vel";
+constexpr auto ANGULAR_VEL_PARAM = "angular_vel";
 
 
 namespace camera_line_follower
@@ -71,16 +73,14 @@ void Camera_Follower::callback_switches(const raspimouse_msgs::msg::Switches::Sh
 
 void Camera_Follower::on_cmd_vel_timer()
 {
-  constexpr double LINEAR_VEL = 0.05;  // unit: m/s
-  constexpr double ANGULAR_VEL = -0.8;  // unit: rad/s
   constexpr double OBJECT_AREA_THRESHOLD = 0.01;  // 0.0 ~ 1.0
   geometry_msgs::msg::Twist cmd_vel;
 
   // Follow the line
   // when the number of pixels of the object is greater than the threshold.
   if (object_is_detected_ && object_normalized_area_ > OBJECT_AREA_THRESHOLD) {
-    cmd_vel.linear.x = LINEAR_VEL;
-    cmd_vel.angular.z = ANGULAR_VEL * object_normalized_point_.x;
+    cmd_vel.linear.x = get_parameter(LINEAR_VEL_PARAM).as_double();
+    cmd_vel.angular.z = -get_parameter(ANGULAR_VEL_PARAM).as_double() * object_normalized_point_.x;
   } else {
     cmd_vel.linear.x = 0.0;
     cmd_vel.angular.z = 0.0;
@@ -135,8 +135,8 @@ bool Camera_Follower::detect_line(const cv::Mat & input_frame, cv::Mat & result_
   cv::Mat extracted_bin;
   cv::inRange(
     gray,
-    get_parameter(BRIGHTNESS_MIN_VAL_PARAM).get_value<int>(),
-    get_parameter(BRIGHTNESS_MAX_VAL_PARAM).get_value<int>(),
+    get_parameter(BRIGHTNESS_MIN_VAL_PARAM).as_int(),
+    get_parameter(BRIGHTNESS_MAX_VAL_PARAM).as_int(),
     extracted_bin);
   input_frame.copyTo(result_frame, extracted_bin);
 
@@ -206,6 +206,8 @@ CallbackReturn Camera_Follower::on_configure(const rclcpp_lifecycle::State &)
   // Set parameter defaults
   declare_parameter(BRIGHTNESS_MIN_VAL_PARAM, 0);
   declare_parameter(BRIGHTNESS_MAX_VAL_PARAM, 90);
+  declare_parameter(LINEAR_VEL_PARAM, 0.05);
+  declare_parameter(ANGULAR_VEL_PARAM, 0.8);
 
   return CallbackReturn::SUCCESS;
 }

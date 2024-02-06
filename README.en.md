@@ -297,6 +297,14 @@ or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
   - Type: `int`
   - Default: 0
   - Minimum threshold value for image binarisation.
+- `linear_vel`
+  - Type: `double`
+  - Default: 0.05
+  - Maximum linear velocity.
+- `angular_vel`
+  - Type: `double`
+  - Default: 0.8
+  - Maximum angular velocity.
 
 ```sh
 ros2 param set /camera_follower brightness_max_value 80

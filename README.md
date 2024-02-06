@@ -301,6 +301,14 @@ $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_devi
   - Type: `int`
   - Default: 0
   - 画像の2値化のしきい値の最小値
+- `linear_vel`
+  - Type: `double`
+  - Default: 0.05
+  - 直進速度の最大値
+- `angular_vel`
+  - Type: `double`
+  - Default: 0.8
+  - 旋回速度の最大値
 
 ```sh
 ros2 param set /camera_follower brightness_max_value 80
