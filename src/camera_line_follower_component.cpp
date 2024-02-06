@@ -53,11 +53,17 @@ void Camera_Follower::image_callback(const sensor_msgs::msg::Image::SharedPtr ms
   cv::Mat frame, result_frame;
   cv::cvtColor(cv_img->image, frame, CV_RGB2BGR);
 
-  if (!frame.empty()) {
+if (!frame.empty()) {
+  // 緑色の物体を検出したら、フラグを操作して走行を止める
+  if (detect_green_object(frame, result_frame)) {
+    object_is_detected_ = false;
+  } else {
     object_is_detected_ = detect_line(frame, result_frame);
-    convert_frame_to_message(result_frame, *result_msg);
-    result_image_pub_->publish(std::move(result_msg));
   }
+  convert_frame_to_message(result_frame, *result_msg);
+  result_image_pub_->publish(std::move(result_msg));
+}
+
 }
 
 void Camera_Follower::callback_switches(const raspimouse_msgs::msg::Switches::SharedPtr msg)
@@ -186,6 +192,38 @@ bool Camera_Follower::detect_line(const cv::Mat & input_frame, cv::Mat & result_
     return false;
   }
 }
+
+bool Camera_Follower::detect_green_object(
+  const cv::Mat & input_frame, cv::Mat & result_frame)
+{
+  // 1. 色空間の変換: BGRからHSVへ
+  cv::Mat hsv_frame;
+  cv::cvtColor(input_frame, hsv_frame, cv::COLOR_BGR2HSV);
+
+  // 2. 緑色のHSV範囲を定義
+  cv::Scalar lower_green_hue_range(40, 100, 100);
+  cv::Scalar upper_green_hue_range(80, 255, 255);
+
+  // 3. 色に基づくマスクの作成
+  cv::Mat green_hue_image;
+  cv::inRange(
+    hsv_frame, lower_green_hue_range, upper_green_hue_range, green_hue_image);
+  // 4. マスクの改善: ノイズの除去
+  cv::erode(green_hue_image, green_hue_image, cv::Mat(), cv::Point(-1, -1), 2);
+  cv::dilate(green_hue_image, green_hue_image, cv::Mat(), cv::Point(-1, -1), 2);
+
+  // 5. 緑色の物体の検出
+  std::vector<std::vector<cv::Point>> contours;
+  cv::findContours(
+    green_hue_image, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+  // 6. 結果の出力
+  result_frame = green_hue_image;
+  // 緑色の物体が一つでも検出された場合はtrue
+  return !contours.empty();
+}
+
+
 
 CallbackReturn Camera_Follower::on_configure(const rclcpp_lifecycle::State &)
 {

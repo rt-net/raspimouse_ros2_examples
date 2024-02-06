@@ -62,6 +62,7 @@ private:
     sensor_msgs::msg::Image & msg) const;
 
   bool detect_line(const cv::Mat & input_frame, cv::Mat & result_frame);
+  bool detect_green_object(const cv::Mat & input_frame, cv::Mat & result_frame);
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
   on_configure(const rclcpp_lifecycle::State &);
