@@ -81,7 +81,8 @@ void Camera_Follower::on_cmd_vel_timer()
   // Follow the line
   // when the number of pixels of the object is greater than the threshold.
   if (object_is_detected_ &&
-    object_normalized_area_ > get_parameter(AREA_THRESHOLD_PARAM).as_double()) {
+    object_normalized_area_ > get_parameter(AREA_THRESHOLD_PARAM).as_double())
+  {
     cmd_vel.linear.x = get_parameter(LINEAR_VEL_PARAM).as_double();
     cmd_vel.angular.z = -get_parameter(ANGULAR_VEL_PARAM).as_double() * object_normalized_point_.x;
   } else {
