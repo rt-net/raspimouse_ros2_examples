@@ -305,9 +305,13 @@ or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
   - Type: `double`
   - Default: 0.8
   - Maximum angular velocity.
+- `area_threthold`
+  - Type: `double`
+  - Default: 0.20
+  - Threshold value of the area of the line to start following.
 
 ```sh
-ros2 param set /camera_follower brightness_max_value 80
+ros2 param set /camera_follower max_brightness 80
 ```
 
 [back to example list](#how-to-use-examples)
