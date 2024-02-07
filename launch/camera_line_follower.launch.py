@@ -47,7 +47,7 @@ def generate_launch_description():
             composable_node_descriptions=[
                 ComposableNode(
                     package='raspimouse_ros2_examples',
-                    plugin='camera_line_follower::Camera_Follower',
+                    plugin='camera_line_follower::CameraFollower',
                     name='camera_follower',
                     extra_arguments=[{'use_intra_process_comms': True}]),
                 ComposableNode(
