@@ -66,7 +66,7 @@ ament_target_dependencies(camera_line_follower_component
   OpenCV
   cv_bridge
   raspimouse_msgs)
-rclcpp_components_register_nodes(camera_line_follower_component "camera_line_follower::Camera_Follower")
+rclcpp_components_register_nodes(camera_line_follower_component "camera_line_follower::CameraFollower")
 
 add_library(line_follower_component SHARED
   src/line_follower_component.cpp)

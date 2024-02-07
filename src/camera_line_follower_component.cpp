@@ -40,13 +40,13 @@ namespace camera_line_follower
 using namespace std::chrono_literals;
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
-Camera_Follower::Camera_Follower(const rclcpp::NodeOptions & options)
+CameraFollower::CameraFollower(const rclcpp::NodeOptions & options)
 : rclcpp_lifecycle::LifecycleNode("camera_follower", options),
   object_is_detected_(false)
 {
 }
 
-void Camera_Follower::image_callback(const sensor_msgs::msg::Image::SharedPtr msg_image)
+void CameraFollower::image_callback(const sensor_msgs::msg::Image::SharedPtr msg_image)
 {
   const auto cv_img = cv_bridge::toCvShare(msg_image, msg_image->encoding);
   auto result_msg = std::make_unique<sensor_msgs::msg::Image>();
@@ -61,7 +61,7 @@ void Camera_Follower::image_callback(const sensor_msgs::msg::Image::SharedPtr ms
   }
 }
 
-void Camera_Follower::callback_switches(const raspimouse_msgs::msg::Switches::SharedPtr msg)
+void CameraFollower::callback_switches(const raspimouse_msgs::msg::Switches::SharedPtr msg)
 {
   if (msg->switch0) {
     RCLCPP_INFO(this->get_logger(), "Stop following.");
@@ -74,7 +74,7 @@ void Camera_Follower::callback_switches(const raspimouse_msgs::msg::Switches::Sh
   }
 }
 
-void Camera_Follower::on_cmd_vel_timer()
+void CameraFollower::on_cmd_vel_timer()
 {
   geometry_msgs::msg::Twist cmd_vel;
 
@@ -99,7 +99,7 @@ void Camera_Follower::on_cmd_vel_timer()
   cmd_vel_pub_->publish(std::move(msg));
 }
 
-void Camera_Follower::set_motor_power(const bool motor_on)
+void CameraFollower::set_motor_power(const bool motor_on)
 {
   if (motor_power_client_ == nullptr) {
     RCLCPP_ERROR(
@@ -113,7 +113,7 @@ void Camera_Follower::set_motor_power(const bool motor_on)
 }
 
 // Ref: https://github.com/ros2/demos/blob/dashing/image_tools/src/cam2image.cpp
-std::string Camera_Follower::mat_type2encoding(const int mat_type) const
+std::string CameraFollower::mat_type2encoding(const int mat_type) const
 {
   switch (mat_type) {
     case CV_8UC1:
@@ -130,7 +130,7 @@ std::string Camera_Follower::mat_type2encoding(const int mat_type) const
 }
 
 // Ref: https://github.com/ros2/demos/blob/dashing/image_tools/src/cam2image.cpp
-void Camera_Follower::convert_frame_to_message(
+void CameraFollower::convert_frame_to_message(
   const cv::Mat & frame, sensor_msgs::msg::Image & msg) const
 {
   // copy cv information into ros message
@@ -144,7 +144,7 @@ void Camera_Follower::convert_frame_to_message(
   msg.header.frame_id = "camera_frame";
 }
 
-bool Camera_Follower::detect_line(const cv::Mat & input_frame, cv::Mat & result_frame)
+bool CameraFollower::detect_line(const cv::Mat & input_frame, cv::Mat & result_frame)
 {
   // Specific colors are extracted from the input image and converted to binary values.
   cv::Mat gray;
@@ -204,11 +204,11 @@ bool Camera_Follower::detect_line(const cv::Mat & input_frame, cv::Mat & result_
   }
 }
 
-CallbackReturn Camera_Follower::on_configure(const rclcpp_lifecycle::State &)
+CallbackReturn CameraFollower::on_configure(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_configure() is called.");
 
-  cmd_vel_timer_ = create_wall_timer(50ms, std::bind(&Camera_Follower::on_cmd_vel_timer, this));
+  cmd_vel_timer_ = create_wall_timer(50ms, std::bind(&CameraFollower::on_cmd_vel_timer, this));
   // Don't actually start publishing data until activated
   cmd_vel_timer_->cancel();
 
@@ -224,9 +224,9 @@ CallbackReturn Camera_Follower::on_configure(const rclcpp_lifecycle::State &)
   cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
   image_sub_ = create_subscription<sensor_msgs::msg::Image>(
     "camera/color/image_raw", rclcpp::SensorDataQoS(),
-    std::bind(&Camera_Follower::image_callback, this, std::placeholders::_1));
+    std::bind(&CameraFollower::image_callback, this, std::placeholders::_1));
   switches_sub_ = create_subscription<raspimouse_msgs::msg::Switches>(
-    "switches", 1, std::bind(&Camera_Follower::callback_switches, this, std::placeholders::_1));
+    "switches", 1, std::bind(&CameraFollower::callback_switches, this, std::placeholders::_1));
 
   // Set parameter defaults
   declare_parameter(MIN_BRIGHTNESS_PARAM, 0);
@@ -238,7 +238,7 @@ CallbackReturn Camera_Follower::on_configure(const rclcpp_lifecycle::State &)
   return CallbackReturn::SUCCESS;
 }
 
-CallbackReturn Camera_Follower::on_activate(const rclcpp_lifecycle::State &)
+CallbackReturn CameraFollower::on_activate(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
 
@@ -249,7 +249,7 @@ CallbackReturn Camera_Follower::on_activate(const rclcpp_lifecycle::State &)
   return CallbackReturn::SUCCESS;
 }
 
-CallbackReturn Camera_Follower::on_deactivate(const rclcpp_lifecycle::State &)
+CallbackReturn CameraFollower::on_deactivate(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
 
@@ -264,7 +264,7 @@ CallbackReturn Camera_Follower::on_deactivate(const rclcpp_lifecycle::State &)
   return CallbackReturn::SUCCESS;
 }
 
-CallbackReturn Camera_Follower::on_cleanup(const rclcpp_lifecycle::State &)
+CallbackReturn CameraFollower::on_cleanup(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_cleanup() is called.");
 
@@ -279,7 +279,7 @@ CallbackReturn Camera_Follower::on_cleanup(const rclcpp_lifecycle::State &)
   return CallbackReturn::SUCCESS;
 }
 
-CallbackReturn Camera_Follower::on_shutdown(const rclcpp_lifecycle::State &)
+CallbackReturn CameraFollower::on_shutdown(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_shutdown() is called.");
 
@@ -298,4 +298,4 @@ CallbackReturn Camera_Follower::on_shutdown(const rclcpp_lifecycle::State &)
 
 #include "rclcpp_components/register_node_macro.hpp"
 
-RCLCPP_COMPONENTS_REGISTER_NODE(camera_line_follower::Camera_Follower)
+RCLCPP_COMPONENTS_REGISTER_NODE(camera_line_follower::CameraFollower)

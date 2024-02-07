@@ -32,11 +32,11 @@
 namespace camera_line_follower
 {
 
-class Camera_Follower : public rclcpp_lifecycle::LifecycleNode
+class CameraFollower : public rclcpp_lifecycle::LifecycleNode
 {
 public:
   RASPIMOUSE_ROS2_EXAMPLES_PUBLIC
-  explicit Camera_Follower(const rclcpp::NodeOptions & options);
+  explicit CameraFollower(const rclcpp::NodeOptions & options);
 
 protected:
   void image_callback(const sensor_msgs::msg::Image::SharedPtr msg_image);
