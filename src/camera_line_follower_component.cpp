@@ -32,6 +32,7 @@ constexpr auto MIN_BRIGHTNESS_PARAM = "min_brightness";
 constexpr auto MAX_BRIGHTNESS_PARAM = "max_brightness";
 constexpr auto LINEAR_VEL_PARAM = "max_linear_vel";
 constexpr auto ANGULAR_VEL_PARAM = "max_angular_vel";
+constexpr auto AREA_THRESHOLD_PARAM = "area_threshold";
 
 
 namespace camera_line_follower
@@ -64,21 +65,24 @@ void Camera_Follower::callback_switches(const raspimouse_msgs::msg::Switches::Sh
 {
   if (msg->switch0) {
     RCLCPP_INFO(this->get_logger(), "Stop following.");
+    set_motor_power(false);
     enable_following_ = false;
   } else if (msg->switch2) {
     RCLCPP_INFO(this->get_logger(), "Start following.");
+    set_motor_power(true);
     enable_following_ = true;
   }
 }
 
 void Camera_Follower::on_cmd_vel_timer()
 {
-  constexpr double OBJECT_AREA_THRESHOLD = 0.01;  // 0.0 ~ 1.0
   geometry_msgs::msg::Twist cmd_vel;
 
   // Follow the line
   // when the number of pixels of the object is greater than the threshold.
-  if (object_is_detected_ && object_normalized_area_ > OBJECT_AREA_THRESHOLD) {
+  if (object_is_detected_ &&
+    object_normalized_area_ > get_parameter(AREA_THRESHOLD_PARAM).as_double())
+  {
     cmd_vel.linear.x = get_parameter(LINEAR_VEL_PARAM).as_double();
     cmd_vel.angular.z = -get_parameter(ANGULAR_VEL_PARAM).as_double() * object_normalized_point_.x;
   } else {
@@ -93,6 +97,19 @@ void Camera_Follower::on_cmd_vel_timer()
 
   auto msg = std::make_unique<geometry_msgs::msg::Twist>(cmd_vel);
   cmd_vel_pub_->publish(std::move(msg));
+}
+
+void Camera_Follower::set_motor_power(const bool motor_on)
+{
+  if (motor_power_client_ == nullptr) {
+    RCLCPP_ERROR(
+      this->get_logger(),
+      "Service motor_power is not avaliable.");
+    return;
+  }
+  auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
+  request->data = motor_on;
+  auto future_result = motor_power_client_->async_send_request(request);
 }
 
 // Ref: https://github.com/ros2/demos/blob/dashing/image_tools/src/cam2image.cpp
@@ -195,6 +212,14 @@ CallbackReturn Camera_Follower::on_configure(const rclcpp_lifecycle::State &)
   // Don't actually start publishing data until activated
   cmd_vel_timer_->cancel();
 
+  motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
+  if (!motor_power_client_->wait_for_service(5s)) {
+    RCLCPP_ERROR(
+      this->get_logger(),
+      "Service motor_power is not avaliable.");
+    return CallbackReturn::FAILURE;
+  }
+
   result_image_pub_ = create_publisher<sensor_msgs::msg::Image>("result_image", 1);
   cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
   image_sub_ = create_subscription<sensor_msgs::msg::Image>(
@@ -208,6 +233,7 @@ CallbackReturn Camera_Follower::on_configure(const rclcpp_lifecycle::State &)
   declare_parameter(MAX_BRIGHTNESS_PARAM, 90);
   declare_parameter(LINEAR_VEL_PARAM, 0.05);
   declare_parameter(ANGULAR_VEL_PARAM, 0.8);
+  declare_parameter(AREA_THRESHOLD_PARAM, 0.2);
 
   return CallbackReturn::SUCCESS;
 }
@@ -215,17 +241,6 @@ CallbackReturn Camera_Follower::on_configure(const rclcpp_lifecycle::State &)
 CallbackReturn Camera_Follower::on_activate(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
-
-  motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
-  if (!motor_power_client_->wait_for_service(5s)) {
-    RCLCPP_ERROR(
-      this->get_logger(),
-      "Service motor_power is not avaliable.");
-    return CallbackReturn::FAILURE;
-  }
-  auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
-  request->data = true;
-  auto future_result = motor_power_client_->async_send_request(request);
 
   result_image_pub_->on_activate();
   cmd_vel_pub_->on_activate();
@@ -237,6 +252,9 @@ CallbackReturn Camera_Follower::on_activate(const rclcpp_lifecycle::State &)
 CallbackReturn Camera_Follower::on_deactivate(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
+
+  set_motor_power(false);
+
   result_image_pub_->on_deactivate();
   cmd_vel_pub_->on_deactivate();
   cmd_vel_timer_->cancel();
@@ -250,6 +268,8 @@ CallbackReturn Camera_Follower::on_cleanup(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_cleanup() is called.");
 
+  set_motor_power(false);
+
   result_image_pub_.reset();
   cmd_vel_pub_.reset();
   cmd_vel_timer_.reset();
@@ -262,6 +282,8 @@ CallbackReturn Camera_Follower::on_cleanup(const rclcpp_lifecycle::State &)
 CallbackReturn Camera_Follower::on_shutdown(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_shutdown() is called.");
+
+  set_motor_power(false);
 
   result_image_pub_.reset();
   cmd_vel_pub_.reset();
