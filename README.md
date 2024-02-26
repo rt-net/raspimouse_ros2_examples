@@ -329,6 +329,8 @@ ros2 param set /camera_follower max_brightness 80
 LiDARと[slam_toolbox](https://github.com/SteveMacenski/slam_toolbox)
 を使ってSLAM（自己位置推定と地図作成）を行うサンプルです。
 
+Raspberry Pi MouseでSLAMとNavigationが行えるパッケージは[こちら](https://github.com/rt-net/raspimouse_slam_navigation_ros2)です。
+
 #### Requirements 
 
 - LiDAR

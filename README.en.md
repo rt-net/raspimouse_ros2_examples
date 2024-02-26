@@ -324,6 +324,8 @@ ros2 param set /camera_follower max_brightness 80
 
 This is an example to use LiDAR and [slam_toolbox](https://github.com/SteveMacenski/slam_toolbox) for SLAM (Simultaneous Localization And Mapping).
 
+SLAM and Navigation examples is [here](https://github.com/rt-net/raspimouse_slam_navigation_ros2).
+
 #### Requirements 
 
 - LiDAR
