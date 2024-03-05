@@ -2,6 +2,19 @@
 Changelog for package raspimouse_ros2_examples
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* READMEにSLAM&Navigationパッケージの案内を追加 (`#53 <https://github.com/rt-net/raspimouse_ros2_examples/issues/53>`_)
+* Camera_FollowerクラスをCameraFollowerに変更 (`#52 <https://github.com/rt-net/raspimouse_ros2_examples/issues/52>`_)
+* Update camera line follower: Set motor power with switch input. Add area_threthold param. (`#51 <https://github.com/rt-net/raspimouse_ros2_examples/issues/51>`_)
+* Add velocity parameters for camera_line_follower (`#50 <https://github.com/rt-net/raspimouse_ros2_examples/issues/50>`_)
+* カメラライントレースを修正 (`#49 <https://github.com/rt-net/raspimouse_ros2_examples/issues/49>`_)
+* Change threthold of line detection
+* Add usb_cam dependency (`#48 <https://github.com/rt-net/raspimouse_ros2_examples/issues/48>`_)
+* RGBカメラによるライントレースの実装 (`#47 <https://github.com/rt-net/raspimouse_ros2_examples/issues/47>`_)
+* リリースのためにCHANGELOG.rstとpackage.xmlを更新 (`#45 <https://github.com/rt-net/raspimouse_ros2_examples/issues/45>`_)
+* Contributors: Shota Aoki, ShotaAk, YusukeKato
+
 2.1.0 (2023-11-07)
 ------------------
 * READMEにGazeboでも実行できることを追記 (`#44 <https://github.com/rt-net/raspimouse_ros2_examples/issues/44>`_)
