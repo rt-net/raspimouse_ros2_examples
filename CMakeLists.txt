@@ -51,6 +51,23 @@ ament_target_dependencies(object_tracking_component
   cv_bridge)
 rclcpp_components_register_nodes(object_tracking_component "object_tracking::Tracker")
 
+add_library(camera_line_follower_component SHARED
+  src/camera_line_follower_component.cpp)
+target_compile_definitions(camera_line_follower_component
+  PRIVATE "RASPIMOUSE_ROS2_EXAMPLES_BUILDING_DLL")
+ament_target_dependencies(camera_line_follower_component
+  rclcpp
+  rclcpp_components
+  rclcpp_lifecycle
+  std_msgs
+  std_srvs
+  sensor_msgs
+  geometry_msgs
+  OpenCV
+  cv_bridge
+  raspimouse_msgs)
+rclcpp_components_register_nodes(camera_line_follower_component "camera_line_follower::CameraFollower")
+
 add_library(line_follower_component SHARED
   src/line_follower_component.cpp)
 target_compile_definitions(line_follower_component
@@ -112,6 +129,7 @@ ament_export_dependencies(OpenCV)
 ament_export_include_directories(include)
 ament_export_libraries(
   object_tracking_component
+  camera_line_follower_component
   line_follower_component
   direction_controller_component)
 
@@ -122,6 +140,7 @@ install(
 
 install(TARGETS
   object_tracking_component
+  camera_line_follower_component
   line_follower_component
   direction_controller_component
   EXPORT export_${PROJECT_NAME}

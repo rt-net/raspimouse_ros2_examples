@@ -62,6 +62,7 @@ $ source ~/ros2_ws/install/setup.bash
 - [joystick_control](#joystick_control)
 - [object_tracking](#object_tracking)
 - [line_follower](#line_follower)
+- [camera_line_follower](#camera_line_follower)
 - [SLAM](#slam)
 - [direction_controller](#direction_controller)
 
@@ -164,7 +165,7 @@ $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/
 
 カメラ画像は`camera/color/image_raw`、物体検出画像は`result_image`というトピックとして発行されます。
 これらの画像は[RViz](https://index.ros.org/r/rviz/)
-や[rqt_image_view](https://index.ros.org/doc/ros2/Tutorials/RQt-Overview-Usage/)
+や[rqt_image_view](https://index.ros.org/p/rqt_image_view/)
 で表示できます。
 
 **画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。**
@@ -253,89 +254,79 @@ void Follower::publish_cmdvel_for_line_following(void)
 
 --- 
 
+### camera_line_follower
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace_2.png width=500 />
+
+RGBカメラによるライントレースのコード例です。
+
+#### Requirements 
+
+- Webカメラ
+  - [Logicool HD WEBCAM C310N](https://www.logicool.co.jp/ja-jp/product/hd-webcam-c310n)
+- カメラマウント
+  - [Raspberry Pi Mouse オプションキット No.4 \[Webカメラマウント\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3584)
+
+#### Installation
+
+Raspberry Pi Mouseにカメラマウントを取り付け、WebカメラをRaspberry Piに接続します。
+
+#### How to use
+
+次のコマンドでノードを起動します。
+
+```sh
+$ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_device:=/dev/video0
+```
+
+ライン上にRaspberry Pi Mouseを置き、SW2を押してライントレースを開始します。
+停止させる場合はSW0を押します。
+
+カメラ画像は`camera/color/image_raw`、物体検出画像は`result_image`というトピックとして発行されます。
+これらの画像は[RViz](https://index.ros.org/r/rviz/)
+や[rqt_image_view](https://index.ros.org/p/rqt_image_view/)
+で表示できます。
+
+**画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。**
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/camera_line_trace.png width=500 />
+
+#### Parameters
+
+- `max_brightness`
+  - Type: `int`
+  - Default: 90
+  - 画像の2値化のしきい値の最大値
+- `min_brightness`
+  - Type: `int`
+  - Default: 0
+  - 画像の2値化のしきい値の最小値
+- `max_linear_vel`
+  - Type: `double`
+  - Default: 0.05
+  - 直進速度の最大値
+- `max_angular_vel`
+  - Type: `double`
+  - Default: 0.8
+  - 旋回速度の最大値
+- `area_threthold`
+  - Type: `double`
+  - Default: 0.20
+  - 走行を開始するためのライン面積のしきい値
+
+```sh
+ros2 param set /camera_follower max_brightness 80
+```
+
+[back to example list](#how-to-use-examples)
+
+--- 
+
 ### SLAM
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/slam_toolbox_ros2.png width=500 />
 
-LiDARと[slam_toolbox](https://github.com/SteveMacenski/slam_toolbox)
-を使ってSLAM（自己位置推定と地図作成）を行うサンプルです。
-
-#### Requirements 
-
-- LiDAR
-  <!-- - [~URG-04LX-UG01~](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1348_1296&products_id=2816)
-  - [RPLIDAR A1](https://www.slamtec.com/en/Lidar/A1) -->
-  - [LDS-01](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1348_5&products_id=3676)
-- [LiDAR Mount](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3867)
-- Joystick Controller (Optional)
-  
-#### Installation
-
-Raspberry Pi MouseにLiDARを取り付けます。
-
-<!-- - URG-04LX-UG01
-  - <img src="https://github.com/rt-net/raspimouse_ros_examples/blob/images/mouse_with_urg.JPG" width=500 />
-- RPLIDAR A1
-  - <img src="https://github.com/rt-net/raspimouse_ros_examples/blob/images/mouse_with_rplidar.png" width=500 /> -->
-- LDS-01
-  - <img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_lds01.JPG width=500 />
-  
-#### How to use
-
-Raspberry Pi Mouse上で次のコマンドでノードを起動します。
-
-```sh
-# LDS
-$ ros2 launch raspimouse_ros2_examples mouse_with_lidar.launch.py lidar:=lds
-```
-
-Raspberry Pi Mouseを動かすため`teleop_joy.launch.py`を起動します
-
-```sh
-# Use DUALSHOCK 3
-$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=dualshock3 mouse:=false
-```
-
-次のコマンドでslam_toolboxパッケージを起動します。（Remote computerでの実行推奨）
-
-```sh
-$ ros2 launch raspimouse_ros2_examples slam.launch.py
-```
-
-Raspberry Pi Mouseを動かして地図を作成します。
-
-次のコマンドで作成した地図を保存します。
-
-```sh
-$ mkdir ~/maps
-$ ros2 run nav2_map_server map_saver_cli -f ~/maps/mymap --ros-args -p save_map_timeout:=10000.0
-```
-
-#### Configure SLAM parameters
-
-[./config/mapper_params_offline.yaml](./config/mapper_params_offline.yaml)で[slam_toolbox](https://github.com/SteveMacenski/slam_toolbox)パッケージのパラメータを調節します。
-
-#### Configure Odometry calculation
-
-下記のように[mouse.yml](./config/mouse.yml)を編集し、`use_pulse_counters`を`true`に（初期値: `false`）することで、
-`raspimouse`ノードがモータの制御パルス数からオドメトリ（`/odom`）を計算します。
-
-これは自己位置推定の精度を向上させます。
-
-```yaml
-raspimouse:
-  ros__parameters:
-    odometry_scale_left_wheel : 1.0
-    odometry_scale_right_wheel: 1.0
-    use_light_sensors         : true
-    use_pulse_counters        : true
-```
-
-<!-- #### Videos
-
-[![slam_urg](http://img.youtube.com/vi/gWozU47UqVE/sddefault.jpg)](https://youtu.be/gWozU47UqVE)
-
-[![slam_urg](http://img.youtube.com/vi/hV68UqAntfo/sddefault.jpg)](https://youtu.be/hV68UqAntfo) -->
+Raspberry Pi MouseでSLAMとNavigationを行うサンプルは[rt-net/raspimouse_slam_navigation_ros2](https://github.com/rt-net/raspimouse_slam_navigation_ros2)へ移行しました。
 
 [back to example list](#how-to-use-examples)
 

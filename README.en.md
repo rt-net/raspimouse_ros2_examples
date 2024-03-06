@@ -61,6 +61,7 @@ This repository is licensed under the Apache 2.0, see [LICENSE](./LICENSE) for d
 - [joystick_control](#joystick_control)
 - [object_tracking](#object_tracking)
 - [line_follower](#line_follower)
+- [camera_line_follower](#camera_line_follower)
 - [SLAM](#slam)
 - [direction_controller](#direction_controller)
 
@@ -162,7 +163,7 @@ $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/
 
 This sample publishes two topics: `camera/color/image_raw` for the camera image and `result_image` for the object detection image.
 These images can be viewed with [RViz](https://index.ros.org/r/rviz/)
-or [rqt_image_view](https://index.ros.org/doc/ros2/Tutorials/RQt-Overview-Usage/).
+or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
 
 **Viewing an image may cause the node to behave unstable and not publish cmd_vel or image topics.**
 
@@ -247,87 +248,81 @@ void Follower::publish_cmdvel_for_line_following(void)
 
 [back to example list](#how-to-use-examples)
 
+---
+
+### camera_line_follower
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace_2.png width=500 />
+
+This is an example for line following by RGB camera.
+
+#### Requirements 
+
+- Web camera
+  - [Logicool HD WEBCAM C310N](https://www.logicool.co.jp/ja-jp/product/hd-webcam-c310n)
+- Camera mount
+  - [Raspberry Pi Mouse Option kit No.4 \[Webcam mount\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3584&language=en)
+
+#### Installation
+
+Install a camera mount and a web camera to Raspberry Pi Mouse, then connect the camera to the Raspberry Pi．
+
+#### How to use
+
+Then, launch nodes with the following command:
+
+```sh
+$ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_device:=/dev/video0
+```
+
+Place Raspberry Pi Mouse on the line and press SW2 to start line following.
+
+Press SW0 to stop the following.
+
+This sample publishes two topics: `camera/color/image_raw` for the camera image and `result_image` for the object detection image.
+These images can be viewed with [RViz](https://index.ros.org/r/rviz/)
+or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
+
+**Viewing an image may cause the node to behave unstable and not publish cmd_vel or image topics.**
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/camera_line_trace.png width=500 />
+
+#### Parameters
+
+- `max_brightness`
+  - Type: `int`
+  - Default: 90
+  - Maximum threshold value for image binarisation.
+- `min_brightness`
+  - Type: `int`
+  - Default: 0
+  - Minimum threshold value for image binarisation.
+- `max_linear_vel`
+  - Type: `double`
+  - Default: 0.05
+  - Maximum linear velocity.
+- `max_angular_vel`
+  - Type: `double`
+  - Default: 0.8
+  - Maximum angular velocity.
+- `area_threthold`
+  - Type: `double`
+  - Default: 0.20
+  - Threshold value of the area of the line to start following.
+
+```sh
+ros2 param set /camera_follower max_brightness 80
+```
+
+[back to example list](#how-to-use-examples)
+
 --- 
 
 ### SLAM
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/slam_toolbox_ros2.png width=500 />
 
-This is an example to use LiDAR and [slam_toolbox](https://github.com/SteveMacenski/slam_toolbox) for SLAM (Simultaneous Localization And Mapping).
-
-#### Requirements 
-
-- LiDAR
-  <!-- - [URG-04LX-UG01](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1348_1296&products_id=2816&language=en)
-  - [RPLIDAR A1](https://www.slamtec.com/en/Lidar/A1) -->
-  - [LDS-01](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1348_5&products_id=3676&language=en)
-- [LiDAR Mount](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3867&language=en)
-- Joystick Controller (Optional)
-  
-#### Installation
-
-Install a LiDAR to the Raspberry Pi Mouse.
-
-<!-- - URG-04LX-UG01
-  - <img src="https://github.com/rt-net/raspimouse_ros_examples/blob/images/mouse_with_urg.JPG" width=500 />
-- RPLIDAR A1
-  - <img src="https://github.com/rt-net/raspimouse_ros_examples/blob/images/mouse_with_rplidar.png" width=500 /> -->
-- LDS-01
-  - <img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_lds01.JPG width=500 />
-  
-#### How to use
-
-Launch nodes on Raspberry Pi Mouse with the following command:
-
-```sh
-# LDS
-$ ros2 launch raspimouse_ros2_examples mouse_with_lidar.launch.py lidar:=lds
-```
-
-Next, launch `teleop_joy.launch.py` to control Raspberry Pi Mouse with the following command:
-
-```sh
-# Use DUALSHOCK 3
-$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=dualshock3 mouse:=false
-```
-
-Then, launch the slam_toolbox package (on a remote computer recommend) with the following command:
-
-```sh
-$ ros2 launch raspimouse_ros2_examples slam.launch.py
-```
-
-After moving Raspberry Pi Mouse and making a map, run a node to save the map with the following command:
-
-```sh
-$ mkdir ~/maps
-$ ros2 run nav2_map_server map_saver_cli -f ~/maps/mymap --ros-args -p save_map_timeout:=10000.0
-```
-
-#### Configure SLAM parameters
-
-Edit [./config/mapper_params_offline.yaml](./config/mapper_params_offline.yaml) to configure parameters of [slam_toolbox](https://github.com/SteveMacenski/slam_toolbox) package.
-
-#### Configure Odometry calculation
-
-Edit  [mouse.yml](./config/mouse.yml) to set `use_pulse_counters` to `true` (default: `false`) then the `raspimouse` node calculate the odometry (`/odom`) from motor control pulse counts.
-
-This improves the accuracy of self-localization.
-
-```yaml
-raspimouse:
-  ros__parameters:
-    odometry_scale_left_wheel : 1.0
-    odometry_scale_right_wheel: 1.0
-    use_light_sensors         : true
-    use_pulse_counters        : true
-```
-
-<!-- #### Videos
-
-[![slam_urg](http://img.youtube.com/vi/gWozU47UqVE/sddefault.jpg)](https://youtu.be/gWozU47UqVE)
-
-[![slam_urg](http://img.youtube.com/vi/hV68UqAntfo/sddefault.jpg)](https://youtu.be/hV68UqAntfo) -->
+SLAM and Navigation examples for Raspberry Pi Mouse is [here](https://github.com/rt-net/raspimouse_slam_navigation_ros2).
 
 [back to example list](#how-to-use-examples)
 
