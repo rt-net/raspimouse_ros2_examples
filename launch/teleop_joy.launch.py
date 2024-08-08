@@ -24,6 +24,7 @@ from launch.actions import SetLaunchConfiguration
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.actions import LifecycleNode
+from launch.events import Shutdown
 
 
 def generate_launch_description():
@@ -65,7 +66,8 @@ def generate_launch_description():
     joystick_control_node = Node(
         package='raspimouse_ros2_examples',
         executable='joystick_control.py',
-        parameters=[LaunchConfiguration('joyconfig_filename')]
+        parameters=[LaunchConfiguration('joyconfig_filename')],
+        on_exit=Shutdown(),
     )
 
     def func_launch_mouse_node(context):
