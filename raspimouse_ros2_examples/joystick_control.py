@@ -124,16 +124,6 @@ class JoyWrapper(Node):
         self._sub_cb_group = MutuallyExclusiveCallbackGroup()
         self._client_cb_group = MutuallyExclusiveCallbackGroup()
 
-        self._sub_joy = self.create_subscription(
-            Joy, 'joy', self._callback_joy, 1,
-            callback_group=self._sub_cb_group)
-        self._sub_lightsensor = self.create_subscription(
-            LightSensors, 'light_sensors', self._callback_lightsensors, 1,
-            callback_group=self._sub_cb_group)
-        self._sub_switches = self.create_subscription(
-            Switches, 'switches', self._callback_switches, 1,
-            callback_group=self._sub_cb_group)
-
         self._client_get_state = self.create_client(
             GetState, 'raspimouse/get_state', callback_group=self._client_cb_group)
         while not self._client_get_state.wait_for_service(timeout_sec=1.0):
@@ -150,6 +140,16 @@ class JoyWrapper(Node):
         while not self._client_motor_power.wait_for_service(timeout_sec=1.0):
             self._node_logger.warn(self._client_motor_power.srv_name + ' service not available')
         self._motor_on()
+
+        self._sub_joy = self.create_subscription(
+            Joy, 'joy', self._callback_joy, 1,
+            callback_group=self._sub_cb_group)
+        self._sub_lightsensor = self.create_subscription(
+            LightSensors, 'light_sensors', self._callback_lightsensors, 1,
+            callback_group=self._sub_cb_group)
+        self._sub_switches = self.create_subscription(
+            Switches, 'switches', self._callback_switches, 1,
+            callback_group=self._sub_cb_group)
 
     def _activate_raspimouse(self):
         self._set_mouse_lifecycle_state(Transition.TRANSITION_CONFIGURE)
