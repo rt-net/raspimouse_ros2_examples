@@ -161,14 +161,12 @@ class JoyWrapper(Node):
         request = ChangeState.Request()
         request.transition.id = transition_id
         future = self._client_change_state.call_async(request)
-        executor = rclpy.executors.SingleThreadedExecutor(context=self.context)
-        rclpy.spin_until_future_complete(self, future, executor=executor)
+        rclpy.spin_until_future_complete(self, future)
         return future.result().success
 
     def _get_mouse_lifecycle_state(self):
         future = self._client_get_state.call_async(GetState.Request())
-        executor = rclpy.executors.SingleThreadedExecutor(context=self.context)
-        rclpy.spin_until_future_complete(self, future, executor=executor)
+        rclpy.spin_until_future_complete(self, future)
         return future.result().current_state.label
 
     def _motor_request(self, request_data=False):
