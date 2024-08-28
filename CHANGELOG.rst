@@ -2,6 +2,12 @@
 Changelog for package raspimouse_ros2_examples
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.1 (2024-08-28)
+------------------
+* サービスクライアントでexecutorを使用しない (`#59 <https://github.com/rt-net/raspimouse_ros2_examples/issues/59>`_)
+* SubscriberとService Clientに別々のcallback_groupを設定 (`#58 <https://github.com/rt-net/raspimouse_ros2_examples/issues/58>`_)
+* Contributors: ShotaAk, YusukeKato
+
 2.2.0 (2024-03-05)
 ------------------
 * READMEにSLAM&Navigationパッケージの案内を追加 (`#53 <https://github.com/rt-net/raspimouse_ros2_examples/issues/53>`_)
