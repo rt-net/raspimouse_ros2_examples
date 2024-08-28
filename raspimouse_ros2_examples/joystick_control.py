@@ -29,6 +29,7 @@ from raspimouse_msgs.msg import Switches
 
 import rclpy
 from rclpy.node import Node
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Int16
 from std_srvs.srv import SetBool
@@ -120,26 +121,35 @@ class JoyWrapper(Node):
         self._pub_buzzer = self.create_publisher(Int16, 'buzzer', 1)
         self._pub_leds = self.create_publisher(Leds, 'leds', 1)
 
-        self._sub_joy = self.create_subscription(
-            Joy, 'joy', self._callback_joy, 1)
-        self._sub_lightsensor = self.create_subscription(
-            LightSensors, 'light_sensors', self._callback_lightsensors, 1)
-        self._sub_switches = self.create_subscription(
-            Switches, 'switches', self._callback_switches, 1)
+        self._sub_cb_group = MutuallyExclusiveCallbackGroup()
+        self._client_cb_group = MutuallyExclusiveCallbackGroup()
 
-        self._client_get_state = self.create_client(GetState, 'raspimouse/get_state')
+        self._client_get_state = self.create_client(
+            GetState, 'raspimouse/get_state', callback_group=self._client_cb_group)
         while not self._client_get_state.wait_for_service(timeout_sec=1.0):
             self._node_logger.warn(self._client_get_state.srv_name + ' service not available')
 
-        self._client_change_state = self.create_client(ChangeState, 'raspimouse/change_state')
+        self._client_change_state = self.create_client(
+            ChangeState, 'raspimouse/change_state', callback_group=self._client_cb_group)
         while not self._client_change_state.wait_for_service(timeout_sec=1.0):
             self._node_logger.warn(self._client_change_state.srv_name + ' service not available')
         self._activate_raspimouse()
 
-        self._client_motor_power = self.create_client(SetBool, 'motor_power')
+        self._client_motor_power = self.create_client(
+            SetBool, 'motor_power', callback_group=self._client_cb_group)
         while not self._client_motor_power.wait_for_service(timeout_sec=1.0):
             self._node_logger.warn(self._client_motor_power.srv_name + ' service not available')
         self._motor_on()
+
+        self._sub_joy = self.create_subscription(
+            Joy, 'joy', self._callback_joy, 1,
+            callback_group=self._sub_cb_group)
+        self._sub_lightsensor = self.create_subscription(
+            LightSensors, 'light_sensors', self._callback_lightsensors, 1,
+            callback_group=self._sub_cb_group)
+        self._sub_switches = self.create_subscription(
+            Switches, 'switches', self._callback_switches, 1,
+            callback_group=self._sub_cb_group)
 
     def _activate_raspimouse(self):
         self._set_mouse_lifecycle_state(Transition.TRANSITION_CONFIGURE)
@@ -151,14 +161,12 @@ class JoyWrapper(Node):
         request = ChangeState.Request()
         request.transition.id = transition_id
         future = self._client_change_state.call_async(request)
-        executor = rclpy.executors.SingleThreadedExecutor(context=self.context)
-        rclpy.spin_until_future_complete(self, future, executor=executor)
+        rclpy.spin_until_future_complete(self, future)
         return future.result().success
 
     def _get_mouse_lifecycle_state(self):
         future = self._client_get_state.call_async(GetState.Request())
-        executor = rclpy.executors.SingleThreadedExecutor(context=self.context)
-        rclpy.spin_until_future_complete(self, future, executor=executor)
+        rclpy.spin_until_future_complete(self, future)
         return future.result().current_state.label
 
     def _motor_request(self, request_data=False):
@@ -194,6 +202,7 @@ class JoyWrapper(Node):
             self._motor_off()
             self._set_mouse_lifecycle_state(Transition.TRANSITION_DEACTIVATE)
             self.destroy_node()
+            raise SystemExit
 
     def _joy_motor_onoff(self, joy_msg):
         if joy_msg.buttons[self._BUTTON_MOTOR_ON]:
@@ -397,7 +406,10 @@ def main(args=None):
 
     joy_wrapper = JoyWrapper()
 
-    rclpy.spin(joy_wrapper)
+    try:
+        rclpy.spin(joy_wrapper)
+    except SystemExit:
+        rclpy.logging.get_logger("joystick_control").info('_joy_shutdown() has been executed')
 
     joy_wrapper.destroy_node()
 
