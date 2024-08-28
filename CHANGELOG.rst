@@ -2,8 +2,8 @@
 Changelog for package raspimouse_ros2_examples
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.1 (2024-08-28)
+------------------
 * サービスクライアントでexecutorを使用しない (`#59 <https://github.com/rt-net/raspimouse_ros2_examples/issues/59>`_)
 * SubscriberとService Clientに別々のcallback_groupを設定 (`#58 <https://github.com/rt-net/raspimouse_ros2_examples/issues/58>`_)
 * Contributors: ShotaAk, YusukeKato
