@@ -26,7 +26,7 @@
 #include "std_msgs/msg/string.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "lifecycle_msgs/srv/change_state.hpp"
-#include "cv_bridge/cv_bridge.h"
+#include "cv_bridge/cv_bridge.hpp"
 
 constexpr auto MIN_BRIGHTNESS_PARAM = "min_brightness";
 constexpr auto MAX_BRIGHTNESS_PARAM = "max_brightness";
