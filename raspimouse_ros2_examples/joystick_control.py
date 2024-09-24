@@ -19,7 +19,7 @@
 import math
 from time import sleep
 
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import TwistStamped
 from lifecycle_msgs.msg import Transition
 from lifecycle_msgs.srv import ChangeState
 from lifecycle_msgs.srv import GetState
@@ -117,7 +117,7 @@ class JoyWrapper(Node):
 
         self._node_logger = self.get_logger()
 
-        self._pub_cmdvel = self.create_publisher(Twist, 'cmd_vel', 1)
+        self._pub_cmdvel = self.create_publisher(TwistStamped, 'cmd_vel', 1)
         self._pub_buzzer = self.create_publisher(Int16, 'buzzer', 1)
         self._pub_leds = self.create_publisher(Leds, 'leds', 1)
 
@@ -212,13 +212,13 @@ class JoyWrapper(Node):
             self._motor_off()
 
     def _joy_cmdvel(self, joy_msg):
-        cmdvel = Twist()
+        cmdvel = TwistStamped()
         if joy_msg.buttons[self._BUTTON_CMD_ENABLE]:
-            cmdvel.linear.x = self._vel_linear_x * joy_msg.axes[self._AXIS_CMD_LINEAR_X]
-            cmdvel.angular.z = self._vel_angular_z * joy_msg.axes[self._AXIS_CMD_ANGULAR_Z]
+            cmdvel.twist.linear.x = self._vel_linear_x * joy_msg.axes[self._AXIS_CMD_LINEAR_X]
+            cmdvel.twist.angular.z = self._vel_angular_z * joy_msg.axes[self._AXIS_CMD_ANGULAR_Z]
             self._node_logger.info(
-                'linear_x:' + str(cmdvel.linear.x) +
-                ', angular_z:' + str(cmdvel.angular.z))
+                'linear_x:' + str(cmdvel.twist.linear.x) +
+                ', angular_z:' + str(cmdvel.twist.angular.z))
             self._pub_cmdvel.publish(cmdvel)
 
             self._cmdvel_has_value = True
