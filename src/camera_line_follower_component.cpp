@@ -24,7 +24,7 @@
 #include <opencv2/opencv.hpp>
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
-#include "geometry_msgs/msg/twist.hpp"
+#include "geometry_msgs/msg/twist_stamped.hpp"
 #include "lifecycle_msgs/srv/change_state.hpp"
 #include "cv_bridge/cv_bridge.hpp"
 
@@ -76,26 +76,26 @@ void CameraFollower::callback_switches(const raspimouse_msgs::msg::Switches::Sha
 
 void CameraFollower::on_cmd_vel_timer()
 {
-  geometry_msgs::msg::Twist cmd_vel;
+  geometry_msgs::msg::TwistStamped cmd_vel;
 
   // Follow the line
   // when the number of pixels of the object is greater than the threshold.
   if (object_is_detected_ &&
     object_normalized_area_ > get_parameter(AREA_THRESHOLD_PARAM).as_double())
   {
-    cmd_vel.linear.x = get_parameter(LINEAR_VEL_PARAM).as_double();
-    cmd_vel.angular.z = -get_parameter(ANGULAR_VEL_PARAM).as_double() * object_normalized_point_.x;
+    cmd_vel.twist.linear.x = get_parameter(LINEAR_VEL_PARAM).as_double();
+    cmd_vel.twist.angular.z = -get_parameter(ANGULAR_VEL_PARAM).as_double() * object_normalized_point_.x;
   } else {
-    cmd_vel.linear.x = 0.0;
-    cmd_vel.angular.z = 0.0;
+    cmd_vel.twist.linear.x = 0.0;
+    cmd_vel.twist.angular.z = 0.0;
   }
 
   if (!enable_following_) {
-    cmd_vel.linear.x = 0.0;
-    cmd_vel.angular.z = 0.0;
+    cmd_vel.twist.linear.x = 0.0;
+    cmd_vel.twist.angular.z = 0.0;
   }
 
-  auto msg = std::make_unique<geometry_msgs::msg::Twist>(cmd_vel);
+  auto msg = std::make_unique<geometry_msgs::msg::TwistStamped>(cmd_vel);
   cmd_vel_pub_->publish(std::move(msg));
 }
 
@@ -221,7 +221,7 @@ CallbackReturn CameraFollower::on_configure(const rclcpp_lifecycle::State &)
   }
 
   result_image_pub_ = create_publisher<sensor_msgs::msg::Image>("result_image", 1);
-  cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
+  cmd_vel_pub_ = create_publisher<geometry_msgs::msg::TwistStamped>("cmd_vel", 1);
   image_sub_ = create_subscription<sensor_msgs::msg::Image>(
     "camera/color/image_raw", rclcpp::SensorDataQoS(),
     std::bind(&CameraFollower::image_callback, this, std::placeholders::_1));
