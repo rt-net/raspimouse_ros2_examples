@@ -122,7 +122,7 @@ void Follower::publish_cmdvel_for_line_following(void)
   const double VEL_ANGULAR_Z = 0.8;  // rad/s
   const double LOW_VEL_ANGULAR_Z = 0.5;  // rad/s
 
-  auto cmd_vel = std::make_unique<geometry_msgs::msg::Twist>();
+  auto cmd_vel = std::make_unique<geometry_msgs::msg::TwistStamped>();
 
   bool detect_line = std::any_of(
     line_is_detected_by_sensor_.begin(), line_is_detected_by_sensor_.end(),
@@ -132,22 +132,22 @@ void Follower::publish_cmdvel_for_line_following(void)
     [](bool detected) {return !detected;});
 
   if (detect_line && detect_field) {
-    cmd_vel->linear.x = VEL_LINEAR_X;
+    cmd_vel->twist.linear.x = VEL_LINEAR_X;
 
     if (line_is_detected_by_sensor_[LEFT]) {
-      cmd_vel->angular.z += VEL_ANGULAR_Z;
+      cmd_vel->twist.angular.z += VEL_ANGULAR_Z;
     }
 
     if (line_is_detected_by_sensor_[RIGHT]) {
-      cmd_vel->angular.z -= VEL_ANGULAR_Z;
+      cmd_vel->twist.angular.z -= VEL_ANGULAR_Z;
     }
 
     if (line_is_detected_by_sensor_[MID_LEFT]) {
-      cmd_vel->angular.z += LOW_VEL_ANGULAR_Z;
+      cmd_vel->twist.angular.z += LOW_VEL_ANGULAR_Z;
     }
 
     if (line_is_detected_by_sensor_[MID_RIGHT]) {
-      cmd_vel->angular.z -= LOW_VEL_ANGULAR_Z;
+      cmd_vel->twist.angular.z -= LOW_VEL_ANGULAR_Z;
     }
   }
 
@@ -301,7 +301,7 @@ CallbackReturn Follower::on_configure(const rclcpp_lifecycle::State &)
   // Don't actually start publishing data until activated
   cmd_vel_timer_->cancel();
 
-  cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
+  cmd_vel_pub_ = create_publisher<geometry_msgs::msg::TwistStamped>("cmd_vel", 1);
   buzzer_pub_ = create_publisher<std_msgs::msg::Int16>("buzzer", 1);
   leds_pub_ = create_publisher<raspimouse_msgs::msg::Leds>("leds", 1);
   light_sensors_sub_ = create_subscription<raspimouse_msgs::msg::LightSensors>(

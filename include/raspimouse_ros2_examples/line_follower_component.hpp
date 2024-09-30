@@ -29,7 +29,7 @@
 #include "std_msgs/msg/int16.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/set_bool.hpp"
-#include "geometry_msgs/msg/twist.hpp"
+#include "geometry_msgs/msg/twist_stamped.hpp"
 
 namespace line_follower
 {
@@ -72,7 +72,7 @@ private:
   bool can_publish_cmdvel_;
 
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Int16>> buzzer_pub_;
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::Twist>> cmd_vel_pub_;
+  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::TwistStamped>> cmd_vel_pub_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<raspimouse_msgs::msg::Leds>> leds_pub_;
   rclcpp::Subscription<raspimouse_msgs::msg::LightSensors>::SharedPtr light_sensors_sub_;
   rclcpp::Subscription<raspimouse_msgs::msg::Switches>::SharedPtr switches_sub_;

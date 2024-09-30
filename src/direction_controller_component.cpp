@@ -42,7 +42,7 @@ Controller::Controller(const rclcpp::NodeOptions & options)
 
   cmd_vel_timer_ = create_wall_timer(16ms, std::bind(&Controller::on_cmd_vel_timer, this));
 
-  cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
+  cmd_vel_pub_ = create_publisher<geometry_msgs::msg::TwistStamped>("cmd_vel", 1);
   buzzer_pub_ = create_publisher<std_msgs::msg::Int16>("buzzer", 1);
   heading_angle_pub_ = create_publisher<std_msgs::msg::Float64>("heading_angle", 1);
   switches_sub_ = create_subscription<raspimouse_msgs::msg::Switches>(
@@ -225,8 +225,8 @@ void Controller::angle_control(const double target_angle)
 {
   const double SIGN = 1.0;
 
-  auto cmd_vel = std::make_unique<geometry_msgs::msg::Twist>();
-  cmd_vel->angular.z = SIGN * omega_pid_controller_.update(heading_angle_, target_angle);
+  auto cmd_vel = std::make_unique<geometry_msgs::msg::TwistStamped>();
+  cmd_vel->twist.angular.z = SIGN * omega_pid_controller_.update(heading_angle_, target_angle);
 
   cmd_vel_pub_->publish(std::move(cmd_vel));
 }

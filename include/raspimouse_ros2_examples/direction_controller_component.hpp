@@ -27,7 +27,7 @@
 #include "std_msgs/msg/float64.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/set_bool.hpp"
-#include "geometry_msgs/msg/twist.hpp"
+#include "geometry_msgs/msg/twist_stamped.hpp"
 #include "geometry_msgs/msg/vector3.hpp"
 
 namespace direction_controller
@@ -95,7 +95,7 @@ private:
   sensor_msgs::msg::Imu imu_data_raw_;
 
   rclcpp::Publisher<std_msgs::msg::Int16>::SharedPtr buzzer_pub_;
-  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
+  rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr cmd_vel_pub_;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr heading_angle_pub_;
   rclcpp::Subscription<raspimouse_msgs::msg::Switches>::SharedPtr switches_sub_;
   rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_data_raw_sub_;
