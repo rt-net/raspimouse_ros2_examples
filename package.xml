@@ -11,6 +11,8 @@
   <author email="s.aoki@rt-net.jp">ShotaAk</author>
   <author email="daisuke.sato@rt-net.jp">Daisuke Sato</author>
   <author email="kozasa@rt-net.jp">Shuhei Kozasa</author>
+  <author email="yusuke.kato@rt-net.jp">Yusuke Kato</author>
+  <author email="kurasawa@rt-net.jp">Shuhei Kozasa</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
