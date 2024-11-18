@@ -14,25 +14,24 @@ Gazebo（シミュレータ）でも動作します。詳細は[こちら](https
 
 ## Supported ROS 2 distributions
 
-- [Foxy](https://github.com/rt-net/raspimouse_ros2_examples/tree/foxy-devel)
-- Humble (This branch)
+- [Humble](https://github.com/rt-net/raspimouse_ros2_examples/tree/humble)
+- [Jazzy](https://github.com/rt-net/raspimouse_ros2_examples/tree/jazzy)(This branch)
 
 ## Requirements
 
 - Raspberry Pi Mouse
   - https://rt-net.jp/products/raspberrypimousev3/
   - Linux OS
-    - Ubuntu server 22.04
-    - https://ubuntu.com/download/raspberry-pi
+    - Ubuntu server 24.04
   - Device Driver
     - [rt-net/RaspberryPiMouse](https://github.com/rt-net/RaspberryPiMouse)
   - ROS
-    - [Humble Hawksbill](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html)
+    - [Jazzy JALSCO](https://docs.ros.org/en/jazzy/index.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 - Remote Computer (Optional)
   - ROS
-    - [Humble Hawksbill](https://dcs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html)
+    - [Jazzy JALSCO](https://docs.ros.org/en/jazzy/index.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 
@@ -41,7 +40,7 @@ Gazebo（シミュレータ）でも動作します。詳細は[こちら](https
 ```sh
 $ cd ~/ros2_ws/src
 # Clone package
-$ git clone -b $ROS_DISTRO-devel https://github.com/rt-net/raspimouse_ros2_examples.git
+$ git clone -b $ROS_DISTRO https://github.com/rt-net/raspimouse_ros2_examples.git
 
 # Install dependencies
 $ rosdep install -r -y --from-paths . --ignore-src
@@ -54,7 +53,7 @@ $ source ~/ros2_ws/install/setup.bash
 
 ## License
 
-このリポジトリはApache 2.0ライセンスの元、公開されています。 
+このリポジトリはApache 2.0ライセンスの元、公開されています。
 ライセンスについては[LICENSE](./LICENSE)を参照ください。
 
 ## How To Use Examples
@@ -72,7 +71,7 @@ $ source ~/ros2_ws/install/setup.bash
 
 ジョイスティックコントローラでRaspberryPiMouseを動かすコード例です。
 
-#### Requirements 
+#### Requirements
 
 - Joystick Controller
   - [Logicool Wireless Gamepad F710](https://gaming.logicool.co.jp/ja-jp/products/gamepads/f710-wireless-gamepad.html#940-0001440)
@@ -123,7 +122,7 @@ button_cmd_enable       : 4
 
 [back to example list](#how-to-use-examples)
 
---- 
+---
 
 ### object_tracking
 
@@ -132,7 +131,7 @@ button_cmd_enable       : 4
 色情報をもとにオレンジ色のボールの追跡を行うコード例です。
 USB接続のWebカメラとOpenCVを使ってボール追跡をします。
 
-#### Requirements 
+#### Requirements
 
 - Webカメラ
   - [Logicool HD WEBCAM C310N](https://www.logicool.co.jp/ja-jp/product/hd-webcam-c310n)
@@ -194,7 +193,7 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
 
 [back to example list](#how-to-use-examples)
 
---- 
+---
 
 ### line_follower
 
@@ -252,7 +251,7 @@ void Follower::publish_cmdvel_for_line_following(void)
 
 [back to example list](#how-to-use-examples)
 
---- 
+---
 
 ### camera_line_follower
 
@@ -260,7 +259,7 @@ void Follower::publish_cmdvel_for_line_following(void)
 
 RGBカメラによるライントレースのコード例です。
 
-#### Requirements 
+#### Requirements
 
 - Webカメラ
   - [Logicool HD WEBCAM C310N](https://www.logicool.co.jp/ja-jp/product/hd-webcam-c310n)
@@ -309,7 +308,7 @@ $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_devi
   - Type: `double`
   - Default: 0.8
   - 旋回速度の最大値
-- `area_threthold`
+- `area_threshold`
   - Type: `double`
   - Default: 0.20
   - 走行を開始するためのライン面積のしきい値
@@ -320,7 +319,7 @@ ros2 param set /camera_follower max_brightness 80
 
 [back to example list](#how-to-use-examples)
 
---- 
+---
 
 ### SLAM
 
@@ -373,9 +372,9 @@ SW0 ~ SW2を押して動作モードを切り替えます。
 
 ### Troubleshooting
 
-IMUの接続が正常に行われない場合があります。  
-その時は、IMUのUSBケーブルを抜き差ししてください。  
-抜き差し実施後は、コマンドを再度実行してください。  
+IMUの接続が正常に行われない場合があります。
+その時は、IMUのUSBケーブルを抜き差ししてください。
+抜き差し実施後は、コマンドを再度実行してください。
 
 #### Configure
 
@@ -410,7 +409,7 @@ Set parameter successful
   - Target angle for the SW1 control mode.
   - default: 0.0, min:-π, max:+π
   - type: double
-  
+
 #### Publish topics
 - heading_angle
   - Heading angle of the robot that calculated from the IMU module sensor values.
