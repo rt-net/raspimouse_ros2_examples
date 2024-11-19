@@ -13,13 +13,12 @@
 // limitations under the License.
 
 #include <memory>
-#include "rclcpp/rclcpp.hpp"
 
 #include "raspimouse/raspimouse_component.hpp"
 #include "raspimouse_ros2_examples/line_follower_component.hpp"
+#include "rclcpp/rclcpp.hpp"
 
-int main(int argc, char * argv[])
-{
+int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
   rclcpp::executors::MultiThreadedExecutor exec;
   rclcpp::NodeOptions options;

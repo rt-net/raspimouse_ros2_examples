@@ -18,39 +18,40 @@
 #include <memory>
 #include <string>
 
+#include "geometry_msgs/msg/twist_stamped.hpp"
+#include "opencv2/highgui/highgui.hpp"
 #include "raspimouse_msgs/msg/switches.hpp"
 #include "raspimouse_ros2_examples/visibility_control.h"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rclcpp_lifecycle/lifecycle_publisher.hpp"
+#include "sensor_msgs/msg/image.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/set_bool.hpp"
-#include "sensor_msgs/msg/image.hpp"
-#include "geometry_msgs/msg/twist_stamped.hpp"
-#include "opencv2/highgui/highgui.hpp"
 
-namespace camera_line_follower
-{
+namespace camera_line_follower {
 
-class CameraFollower : public rclcpp_lifecycle::LifecycleNode
-{
-public:
+class CameraFollower : public rclcpp_lifecycle::LifecycleNode {
+ public:
   RASPIMOUSE_ROS2_EXAMPLES_PUBLIC
-  explicit CameraFollower(const rclcpp::NodeOptions & options);
+  explicit CameraFollower(const rclcpp::NodeOptions &options);
 
-protected:
+ protected:
   void image_callback(const sensor_msgs::msg::Image::SharedPtr msg_image);
   void callback_switches(const raspimouse_msgs::msg::Switches::SharedPtr msg);
   void on_cmd_vel_timer();
 
-private:
+ private:
   cv::VideoCapture cap_;
   bool object_is_detected_;
   bool enable_following_;
   cv::Point2d object_normalized_point_;
   double object_normalized_area_;
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> result_image_pub_;
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::TwistStamped>> cmd_vel_pub_;
+  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>>
+      result_image_pub_;
+  std::shared_ptr<
+      rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::TwistStamped>>
+      cmd_vel_pub_;
   std::shared_ptr<rclcpp::Client<std_srvs::srv::SetBool>> motor_power_client_;
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
   rclcpp::Subscription<raspimouse_msgs::msg::Switches>::SharedPtr switches_sub_;
@@ -58,11 +59,10 @@ private:
 
   void set_motor_power(const bool motor_on);
   std::string mat_type2encoding(const int mat_type) const;
-  void convert_frame_to_message(
-    const cv::Mat & frame,
-    sensor_msgs::msg::Image & msg) const;
+  void convert_frame_to_message(const cv::Mat &frame,
+                                sensor_msgs::msg::Image &msg) const;
 
-  bool detect_line(const cv::Mat & input_frame, cv::Mat & result_frame);
+  bool detect_line(const cv::Mat &input_frame, cv::Mat &result_frame);
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
   on_configure(const rclcpp_lifecycle::State &);

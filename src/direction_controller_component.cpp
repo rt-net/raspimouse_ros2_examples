@@ -24,31 +24,32 @@
 
 using namespace std::chrono_literals;
 
-namespace direction_controller
-{
+namespace direction_controller {
 
-enum CONTROL_MODE
-{
+enum CONTROL_MODE {
   MODE_NONE = 0,
   MODE_CALIBRATION = 1,
   MODE_KEEP_ZERO_RADIAN = 2,
   MODE_ROTATION = 3
 };
 
-Controller::Controller(const rclcpp::NodeOptions & options)
-: Node("direction_controller", options)
-{
+Controller::Controller(const rclcpp::NodeOptions& options)
+    : Node("direction_controller", options) {
   using namespace std::placeholders;  // for _1, _2, _3...
 
-  cmd_vel_timer_ = create_wall_timer(16ms, std::bind(&Controller::on_cmd_vel_timer, this));
+  cmd_vel_timer_ =
+      create_wall_timer(16ms, std::bind(&Controller::on_cmd_vel_timer, this));
 
-  cmd_vel_pub_ = create_publisher<geometry_msgs::msg::TwistStamped>("cmd_vel", 1);
+  cmd_vel_pub_ =
+      create_publisher<geometry_msgs::msg::TwistStamped>("cmd_vel", 1);
   buzzer_pub_ = create_publisher<std_msgs::msg::Int16>("buzzer", 1);
-  heading_angle_pub_ = create_publisher<std_msgs::msg::Float64>("heading_angle", 1);
+  heading_angle_pub_ =
+      create_publisher<std_msgs::msg::Float64>("heading_angle", 1);
   switches_sub_ = create_subscription<raspimouse_msgs::msg::Switches>(
-    "switches", 1, std::bind(&Controller::callback_switches, this, _1));
+      "switches", 1, std::bind(&Controller::callback_switches, this, _1));
   imu_data_raw_sub_ = create_subscription<sensor_msgs::msg::Imu>(
-    "imu/data_raw", 1, std::bind(&Controller::callback_imu_data_raw, this, _1));
+      "imu/data_raw", 1,
+      std::bind(&Controller::callback_imu_data_raw, this, _1));
 
   motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
 
@@ -72,10 +73,9 @@ Controller::Controller(const rclcpp::NodeOptions & options)
   descriptor.floating_point_range[0] = range;
   this->declare_parameter("d_gain", 20.0, descriptor);
 
-  omega_pid_controller_.set_gain(
-    this->get_parameter("p_gain").as_double(),
-    this->get_parameter("i_gain").as_double(),
-    this->get_parameter("d_gain").as_double());
+  omega_pid_controller_.set_gain(this->get_parameter("p_gain").as_double(),
+                                 this->get_parameter("i_gain").as_double(),
+                                 this->get_parameter("d_gain").as_double());
 
   pressed_switch_number_ = -1;
   control_mode_ = MODE_NONE;
@@ -86,8 +86,7 @@ Controller::Controller(const rclcpp::NodeOptions & options)
   increase_target_angle_ = true;
 }
 
-void Controller::on_cmd_vel_timer()
-{
+void Controller::on_cmd_vel_timer() {
   int released_switch_number = -1;
   if (switches_.switch0) {
     pressed_switch_number_ = 0;
@@ -103,13 +102,13 @@ void Controller::on_cmd_vel_timer()
     }
   }
 
-  omega_pid_controller_.set_gain(
-    this->get_parameter("p_gain").as_double(),
-    this->get_parameter("i_gain").as_double(),
-    this->get_parameter("d_gain").as_double());
+  omega_pid_controller_.set_gain(this->get_parameter("p_gain").as_double(),
+                                 this->get_parameter("i_gain").as_double(),
+                                 this->get_parameter("d_gain").as_double());
 
   if (released_switch_number != -1 || filtered_acc_.z > 0.0) {
-    if (control_mode_ == MODE_KEEP_ZERO_RADIAN || control_mode_ == MODE_ROTATION) {
+    if (control_mode_ == MODE_KEEP_ZERO_RADIAN ||
+        control_mode_ == MODE_ROTATION) {
       control_mode_ = MODE_NONE;
       set_motor_power(false);
       return;
@@ -140,16 +139,17 @@ void Controller::on_cmd_vel_timer()
   }
 }
 
-void Controller::callback_switches(const raspimouse_msgs::msg::Switches::SharedPtr msg)
-{
+void Controller::callback_switches(
+    const raspimouse_msgs::msg::Switches::SharedPtr msg) {
   switches_ = *msg;
 }
 
-void Controller::callback_imu_data_raw(const sensor_msgs::msg::Imu::SharedPtr msg)
-{
+void Controller::callback_imu_data_raw(
+    const sensor_msgs::msg::Imu::SharedPtr msg) {
   imu_data_raw_ = *msg;
 
-  calculate_heading_angle(imu_data_raw_.angular_velocity.z, this->now().seconds());
+  calculate_heading_angle(imu_data_raw_.angular_velocity.z,
+                          this->now().seconds());
   auto heading_angle_msg = std::make_unique<std_msgs::msg::Float64>();
   heading_angle_msg->data = heading_angle_;
   heading_angle_pub_->publish(std::move(heading_angle_msg));
@@ -167,12 +167,9 @@ void Controller::callback_imu_data_raw(const sensor_msgs::msg::Imu::SharedPtr ms
   filter_acceleration(imu_data_raw_.linear_acceleration);
 }
 
-bool Controller::set_motor_power(const bool motor_on)
-{
+bool Controller::set_motor_power(const bool motor_on) {
   if (!motor_power_client_->wait_for_service(5s)) {
-    RCLCPP_ERROR(
-      this->get_logger(),
-      "Service motor_power is not avaliable.");
+    RCLCPP_ERROR(this->get_logger(), "Service motor_power is not avaliable.");
     return false;
   }
   auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
@@ -181,17 +178,16 @@ bool Controller::set_motor_power(const bool motor_on)
   return true;
 }
 
-bool Controller::omega_calibration(const double omega)
-{
+bool Controller::omega_calibration(const double omega) {
   const int SAMPLE_NUM = 100;
   bool complete = false;
 
   omega_samples_.push_back(omega);
 
   if (omega_samples_.size() >= SAMPLE_NUM) {
-    omega_bias_ = std::accumulate(
-      std::begin(omega_samples_),
-      std::end(omega_samples_), 0.0) / omega_samples_.size();
+    omega_bias_ = std::accumulate(std::begin(omega_samples_),
+                                  std::end(omega_samples_), 0.0) /
+                  omega_samples_.size();
     omega_samples_.clear();
     complete = true;
   }
@@ -199,8 +195,8 @@ bool Controller::omega_calibration(const double omega)
   return complete;
 }
 
-void Controller::calculate_heading_angle(const double omega, const double current_time)
-{
+void Controller::calculate_heading_angle(const double omega,
+                                         const double current_time) {
   const double ALPHA = 1.0;
 
   double diff_time = current_time - prev_heading_calculation_time_;
@@ -210,8 +206,7 @@ void Controller::calculate_heading_angle(const double omega, const double curren
   prev_heading_calculation_time_ = current_time;
 }
 
-void Controller::filter_acceleration(const geometry_msgs::msg::Vector3 acc)
-{
+void Controller::filter_acceleration(const geometry_msgs::msg::Vector3 acc) {
   const double ALPHA = 0.1;
 
   // Simple low pass filter
@@ -221,18 +216,17 @@ void Controller::filter_acceleration(const geometry_msgs::msg::Vector3 acc)
   prev_acc_ = filtered_acc_;
 }
 
-void Controller::angle_control(const double target_angle)
-{
+void Controller::angle_control(const double target_angle) {
   const double SIGN = 1.0;
 
   auto cmd_vel = std::make_unique<geometry_msgs::msg::TwistStamped>();
-  cmd_vel->twist.angular.z = SIGN * omega_pid_controller_.update(heading_angle_, target_angle);
+  cmd_vel->twist.angular.z =
+      SIGN * omega_pid_controller_.update(heading_angle_, target_angle);
 
   cmd_vel_pub_->publish(std::move(cmd_vel));
 }
 
-void Controller::rotation(void)
-{
+void Controller::rotation(void) {
   const double ADD_ANGLE = 2.0 * M_PI / 180.0;
   const double START_ANGLE = -M_PI * 0.5;
   const double END_ANGLE = M_PI * 0.5;
@@ -254,8 +248,8 @@ void Controller::rotation(void)
   angle_control(target_angle_);
 }
 
-void Controller::beep_buzzer(const int freq, const std::chrono::nanoseconds & beep_time)
-{
+void Controller::beep_buzzer(const int freq,
+                             const std::chrono::nanoseconds& beep_time) {
   auto msg = std::make_unique<std_msgs::msg::Int16>();
   msg->data = freq;
   buzzer_pub_->publish(std::move(msg));
@@ -267,26 +261,20 @@ void Controller::beep_buzzer(const int freq, const std::chrono::nanoseconds & be
   buzzer_pub_->publish(std::move(msg));
 }
 
-void Controller::beep_start(void)
-{
-  beep_buzzer(1000, 500ms);
-}
+void Controller::beep_start(void) { beep_buzzer(1000, 500ms); }
 
-void Controller::beep_success(void)
-{
+void Controller::beep_success(void) {
   beep_buzzer(1000, 100ms);
   rclcpp::sleep_for(100ms);
   beep_buzzer(1000, 100ms);
 }
 
-void Controller::beep_failure(void)
-{
+void Controller::beep_failure(void) {
   for (int i = 0; i < 4; i++) {
     beep_buzzer(500, 100ms);
     rclcpp::sleep_for(100ms);
   }
 }
-
 
 }  // namespace direction_controller
 

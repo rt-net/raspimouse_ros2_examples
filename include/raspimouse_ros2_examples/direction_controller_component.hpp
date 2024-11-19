@@ -19,31 +19,30 @@
 #include <string>
 #include <vector>
 
-#include "raspimouse_ros2_examples/visibility_control.h"
-#include "raspimouse_msgs/msg/switches.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/imu.hpp"
-#include "std_msgs/msg/int16.hpp"
-#include "std_msgs/msg/float64.hpp"
-#include "std_msgs/msg/string.hpp"
-#include "std_srvs/srv/set_bool.hpp"
 #include "geometry_msgs/msg/twist_stamped.hpp"
 #include "geometry_msgs/msg/vector3.hpp"
+#include "raspimouse_msgs/msg/switches.hpp"
+#include "raspimouse_ros2_examples/visibility_control.h"
+#include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/imu.hpp"
+#include "std_msgs/msg/float64.hpp"
+#include "std_msgs/msg/int16.hpp"
+#include "std_msgs/msg/string.hpp"
+#include "std_srvs/srv/set_bool.hpp"
 
-namespace direction_controller
-{
+namespace direction_controller {
 
-class PIDController
-{
-public:
+class PIDController {
+ public:
   PIDController()
-  : p_gain_(0.0), i_gain_(0.0), d_gain_(0.0),
-    error1_(0.0), error2_(0.0), output_(0.0)
-  {
-  }
+      : p_gain_(0.0),
+        i_gain_(0.0),
+        d_gain_(0.0),
+        error1_(0.0),
+        error2_(0.0),
+        output_(0.0) {}
 
-  double update(const double current, const double target)
-  {
+  double update(const double current, const double target) {
     double error = target - current;
 
     double delta_output = p_gain_ * (error - error1_);
@@ -58,21 +57,19 @@ public:
     return output_;
   }
 
-  void set_gain(const double p_gain, const double i_gain, const double d_gain)
-  {
+  void set_gain(const double p_gain, const double i_gain, const double d_gain) {
     p_gain_ = p_gain;
     i_gain_ = i_gain;
     d_gain_ = d_gain;
   }
 
-  void reset_output_and_errors()
-  {
+  void reset_output_and_errors() {
     error1_ = 0.0;
     error2_ = 0.0;
     output_ = 0.0;
   }
 
-private:
+ private:
   double p_gain_;
   double i_gain_;
   double d_gain_;
@@ -81,16 +78,15 @@ private:
   double output_;
 };
 
-class Controller : public rclcpp::Node
-{
-public:
+class Controller : public rclcpp::Node {
+ public:
   RASPIMOUSE_ROS2_EXAMPLES_PUBLIC
-  explicit Controller(const rclcpp::NodeOptions & options);
+  explicit Controller(const rclcpp::NodeOptions& options);
 
-protected:
+ protected:
   void on_cmd_vel_timer();
 
-private:
+ private:
   raspimouse_msgs::msg::Switches switches_;
   sensor_msgs::msg::Imu imu_data_raw_;
 
@@ -124,7 +120,7 @@ private:
   void calculate_heading_angle(const double omega, const double current_time);
   void angle_control(const double target_angle);
   void rotation(void);
-  void beep_buzzer(const int freq, const std::chrono::nanoseconds & beep_time);
+  void beep_buzzer(const int freq, const std::chrono::nanoseconds& beep_time);
   void beep_start(void);
   void beep_success(void);
   void beep_failure(void);
