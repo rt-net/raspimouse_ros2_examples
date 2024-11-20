@@ -333,7 +333,7 @@ Raspberry Pi MouseでSLAMとNavigationを行うサンプルは[rt-net/raspimouse
 
 ### direction_controller
 
-<img src=https://www.rt-net.jp/wp-content/uploads/2018/02/img-usb9s_01.png width=500 />
+<img src=https://www.rt-shop.jp/images/RT/RT-USB-9axisIMU.png width=500 />
 
 IMUセンサを使用した角度制御のコード例です。
 

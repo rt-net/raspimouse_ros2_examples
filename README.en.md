@@ -329,13 +329,13 @@ SLAM and Navigation examples for Raspberry Pi Mouse is [here](https://github.com
 
 ### direction_controller
 
-<img src=https://www.rt-net.jp/wp-content/uploads/2018/02/img-usb9s_01.png width=500 />
+<img src=https://www.rt-shop.jp/images/RT/RT-USB-9axisIMU.png width=200 /> <img src=https://www.rt-shop.jp/images/RT/%E8%A3%BD%E5%93%81%E5%86%99%E7%9C%9F.JPG height=200>
 
 This is an example to use an IMU sensor for direction control.
 
 #### Requirements
 
-- [USB output 9 degrees IMU sensor module](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1348_1&products_id=3416&language=en)
+- [USB output 9 degrees IMU sensor module](https://www.rt-shop.jp/index.php?main_page=product_info&products_id=3416&language=en)
 - [LiDAR Mount](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3867)
 - RT-USB-9axisIMU ROS Package.
   - https://github.com/rt-net/rt_usb_9axisimu_driver
