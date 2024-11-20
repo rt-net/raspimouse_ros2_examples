@@ -19,32 +19,41 @@
 #include <string>
 #include <vector>
 
-#include "geometry_msgs/msg/twist_stamped.hpp"
-#include "raspimouse_msgs/msg/leds.hpp"
-#include "raspimouse_msgs/msg/light_sensors.hpp"
-#include "raspimouse_msgs/msg/switches.hpp"
 #include "raspimouse_ros2_examples/visibility_control.h"
+#include "raspimouse_msgs/msg/switches.hpp"
+#include "raspimouse_msgs/msg/light_sensors.hpp"
+#include "raspimouse_msgs/msg/leds.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 #include "std_msgs/msg/int16.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/set_bool.hpp"
+#include "geometry_msgs/msg/twist_stamped.hpp"
 
-namespace line_follower {
+namespace line_follower
+{
 
-class Follower : public rclcpp_lifecycle::LifecycleNode {
- public:
+class Follower : public rclcpp_lifecycle::LifecycleNode
+{
+public:
   RASPIMOUSE_ROS2_EXAMPLES_PUBLIC
-  explicit Follower(const rclcpp::NodeOptions &options);
+  explicit Follower(const rclcpp::NodeOptions & options);
 
- protected:
+protected:
   void on_cmd_vel_timer();
 
- private:
+private:
   using SensorsType = std::vector<int>;
 
-  enum SensorIndex { LEFT = 0, MID_LEFT, MID_RIGHT, RIGHT, SENSOR_NUM };
+  enum SensorIndex
+  {
+    LEFT = 0,
+    MID_LEFT,
+    MID_RIGHT,
+    RIGHT,
+    SENSOR_NUM
+  };
 
   static const int NUM_OF_SAMPLES;
 
@@ -62,23 +71,16 @@ class Follower : public rclcpp_lifecycle::LifecycleNode {
   bool field_sampling_;
   bool can_publish_cmdvel_;
 
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Int16>>
-      buzzer_pub_;
-  std::shared_ptr<
-      rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::TwistStamped>>
-      cmd_vel_pub_;
-  std::shared_ptr<
-      rclcpp_lifecycle::LifecyclePublisher<raspimouse_msgs::msg::Leds>>
-      leds_pub_;
-  rclcpp::Subscription<raspimouse_msgs::msg::LightSensors>::SharedPtr
-      light_sensors_sub_;
+  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Int16>> buzzer_pub_;
+  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::TwistStamped>> cmd_vel_pub_;
+  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<raspimouse_msgs::msg::Leds>> leds_pub_;
+  rclcpp::Subscription<raspimouse_msgs::msg::LightSensors>::SharedPtr light_sensors_sub_;
   rclcpp::Subscription<raspimouse_msgs::msg::Switches>::SharedPtr switches_sub_;
   std::shared_ptr<rclcpp::Client<std_srvs::srv::SetBool>> motor_power_client_;
 
   rclcpp::TimerBase::SharedPtr cmd_vel_timer_;
 
-  void callback_light_sensors(
-      const raspimouse_msgs::msg::LightSensors::SharedPtr msg);
+  void callback_light_sensors(const raspimouse_msgs::msg::LightSensors::SharedPtr msg);
   void callback_switches(const raspimouse_msgs::msg::Switches::SharedPtr msg);
 
   void set_motor_power(const bool motor_on);
@@ -86,7 +88,7 @@ class Follower : public rclcpp_lifecycle::LifecycleNode {
   void update_line_detection(void);
   bool line_is_bright(void);
   void indicate_line_detections(void);
-  void beep_buzzer(const int freq, const std::chrono::nanoseconds &beep_time);
+  void beep_buzzer(const int freq, const std::chrono::nanoseconds & beep_time);
   void beep_start(void);
   void beep_success(void);
   void beep_failure(void);

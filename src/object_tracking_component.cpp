@@ -14,31 +14,33 @@
 
 #include "raspimouse_ros2_examples/object_tracking_component.hpp"
 
+#include <memory>
 #include <chrono>
 #include <iostream>
-#include <memory>
-#include <opencv2/opencv.hpp>
-#include <string>
 #include <utility>
+#include <string>
 #include <vector>
 
-#include "cv_bridge/cv_bridge.hpp"
-#include "lifecycle_msgs/srv/change_state.hpp"
+#include <opencv2/opencv.hpp>
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "lifecycle_msgs/srv/change_state.hpp"
+#include "cv_bridge/cv_bridge.hpp"
 
 using namespace std::chrono_literals;
-using CallbackReturn =
-    rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
+using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
-namespace object_tracking {
+namespace object_tracking
+{
 
-Tracker::Tracker(const rclcpp::NodeOptions &options)
-    : rclcpp_lifecycle::LifecycleNode("tracker", options),
-      object_is_detected_(false) {}
+Tracker::Tracker(const rclcpp::NodeOptions & options)
+: rclcpp_lifecycle::LifecycleNode("tracker", options),
+  object_is_detected_(false)
+{
+}
 
-void Tracker::image_callback(
-    const sensor_msgs::msg::Image::SharedPtr msg_image) {
+void Tracker::image_callback(const sensor_msgs::msg::Image::SharedPtr msg_image)
+{
   auto cv_img = cv_bridge::toCvShare(msg_image, msg_image->encoding);
   auto msg = std::make_unique<sensor_msgs::msg::Image>();
   auto result_msg = std::make_unique<sensor_msgs::msg::Image>();
@@ -55,17 +57,17 @@ void Tracker::image_callback(
   }
 }
 
-void Tracker::on_cmd_vel_timer() {
-  const double LINEAR_VEL = -0.5;             // unit: m/s
-  const double ANGULAR_VEL = -0.8;            // unit: rad/s
-  const double TARGET_AREA = 0.1;             // 0.0 ~ 1.0
+void Tracker::on_cmd_vel_timer()
+{
+  const double LINEAR_VEL = -0.5;  // unit: m/s
+  const double ANGULAR_VEL = -0.8;  // unit: rad/s
+  const double TARGET_AREA = 0.1;  // 0.0 ~ 1.0
   const double OBJECT_AREA_THRESHOLD = 0.01;  // 0.0 ~ 1.0
 
   // Detects an object and tracks it
   // when the number of pixels of the object is greater than the threshold.
   if (object_is_detected_ && object_normalized_area_ > OBJECT_AREA_THRESHOLD) {
-    cmd_vel_.twist.linear.x =
-        LINEAR_VEL * (object_normalized_area_ - TARGET_AREA);
+    cmd_vel_.twist.linear.x = LINEAR_VEL * (object_normalized_area_ - TARGET_AREA);
     cmd_vel_.twist.angular.z = ANGULAR_VEL * object_normalized_point_.x;
   } else {
     cmd_vel_.twist.linear.x = 0.0;
@@ -76,7 +78,8 @@ void Tracker::on_cmd_vel_timer() {
 }
 
 // Ref: https://github.com/ros2/demos/blob/dashing/image_tools/src/cam2image.cpp
-std::string Tracker::mat_type2encoding(int mat_type) {
+std::string Tracker::mat_type2encoding(int mat_type)
+{
   switch (mat_type) {
     case CV_8UC1:
       return "mono8";
@@ -92,8 +95,9 @@ std::string Tracker::mat_type2encoding(int mat_type) {
 }
 
 // Ref: https://github.com/ros2/demos/blob/dashing/image_tools/src/cam2image.cpp
-void Tracker::convert_frame_to_message(const cv::Mat &frame,
-                                       sensor_msgs::msg::Image &msg) {
+void Tracker::convert_frame_to_message(
+  const cv::Mat & frame, sensor_msgs::msg::Image & msg)
+{
   // copy cv information into ros message
   msg.height = frame.rows;
   msg.width = frame.cols;
@@ -105,17 +109,15 @@ void Tracker::convert_frame_to_message(const cv::Mat &frame,
   msg.header.frame_id = "camera_frame";
 }
 
-void Tracker::tracking(const cv::Mat &input_frame, cv::Mat &result_frame) {
-  // Specific colors are extracted from the input image and converted to binary
-  // values.
+void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
+{
+  // Specific colors are extracted from the input image and converted to binary values.
   cv::Mat hsv;
   cv::cvtColor(input_frame, hsv, cv::COLOR_BGR2HSV);
   cv::Mat extracted_bin;
-  cv::inRange(hsv, cv::Scalar(0, 100, 100), cv::Scalar(29, 255, 255),
-              extracted_bin);  // Red-Orange
-  // cv::inRange(hsv, cv::Scalar(60, 100, 100), cv::Scalar(80, 255, 255),
-  // extracted_bin);  // Green cv::inRange(hsv, cv::Scalar(100, 100, 100),
-  // cv::Scalar(120, 255, 255), extracted_bin);  // Blue
+  cv::inRange(hsv, cv::Scalar(0, 100, 100), cv::Scalar(29, 255, 255), extracted_bin);  // Red-Orange
+  // cv::inRange(hsv, cv::Scalar(60, 100, 100), cv::Scalar(80, 255, 255), extracted_bin);  // Green
+  // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);  // Blue
   input_frame.copyTo(result_frame, extracted_bin);
 
   // Remove noise with morphology transformation
@@ -125,8 +127,7 @@ void Tracker::tracking(const cv::Mat &input_frame, cv::Mat &result_frame) {
   // Extracting contours
   std::vector<std::vector<cv::Point>> contours;
   std::vector<cv::Vec4i> hierarchy;
-  cv::findContours(morph_bin, contours, hierarchy, cv::RETR_EXTERNAL,
-                   cv::CHAIN_APPROX_NONE);
+  cv::findContours(morph_bin, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
 
   // Extracting the largest contours
   double max_area = 0;
@@ -139,58 +140,59 @@ void Tracker::tracking(const cv::Mat &input_frame, cv::Mat &result_frame) {
     }
   }
 
-  // If the contour exists (if the object exists), find the centroid of the
-  // contour
+  // If the contour exists (if the object exists), find the centroid of the contour
   if (max_area_index >= 0) {
     cv::Moments mt = cv::moments(contours.at(max_area_index));
     cv::Point mt_point = cv::Point(mt.m10 / mt.m00, mt.m01 / mt.m00);
 
     // Normalize the centroid coordinates to [-1.0, 1.0].
-    object_normalized_point_ =
-        cv::Point2d(2.0 * mt_point.x / input_frame.cols - 1.0,
-                    2.0 * mt_point.y / input_frame.rows - 1.0);
+    object_normalized_point_ = cv::Point2d(
+      2.0 * mt_point.x / input_frame.cols - 1.0,
+      2.0 * mt_point.y / input_frame.rows - 1.0
+    );
     // Normalize the the contour area to [0.0, 1.0].
     object_normalized_area_ = max_area / (input_frame.rows * input_frame.cols);
     object_is_detected_ = true;
 
-    std::string text =
-        "Area:" + std::to_string(object_normalized_area_ * 100) + "%";
-    cv::drawContours(result_frame, contours, max_area_index,
-                     cv::Scalar(0, 255, 0), 2, cv::LINE_4, hierarchy);
-    cv::circle(result_frame, mt_point, 30, cv::Scalar(0, 0, 255), 2,
-               cv::LINE_4);
-    cv::putText(result_frame, text, cv::Point(0, 30), cv::FONT_HERSHEY_SIMPLEX,
-                1, cv::Scalar(255, 0, 0), 2);
+    std::string text = "Area:" + std::to_string(object_normalized_area_ * 100) + "%";
+    cv::drawContours(
+      result_frame, contours, max_area_index,
+      cv::Scalar(0, 255, 0), 2, cv::LINE_4, hierarchy);
+    cv::circle(result_frame, mt_point, 30, cv::Scalar(0, 0, 255), 2, cv::LINE_4);
+    cv::putText(
+      result_frame, text, cv::Point(0, 30),
+      cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 0, 0), 2);
   } else {
     object_is_detected_ = false;
   }
 }
 
-CallbackReturn Tracker::on_configure(const rclcpp_lifecycle::State &) {
+CallbackReturn Tracker::on_configure(const rclcpp_lifecycle::State &)
+{
   RCLCPP_INFO(this->get_logger(), "on_configure() is called.");
 
-  cmd_vel_timer_ =
-      create_wall_timer(50ms, std::bind(&Tracker::on_cmd_vel_timer, this));
+  cmd_vel_timer_ = create_wall_timer(50ms, std::bind(&Tracker::on_cmd_vel_timer, this));
   // Don't actually start publishing data until activated
   cmd_vel_timer_->cancel();
 
-  result_image_pub_ =
-      create_publisher<sensor_msgs::msg::Image>("result_image", 1);
-  cmd_vel_pub_ =
-      create_publisher<geometry_msgs::msg::TwistStamped>("cmd_vel", 1);
+  result_image_pub_ = create_publisher<sensor_msgs::msg::Image>("result_image", 1);
+  cmd_vel_pub_ = create_publisher<geometry_msgs::msg::TwistStamped>("cmd_vel", 1);
   image_sub_ = create_subscription<sensor_msgs::msg::Image>(
-      "camera/color/image_raw", rclcpp::SensorDataQoS(),
-      std::bind(&Tracker::image_callback, this, std::placeholders::_1));
+    "camera/color/image_raw", rclcpp::SensorDataQoS(),
+    std::bind(&Tracker::image_callback, this, std::placeholders::_1));
 
   return CallbackReturn::SUCCESS;
 }
 
-CallbackReturn Tracker::on_activate(const rclcpp_lifecycle::State &) {
+CallbackReturn Tracker::on_activate(const rclcpp_lifecycle::State &)
+{
   RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
 
   motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
   if (!motor_power_client_->wait_for_service(5s)) {
-    RCLCPP_ERROR(this->get_logger(), "Service motor_power is not avaliable.");
+    RCLCPP_ERROR(
+      this->get_logger(),
+      "Service motor_power is not avaliable.");
     return CallbackReturn::FAILURE;
   }
   auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
@@ -204,7 +206,8 @@ CallbackReturn Tracker::on_activate(const rclcpp_lifecycle::State &) {
   return CallbackReturn::SUCCESS;
 }
 
-CallbackReturn Tracker::on_deactivate(const rclcpp_lifecycle::State &) {
+CallbackReturn Tracker::on_deactivate(const rclcpp_lifecycle::State &)
+{
   RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
   result_image_pub_->on_deactivate();
   cmd_vel_pub_->on_deactivate();
@@ -216,7 +219,8 @@ CallbackReturn Tracker::on_deactivate(const rclcpp_lifecycle::State &) {
   return CallbackReturn::SUCCESS;
 }
 
-CallbackReturn Tracker::on_cleanup(const rclcpp_lifecycle::State &) {
+CallbackReturn Tracker::on_cleanup(const rclcpp_lifecycle::State &)
+{
   RCLCPP_INFO(this->get_logger(), "on_cleanup() is called.");
 
   result_image_pub_.reset();
@@ -227,7 +231,8 @@ CallbackReturn Tracker::on_cleanup(const rclcpp_lifecycle::State &) {
   return CallbackReturn::SUCCESS;
 }
 
-CallbackReturn Tracker::on_shutdown(const rclcpp_lifecycle::State &) {
+CallbackReturn Tracker::on_shutdown(const rclcpp_lifecycle::State &)
+{
   RCLCPP_INFO(this->get_logger(), "on_shutdown() is called.");
 
   result_image_pub_.reset();

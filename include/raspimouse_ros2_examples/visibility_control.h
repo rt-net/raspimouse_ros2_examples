@@ -16,38 +16,39 @@
 #define RASPIMOUSE_ROS2_EXAMPLES__VISIBILITY_CONTROL_H_
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 // This logic was borrowed (then namespaced) from the examples on the gcc wiki:
 //     https://gcc.gnu.org/wiki/Visibility
 
 #if defined _WIN32 || defined __CYGWIN__
-#ifdef __GNUC__
-#define RASPIMOUSE_ROS2_EXAMPLES_EXPORT __attribute__((dllexport))
-#define RASPIMOUSE_ROS2_EXAMPLES_IMPORT __attribute__((dllimport))
+  #ifdef __GNUC__
+    #define RASPIMOUSE_ROS2_EXAMPLES_EXPORT __attribute__ ((dllexport))
+    #define RASPIMOUSE_ROS2_EXAMPLES_IMPORT __attribute__ ((dllimport))
+  #else
+    #define RASPIMOUSE_ROS2_EXAMPLES_EXPORT __declspec(dllexport)
+    #define RASPIMOUSE_ROS2_EXAMPLES_IMPORT __declspec(dllimport)
+  #endif
+  #ifdef RASPIMOUSE_ROS2_EXAMPLES_BUILDING_DLL
+    #define RASPIMOUSE_ROS2_EXAMPLES_PUBLIC RASPIMOUSE_ROS2_EXAMPLES_EXPORT
+  #else
+    #define RASPIMOUSE_ROS2_EXAMPLES_PUBLIC RASPIMOUSE_ROS2_EXAMPLES_IMPORT
+  #endif
+  #define RASPIMOUSE_ROS2_EXAMPLES_PUBLIC_TYPE RASPIMOUSE_ROS2_EXAMPLES_PUBLIC
+  #define RASPIMOUSE_ROS2_EXAMPLES_LOCAL
 #else
-#define RASPIMOUSE_ROS2_EXAMPLES_EXPORT __declspec(dllexport)
-#define RASPIMOUSE_ROS2_EXAMPLES_IMPORT __declspec(dllimport)
-#endif
-#ifdef RASPIMOUSE_ROS2_EXAMPLES_BUILDING_DLL
-#define RASPIMOUSE_ROS2_EXAMPLES_PUBLIC RASPIMOUSE_ROS2_EXAMPLES_EXPORT
-#else
-#define RASPIMOUSE_ROS2_EXAMPLES_PUBLIC RASPIMOUSE_ROS2_EXAMPLES_IMPORT
-#endif
-#define RASPIMOUSE_ROS2_EXAMPLES_PUBLIC_TYPE RASPIMOUSE_ROS2_EXAMPLES_PUBLIC
-#define RASPIMOUSE_ROS2_EXAMPLES_LOCAL
-#else
-#define RASPIMOUSE_ROS2_EXAMPLES_EXPORT __attribute__((visibility("default")))
-#define RASPIMOUSE_ROS2_EXAMPLES_IMPORT
-#if __GNUC__ >= 4
-#define RASPIMOUSE_ROS2_EXAMPLES_PUBLIC __attribute__((visibility("default")))
-#define RASPIMOUSE_ROS2_EXAMPLES_LOCAL __attribute__((visibility("hidden")))
-#else
-#define RASPIMOUSE_ROS2_EXAMPLES_PUBLIC
-#define RASPIMOUSE_ROS2_EXAMPLES_LOCAL
-#endif
-#define RASPIMOUSE_ROS2_EXAMPLES_PUBLIC_TYPE
+  #define RASPIMOUSE_ROS2_EXAMPLES_EXPORT __attribute__ ((visibility("default")))
+  #define RASPIMOUSE_ROS2_EXAMPLES_IMPORT
+  #if __GNUC__ >= 4
+    #define RASPIMOUSE_ROS2_EXAMPLES_PUBLIC __attribute__ ((visibility("default")))
+    #define RASPIMOUSE_ROS2_EXAMPLES_LOCAL  __attribute__ ((visibility("hidden")))
+  #else
+    #define RASPIMOUSE_ROS2_EXAMPLES_PUBLIC
+    #define RASPIMOUSE_ROS2_EXAMPLES_LOCAL
+  #endif
+  #define RASPIMOUSE_ROS2_EXAMPLES_PUBLIC_TYPE
 #endif
 
 #ifdef __cplusplus

@@ -13,18 +13,18 @@
 // limitations under the License.
 
 #include <memory>
+#include "rclcpp/rclcpp.hpp"
 
 #include "raspimouse/raspimouse_component.hpp"
 #include "raspimouse_ros2_examples/direction_controller_component.hpp"
-#include "rclcpp/rclcpp.hpp"
 #include "rt_usb_9axisimu_driver/rt_usb_9axisimu_driver_component.hpp"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char * argv[])
+{
   rclcpp::init(argc, argv);
   rclcpp::executors::SingleThreadedExecutor exec;
   rclcpp::NodeOptions options;
-  auto direction_controller =
-      std::make_shared<direction_controller::Controller>(options);
+  auto direction_controller = std::make_shared<direction_controller::Controller>(options);
   exec.add_node(direction_controller->get_node_base_interface());
   exec.spin();
   rclcpp::shutdown();
