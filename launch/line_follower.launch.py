@@ -22,7 +22,7 @@ def generate_launch_description():
         package='raspimouse_ros2_examples',
         executable='line_follower',
         output='screen',
-        parameters=[{'use_pulse_counters': False}]
+        parameters=[{'use_pulse_counters': False}],
     )
 
     manager = Node(
@@ -30,7 +30,7 @@ def generate_launch_description():
         package='raspimouse_ros2_examples',
         executable='lifecycle_node_manager',
         output='screen',
-        parameters=[{'components': ['raspimouse', 'follower']}]
+        parameters=[{'components': ['raspimouse', 'follower']}],
     )
 
     return launch.LaunchDescription([line_follower, manager])

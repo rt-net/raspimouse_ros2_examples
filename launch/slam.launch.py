@@ -20,29 +20,32 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     slam_node = Node(
-        package='slam_toolbox', executable='sync_slam_toolbox_node',
+        package='slam_toolbox',
+        executable='sync_slam_toolbox_node',
         output='screen',
         parameters=[
-            get_package_share_directory(
-                'raspimouse_ros2_examples')
+            get_package_share_directory('raspimouse_ros2_examples')
             + '/config/mapper_params_offline.yaml'
         ],
     )
 
     rviz2_node = Node(
         name='rviz2',
-        package='rviz2', executable='rviz2', output='screen',
+        package='rviz2',
+        executable='rviz2',
+        output='screen',
         arguments=[
             '-d',
             get_package_share_directory('raspimouse_ros2_examples')
-            + '/config/default.rviz'],
+            + '/config/default.rviz',
+        ],
     )
 
     static_transform_publisher_node = Node(
         package='tf2_ros',
-        executable='static_transform_publisher', output='screen',
-        arguments=['0', '0', '0.1', '0', '3.14',
-                   '3.14', 'base_footprint', 'laser'],
+        executable='static_transform_publisher',
+        output='screen',
+        arguments=['0', '0', '0.1', '0', '3.14', '3.14', 'base_footprint', 'laser'],
     )
 
     ld = LaunchDescription()

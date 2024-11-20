@@ -20,19 +20,29 @@ from launch_ros.actions import LifecycleNode
 def generate_launch_description():
     """Generate launch description with multiple components."""
     mouse_node = LifecycleNode(
-        name='raspimouse', namespace="",
+        name='raspimouse',
+        namespace='',
         package='raspimouse',
         executable='raspimouse',
         output='screen',
-        parameters=[{'use_light_sensors': False, }]
+        parameters=[
+            {
+                'use_light_sensors': False,
+            }
+        ],
     )
 
     imu_driver = LifecycleNode(
-        name='rt_usb_9axisimu_driver', namespace="",
+        name='rt_usb_9axisimu_driver',
+        namespace='',
         package='rt_usb_9axisimu_driver',
         executable='rt_usb_9axisimu_driver',
         output='screen',
-        parameters=[{'port': '/dev/ttyACM0', }]
+        parameters=[
+            {
+                'port': '/dev/ttyACM0',
+            }
+        ],
     )
 
     direction_controller = Node(
@@ -46,8 +56,9 @@ def generate_launch_description():
         package='raspimouse_ros2_examples',
         executable='lifecycle_node_manager',
         output='screen',
-        parameters=[{'components': ['raspimouse', 'rt_usb_9axisimu_driver']}]
+        parameters=[{'components': ['raspimouse', 'rt_usb_9axisimu_driver']}],
     )
 
-    return launch.LaunchDescription([
-        mouse_node, imu_driver, direction_controller, manager])
+    return launch.LaunchDescription(
+        [mouse_node, imu_driver, direction_controller, manager]
+    )
