@@ -37,8 +37,7 @@ class PIDController
 {
 public:
   PIDController()
-  : p_gain_(0.0), i_gain_(0.0), d_gain_(0.0),
-    error1_(0.0), error2_(0.0), output_(0.0)
+  : p_gain_(0.0), i_gain_(0.0), d_gain_(0.0), error1_(0.0), error2_(0.0), output_(0.0)
   {
   }
 

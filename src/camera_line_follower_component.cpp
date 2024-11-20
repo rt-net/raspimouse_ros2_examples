@@ -41,8 +41,7 @@ using namespace std::chrono_literals;
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
 CameraFollower::CameraFollower(const rclcpp::NodeOptions & options)
-: rclcpp_lifecycle::LifecycleNode("camera_follower", options),
-  object_is_detected_(false)
+: rclcpp_lifecycle::LifecycleNode("camera_follower", options), object_is_detected_(false)
 {
 }
 
@@ -80,11 +79,12 @@ void CameraFollower::on_cmd_vel_timer()
 
   // Follow the line
   // when the number of pixels of the object is greater than the threshold.
-  if (object_is_detected_ &&
-    object_normalized_area_ > get_parameter(AREA_THRESHOLD_PARAM).as_double())
-  {
+  if (
+    object_is_detected_ &&
+    object_normalized_area_ > get_parameter(AREA_THRESHOLD_PARAM).as_double()) {
     cmd_vel.twist.linear.x = get_parameter(LINEAR_VEL_PARAM).as_double();
-    cmd_vel.twist.angular.z = -get_parameter(ANGULAR_VEL_PARAM).as_double() * object_normalized_point_.x;
+    cmd_vel.twist.angular.z =
+      -get_parameter(ANGULAR_VEL_PARAM).as_double() * object_normalized_point_.x;
   } else {
     cmd_vel.twist.linear.x = 0.0;
     cmd_vel.twist.angular.z = 0.0;
@@ -102,9 +102,7 @@ void CameraFollower::on_cmd_vel_timer()
 void CameraFollower::set_motor_power(const bool motor_on)
 {
   if (motor_power_client_ == nullptr) {
-    RCLCPP_ERROR(
-      this->get_logger(),
-      "Service motor_power is not avaliable.");
+    RCLCPP_ERROR(this->get_logger(), "Service motor_power is not avaliable.");
     return;
   }
   auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
@@ -151,10 +149,8 @@ bool CameraFollower::detect_line(const cv::Mat & input_frame, cv::Mat & result_f
   cv::cvtColor(input_frame, gray, cv::COLOR_BGR2GRAY);
   cv::Mat extracted_bin;
   cv::inRange(
-    gray,
-    get_parameter(MIN_BRIGHTNESS_PARAM).as_int(),
-    get_parameter(MAX_BRIGHTNESS_PARAM).as_int(),
-    extracted_bin);
+    gray, get_parameter(MIN_BRIGHTNESS_PARAM).as_int(),
+    get_parameter(MAX_BRIGHTNESS_PARAM).as_int(), extracted_bin);
   input_frame.copyTo(result_frame, extracted_bin);
 
   // Remove noise with morphology transformation
@@ -184,20 +180,17 @@ bool CameraFollower::detect_line(const cv::Mat & input_frame, cv::Mat & result_f
 
     // Normalize the centroid coordinates to [-1.0, 1.0].
     object_normalized_point_ = cv::Point2d(
-      2.0 * mt_point.x / input_frame.cols - 1.0,
-      2.0 * mt_point.y / input_frame.rows - 1.0
-    );
+      2.0 * mt_point.x / input_frame.cols - 1.0, 2.0 * mt_point.y / input_frame.rows - 1.0);
     // Normalize the the contour area to [0.0, 1.0].
     object_normalized_area_ = max_area / (input_frame.rows * input_frame.cols);
 
     std::string text = "Area:" + std::to_string(object_normalized_area_ * 100) + "%";
     cv::drawContours(
-      result_frame, contours, max_area_index,
-      cv::Scalar(0, 255, 0), 2, cv::LINE_4, hierarchy);
+      result_frame, contours, max_area_index, cv::Scalar(0, 255, 0), 2, cv::LINE_4, hierarchy);
     cv::circle(result_frame, mt_point, 30, cv::Scalar(0, 0, 255), 2, cv::LINE_4);
     cv::putText(
-      result_frame, text, cv::Point(0, 30),
-      cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
+      result_frame, text, cv::Point(0, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255),
+      2);
     return true;
   } else {
     return false;
@@ -214,9 +207,7 @@ CallbackReturn CameraFollower::on_configure(const rclcpp_lifecycle::State &)
 
   motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
   if (!motor_power_client_->wait_for_service(5s)) {
-    RCLCPP_ERROR(
-      this->get_logger(),
-      "Service motor_power is not avaliable.");
+    RCLCPP_ERROR(this->get_logger(), "Service motor_power is not avaliable.");
     return CallbackReturn::FAILURE;
   }
 

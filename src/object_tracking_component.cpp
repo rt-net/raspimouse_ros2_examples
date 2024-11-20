@@ -34,8 +34,7 @@ namespace object_tracking
 {
 
 Tracker::Tracker(const rclcpp::NodeOptions & options)
-: rclcpp_lifecycle::LifecycleNode("tracker", options),
-  object_is_detected_(false)
+: rclcpp_lifecycle::LifecycleNode("tracker", options), object_is_detected_(false)
 {
 }
 
@@ -59,9 +58,9 @@ void Tracker::image_callback(const sensor_msgs::msg::Image::SharedPtr msg_image)
 
 void Tracker::on_cmd_vel_timer()
 {
-  const double LINEAR_VEL = -0.5;  // unit: m/s
-  const double ANGULAR_VEL = -0.8;  // unit: rad/s
-  const double TARGET_AREA = 0.1;  // 0.0 ~ 1.0
+  const double LINEAR_VEL = -0.5;             // unit: m/s
+  const double ANGULAR_VEL = -0.8;            // unit: rad/s
+  const double TARGET_AREA = 0.1;             // 0.0 ~ 1.0
   const double OBJECT_AREA_THRESHOLD = 0.01;  // 0.0 ~ 1.0
 
   // Detects an object and tracks it
@@ -95,8 +94,7 @@ std::string Tracker::mat_type2encoding(int mat_type)
 }
 
 // Ref: https://github.com/ros2/demos/blob/dashing/image_tools/src/cam2image.cpp
-void Tracker::convert_frame_to_message(
-  const cv::Mat & frame, sensor_msgs::msg::Image & msg)
+void Tracker::convert_frame_to_message(const cv::Mat & frame, sensor_msgs::msg::Image & msg)
 {
   // copy cv information into ros message
   msg.height = frame.rows;
@@ -147,21 +145,17 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
 
     // Normalize the centroid coordinates to [-1.0, 1.0].
     object_normalized_point_ = cv::Point2d(
-      2.0 * mt_point.x / input_frame.cols - 1.0,
-      2.0 * mt_point.y / input_frame.rows - 1.0
-    );
+      2.0 * mt_point.x / input_frame.cols - 1.0, 2.0 * mt_point.y / input_frame.rows - 1.0);
     // Normalize the the contour area to [0.0, 1.0].
     object_normalized_area_ = max_area / (input_frame.rows * input_frame.cols);
     object_is_detected_ = true;
 
     std::string text = "Area:" + std::to_string(object_normalized_area_ * 100) + "%";
     cv::drawContours(
-      result_frame, contours, max_area_index,
-      cv::Scalar(0, 255, 0), 2, cv::LINE_4, hierarchy);
+      result_frame, contours, max_area_index, cv::Scalar(0, 255, 0), 2, cv::LINE_4, hierarchy);
     cv::circle(result_frame, mt_point, 30, cv::Scalar(0, 0, 255), 2, cv::LINE_4);
     cv::putText(
-      result_frame, text, cv::Point(0, 30),
-      cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 0, 0), 2);
+      result_frame, text, cv::Point(0, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 0, 0), 2);
   } else {
     object_is_detected_ = false;
   }
@@ -190,9 +184,7 @@ CallbackReturn Tracker::on_activate(const rclcpp_lifecycle::State &)
 
   motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
   if (!motor_power_client_->wait_for_service(5s)) {
-    RCLCPP_ERROR(
-      this->get_logger(),
-      "Service motor_power is not avaliable.");
+    RCLCPP_ERROR(this->get_logger(), "Service motor_power is not avaliable.");
     return CallbackReturn::FAILURE;
   }
   auto request = std::make_shared<std_srvs::srv::SetBool::Request>();

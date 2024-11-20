@@ -25,7 +25,6 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
-#include "lifecycle_msgs/srv/change_state.hpp"
 
 using namespace std::chrono_literals;
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
@@ -44,8 +43,10 @@ Follower::Follower(const rclcpp::NodeOptions & options)
   sampling_values_(SensorsType(SENSOR_NUM, 0)),
   line_is_detected_by_sensor_(std::vector<bool>(SENSOR_NUM, false)),
   sampling_count_(0),
-  line_values_are_sampled_(false), field_values_are_sampled_(false),
-  line_sampling_(false), field_sampling_(false),
+  line_values_are_sampled_(false),
+  field_values_are_sampled_(false),
+  line_sampling_(false),
+  field_sampling_(false),
   can_publish_cmdvel_(false)
 {
 }
@@ -118,18 +119,18 @@ void Follower::set_motor_power(const bool motor_on)
 
 void Follower::publish_cmdvel_for_line_following(void)
 {
-  const double VEL_LINEAR_X = 0.08;  // m/s
-  const double VEL_ANGULAR_Z = 0.8;  // rad/s
+  const double VEL_LINEAR_X = 0.08;      // m/s
+  const double VEL_ANGULAR_Z = 0.8;      // rad/s
   const double LOW_VEL_ANGULAR_Z = 0.5;  // rad/s
 
   auto cmd_vel = std::make_unique<geometry_msgs::msg::TwistStamped>();
 
   bool detect_line = std::any_of(
     line_is_detected_by_sensor_.begin(), line_is_detected_by_sensor_.end(),
-    [](bool detected) {return detected;});
+    [](bool detected) { return detected; });
   bool detect_field = std::any_of(
     line_is_detected_by_sensor_.begin(), line_is_detected_by_sensor_.end(),
-    [](bool detected) {return !detected;});
+    [](bool detected) { return !detected; });
 
   if (detect_line && detect_field) {
     cmd_vel->twist.linear.x = VEL_LINEAR_X;
@@ -200,10 +201,7 @@ void Follower::beep_buzzer(const int freq, const std::chrono::nanoseconds & beep
   buzzer_pub_->publish(std::move(msg));
 }
 
-void Follower::beep_start(void)
-{
-  beep_buzzer(1000, 500ms);
-}
+void Follower::beep_start(void) { beep_buzzer(1000, 500ms); }
 
 void Follower::beep_success(void)
 {
@@ -254,9 +252,8 @@ void Follower::multisampling(void)
     line_sampling_ = field_sampling_ = false;
 
     RCLCPP_INFO(
-      this->get_logger(), "L:%d, ML:%d, MR:%d, R:%d",
-      sampling_values_[LEFT], sampling_values_[MID_LEFT],
-      sampling_values_[MID_RIGHT], sampling_values_[RIGHT]);
+      this->get_logger(), "L:%d, ML:%d, MR:%d, R:%d", sampling_values_[LEFT],
+      sampling_values_[MID_LEFT], sampling_values_[MID_RIGHT], sampling_values_[RIGHT]);
 
     set_line_thresholds();
     beep_success();
@@ -281,14 +278,13 @@ void Follower::set_line_thresholds(void)
   }
 
   for (int sensor_i = 0; sensor_i < SENSOR_NUM; sensor_i++) {
-    line_thresholds_[sensor_i] = median(
-      sensor_line_values_[sensor_i], sensor_field_values_[sensor_i]);
+    line_thresholds_[sensor_i] =
+      median(sensor_line_values_[sensor_i], sensor_field_values_[sensor_i]);
   }
 
   RCLCPP_INFO(
-    this->get_logger(), "line_thresholds: L:%d, ML:%d, MR:%d, R:%d",
-    line_thresholds_[LEFT], line_thresholds_[MID_LEFT],
-    line_thresholds_[MID_RIGHT], line_thresholds_[RIGHT]);
+    this->get_logger(), "line_thresholds: L:%d, ML:%d, MR:%d, R:%d", line_thresholds_[LEFT],
+    line_thresholds_[MID_LEFT], line_thresholds_[MID_RIGHT], line_thresholds_[RIGHT]);
 }
 
 CallbackReturn Follower::on_configure(const rclcpp_lifecycle::State &)
@@ -311,9 +307,7 @@ CallbackReturn Follower::on_configure(const rclcpp_lifecycle::State &)
 
   motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
   if (!motor_power_client_->wait_for_service(5s)) {
-    RCLCPP_ERROR(
-      this->get_logger(),
-      "Service motor_power is not avaliable.");
+    RCLCPP_ERROR(this->get_logger(), "Service motor_power is not avaliable.");
     return CallbackReturn::FAILURE;
   }
   return CallbackReturn::SUCCESS;
