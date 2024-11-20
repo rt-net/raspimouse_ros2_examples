@@ -49,7 +49,7 @@ private:
   geometry_msgs::msg::TwistStamped cmd_vel_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> result_image_pub_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::TwistStamped>>
-    cmd_vel_pub_;
+  cmd_vel_pub_;
   std::shared_ptr<rclcpp::Client<std_srvs::srv::SetBool>> motor_power_client_;
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
   rclcpp::TimerBase::SharedPtr cmd_vel_timer_;

@@ -127,10 +127,10 @@ void Follower::publish_cmdvel_for_line_following(void)
 
   bool detect_line = std::any_of(
     line_is_detected_by_sensor_.begin(), line_is_detected_by_sensor_.end(),
-    [](bool detected) { return detected; });
+    [](bool detected) {return detected;});
   bool detect_field = std::any_of(
     line_is_detected_by_sensor_.begin(), line_is_detected_by_sensor_.end(),
-    [](bool detected) { return !detected; });
+    [](bool detected) {return !detected;});
 
   if (detect_line && detect_field) {
     cmd_vel->twist.linear.x = VEL_LINEAR_X;
@@ -201,7 +201,7 @@ void Follower::beep_buzzer(const int freq, const std::chrono::nanoseconds & beep
   buzzer_pub_->publish(std::move(msg));
 }
 
-void Follower::beep_start(void) { beep_buzzer(1000, 500ms); }
+void Follower::beep_start(void) {beep_buzzer(1000, 500ms);}
 
 void Follower::beep_success(void)
 {

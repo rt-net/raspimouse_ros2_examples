@@ -35,7 +35,8 @@ enum CONTROL_MODE
   MODE_ROTATION = 3
 };
 
-Controller::Controller(const rclcpp::NodeOptions & options) : Node("direction_controller", options)
+Controller::Controller(const rclcpp::NodeOptions & options)
+: Node("direction_controller", options)
 {
   using namespace std::placeholders;  // for _1, _2, _3...
 
@@ -185,7 +186,7 @@ bool Controller::omega_calibration(const double omega)
 
   if (omega_samples_.size() >= SAMPLE_NUM) {
     omega_bias_ = std::accumulate(std::begin(omega_samples_), std::end(omega_samples_), 0.0) /
-                  omega_samples_.size();
+      omega_samples_.size();
     omega_samples_.clear();
     complete = true;
   }
@@ -261,7 +262,7 @@ void Controller::beep_buzzer(const int freq, const std::chrono::nanoseconds & be
   buzzer_pub_->publish(std::move(msg));
 }
 
-void Controller::beep_start(void) { beep_buzzer(1000, 500ms); }
+void Controller::beep_start(void) {beep_buzzer(1000, 500ms);}
 
 void Controller::beep_success(void)
 {

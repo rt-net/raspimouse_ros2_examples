@@ -60,7 +60,7 @@ bool all_nodes_are_unconfigured(
   rclcpp::Node::SharedPtr node, const std::vector<std::string> & target_node_names)
 {
   return std::all_of(target_node_names.begin(), target_node_names.end(), [&](std::string s) {
-    return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_UNCONFIGURED;
+             return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_UNCONFIGURED;
   });
 }
 
@@ -68,7 +68,7 @@ bool all_nodes_are_inactive(
   rclcpp::Node::SharedPtr node, const std::vector<std::string> & target_node_names)
 {
   return std::all_of(target_node_names.begin(), target_node_names.end(), [&](std::string s) {
-    return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_INACTIVE;
+             return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_INACTIVE;
   });
 }
 
@@ -76,7 +76,7 @@ bool all_nodes_are_active(
   rclcpp::Node::SharedPtr node, const std::vector<std::string> & target_node_names)
 {
   return std::all_of(target_node_names.begin(), target_node_names.end(), [&](std::string s) {
-    return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_ACTIVE;
+             return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_ACTIVE;
   });
 }
 
@@ -112,7 +112,7 @@ bool configure_all_nodes(
   rclcpp::Node::SharedPtr node, const std::vector<std::string> & target_node_names)
 {
   return std::all_of(target_node_names.begin(), target_node_names.end(), [&](std::string s) {
-    return change_state(s, node, MsgTransition::TRANSITION_CONFIGURE, 10s);
+             return change_state(s, node, MsgTransition::TRANSITION_CONFIGURE, 10s);
   });
 }
 
@@ -120,7 +120,7 @@ bool activate_all_nodes(
   rclcpp::Node::SharedPtr node, const std::vector<std::string> & target_node_names)
 {
   return std::all_of(target_node_names.begin(), target_node_names.end(), [&](std::string s) {
-    return change_state(s, node, MsgTransition::TRANSITION_ACTIVATE, 10s);
+             return change_state(s, node, MsgTransition::TRANSITION_ACTIVATE, 10s);
   });
 }
 
