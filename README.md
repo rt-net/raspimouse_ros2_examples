@@ -26,12 +26,12 @@ Gazebo（シミュレータ）でも動作します。詳細は[こちら](https
   - Device Driver
     - [rt-net/RaspberryPiMouse](https://github.com/rt-net/RaspberryPiMouse)
   - ROS
-    - [Jazzy JALSCO](https://docs.ros.org/en/jazzy/index.html)
+    - [Jazzy Jalisco](https://docs.ros.org/en/jazzy/index.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 - Remote Computer (Optional)
   - ROS
-    - [Jazzy JALSCO](https://docs.ros.org/en/jazzy/index.html)
+    - [Jazzy Jalisco](https://docs.ros.org/en/jazzy/index.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 
