@@ -28,8 +28,8 @@ from raspimouse_msgs.msg import LightSensors
 from raspimouse_msgs.msg import Switches
 
 import rclpy
-from rclpy.node import Node
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+from rclpy.node import Node
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Int16
 from std_srvs.srv import SetBool
