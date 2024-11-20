@@ -17,11 +17,10 @@
 #include <chrono>
 #include <iostream>
 #include <memory>
+#include <opencv2/opencv.hpp>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include <opencv2/opencv.hpp>
 
 #include "cv_bridge/cv_bridge.hpp"
 #include "geometry_msgs/msg/twist_stamped.hpp"
