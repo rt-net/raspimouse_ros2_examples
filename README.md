@@ -15,7 +15,7 @@ Gazebo（シミュレータ）でも動作します。詳細は[こちら](https
 ## Supported ROS 2 distributions
 
 - [Humble](https://github.com/rt-net/raspimouse_ros2_examples/tree/humble)
-- [Jazzy](https://github.com/rt-net/raspimouse_ros2_examples/tree/jazzy)(This branch)
+- [Jazzy](https://github.com/rt-net/raspimouse_ros2_examples/tree/jazzy) (This branch)
 
 ## Requirements
 

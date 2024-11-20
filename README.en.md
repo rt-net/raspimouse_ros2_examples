@@ -14,25 +14,24 @@ To run on Gazebo, click [here](https://github.com/rt-net/raspimouse_sim/blob/ros
 
 ## Supported ROS 2 distributions
 
-- [Foxy](https://github.com/rt-net/raspimouse_ros2_examples/tree/foxy-devel)
-- Humble (This branch)
+- [Humble](https://github.com/rt-net/raspimouse_ros2_examples/tree/humble)
+- [Jazzy](https://github.com/rt-net/raspimouse_ros2_examples/tree/jazzy) (This branch)
 
 ## Requirements
 
 - Raspberry Pi Mouse
   - https://rt-net.jp/products/raspberrypimousev3/
   - Linux OS
-    - Ubuntu server 22.04
-    - https://ubuntu.com/download/raspberry-pi
+    - Ubuntu server 24.04
   - Device Driver
     - [rt-net/RaspberryPiMouse](https://github.com/rt-net/RaspberryPiMouse)
   - ROS
-    - [Humble Hawksbill](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html)
+    - [Jazzy Jalisco](https://docs.ros.org/en/jazzy/index.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 - Remote Computer (Optional)
   - ROS
-    - [Humble Hawksbill](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html)
+    - [Jazzy Jalisco](https://docs.ros.org/en/jazzy/index.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 
@@ -41,7 +40,7 @@ To run on Gazebo, click [here](https://github.com/rt-net/raspimouse_sim/blob/ros
 ```sh
 $ cd ~/ros2_ws/src
 # Clone package
-$ git clone -b $ROS_DISTRO-devel https://github.com/rt-net/raspimouse_ros2_examples.git
+$ git clone -b $ROS_DISTRO https://github.com/rt-net/raspimouse_ros2_examples.git
 
 # Install dependencies
 $ rosdep install -r -y --from-paths . --ignore-src
@@ -71,7 +70,7 @@ This repository is licensed under the Apache 2.0, see [LICENSE](./LICENSE) for d
 
 This is an example to use joystick controller to control a Raspberry Pi Mouse.
 
-#### Requirements 
+#### Requirements
 
 - Joystick Controller
   - [Logicool Wireless Gamepad F710](https://gaming.logicool.co.jp/ja-jp/products/gamepads/f710-wireless-gamepad.html#940-0001440)
@@ -122,7 +121,7 @@ button_cmd_enable       : 4
 
 [back to example list](#how-to-use-examples)
 
---- 
+---
 
 ### object_tracking
 
@@ -130,7 +129,7 @@ button_cmd_enable       : 4
 
 This is an example to use RGB camera images and OpenCV library for object tracking.
 
-#### Requirements 
+#### Requirements
 
 - Web camera
   - [Logicool HD WEBCAM C310N](https://www.logicool.co.jp/ja-jp/product/hd-webcam-c310n)
@@ -190,7 +189,7 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
 
 [back to example list](#how-to-use-examples)
 
---- 
+---
 
 ### line_follower
 
@@ -256,7 +255,7 @@ void Follower::publish_cmdvel_for_line_following(void)
 
 This is an example for line following by RGB camera.
 
-#### Requirements 
+#### Requirements
 
 - Web camera
   - [Logicool HD WEBCAM C310N](https://www.logicool.co.jp/ja-jp/product/hd-webcam-c310n)
@@ -316,7 +315,7 @@ ros2 param set /camera_follower max_brightness 80
 
 [back to example list](#how-to-use-examples)
 
---- 
+---
 
 ### SLAM
 
@@ -369,8 +368,8 @@ Then, press SW0 ~ SW2 to change the control mode as following,
 
 ### Troubleshooting
 
-The IMU might not be connected correctly.  
-Reconnect the USB cable several times and re-execute the above command.  
+The IMU might not be connected correctly.
+Reconnect the USB cable several times and re-execute the above command.
 
 #### Configure
 
