@@ -288,6 +288,8 @@ $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_devi
 
 **画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。**
 
+**ラインの検出精度が悪い場合はカメラの露光やホワイトバランスの調整を行ってください。**
+
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/camera_line_trace.png width=500 />
 
 #### Parameters

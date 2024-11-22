@@ -284,6 +284,8 @@ or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
 
 **Viewing an image may cause the node to behave unstable and not publish cmd_vel or image topics.**
 
+**If the line detection accuracy is poor, please adjust the camera's exposure and white balance.**
+
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/camera_line_trace.png width=500 />
 
 #### Parameters
