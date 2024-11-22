@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-#include "raspimouse_ros2_examples/visibility_control.h"
+#include "raspimouse_ros2_examples/visibility_control.hpp"
 #include "raspimouse_msgs/msg/switches.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/imu.hpp"

@@ -18,7 +18,7 @@
 #include <memory>
 #include <string>
 
-#include "raspimouse_ros2_examples/visibility_control.h"
+#include "raspimouse_ros2_examples/visibility_control.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rclcpp_lifecycle/lifecycle_publisher.hpp"
