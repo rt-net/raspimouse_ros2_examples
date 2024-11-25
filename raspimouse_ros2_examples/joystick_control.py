@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding: UTF-8
 
-# Copyright 2020 RT Corporation
+# Copyright 2020-2024 RT Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 import math
 from time import sleep
 
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import TwistStamped
 from lifecycle_msgs.msg import Transition
 from lifecycle_msgs.srv import ChangeState
 from lifecycle_msgs.srv import GetState
@@ -28,15 +28,14 @@ from raspimouse_msgs.msg import LightSensors
 from raspimouse_msgs.msg import Switches
 
 import rclpy
-from rclpy.node import Node
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+from rclpy.node import Node
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Int16
 from std_srvs.srv import SetBool
 
 
 class JoyWrapper(Node):
-
     def __init__(self):
         super().__init__('joystick_control')
 
@@ -97,7 +96,9 @@ class JoyWrapper(Node):
         self._BUTTON_BUZZER6 = self.get_parameter('button_buzzer6').value
         self._BUTTON_BUZZER7 = self.get_parameter('button_buzzer7').value
 
-        self._BUTTON_SENSOR_SOUND_EN = self.get_parameter('button_sensor_sound_en').value
+        self._BUTTON_SENSOR_SOUND_EN = self.get_parameter(
+            'button_sensor_sound_en'
+        ).value
         self._BUTTON_CONFIG_ENABLE = self.get_parameter('button_config_enable').value
 
         # for _joy_velocity_config()
@@ -117,7 +118,7 @@ class JoyWrapper(Node):
 
         self._node_logger = self.get_logger()
 
-        self._pub_cmdvel = self.create_publisher(Twist, 'cmd_vel', 1)
+        self._pub_cmdvel = self.create_publisher(TwistStamped, 'cmd_vel', 1)
         self._pub_buzzer = self.create_publisher(Int16, 'buzzer', 1)
         self._pub_leds = self.create_publisher(Leds, 'leds', 1)
 
@@ -125,37 +126,53 @@ class JoyWrapper(Node):
         self._client_cb_group = MutuallyExclusiveCallbackGroup()
 
         self._client_get_state = self.create_client(
-            GetState, 'raspimouse/get_state', callback_group=self._client_cb_group)
+            GetState, 'raspimouse/get_state', callback_group=self._client_cb_group
+        )
         while not self._client_get_state.wait_for_service(timeout_sec=1.0):
-            self._node_logger.warn(self._client_get_state.srv_name + ' service not available')
+            self._node_logger.warn(
+                self._client_get_state.srv_name + ' service not available'
+            )
 
         self._client_change_state = self.create_client(
-            ChangeState, 'raspimouse/change_state', callback_group=self._client_cb_group)
+            ChangeState, 'raspimouse/change_state', callback_group=self._client_cb_group
+        )
         while not self._client_change_state.wait_for_service(timeout_sec=1.0):
-            self._node_logger.warn(self._client_change_state.srv_name + ' service not available')
+            self._node_logger.warn(
+                self._client_change_state.srv_name + ' service not available'
+            )
         self._activate_raspimouse()
 
         self._client_motor_power = self.create_client(
-            SetBool, 'motor_power', callback_group=self._client_cb_group)
+            SetBool, 'motor_power', callback_group=self._client_cb_group
+        )
         while not self._client_motor_power.wait_for_service(timeout_sec=1.0):
-            self._node_logger.warn(self._client_motor_power.srv_name + ' service not available')
+            self._node_logger.warn(
+                self._client_motor_power.srv_name + ' service not available'
+            )
         self._motor_on()
 
         self._sub_joy = self.create_subscription(
-            Joy, 'joy', self._callback_joy, 1,
-            callback_group=self._sub_cb_group)
+            Joy, 'joy', self._callback_joy, 1, callback_group=self._sub_cb_group
+        )
         self._sub_lightsensor = self.create_subscription(
-            LightSensors, 'light_sensors', self._callback_lightsensors, 1,
-            callback_group=self._sub_cb_group)
+            LightSensors,
+            'light_sensors',
+            self._callback_lightsensors,
+            1,
+            callback_group=self._sub_cb_group,
+        )
         self._sub_switches = self.create_subscription(
-            Switches, 'switches', self._callback_switches, 1,
-            callback_group=self._sub_cb_group)
+            Switches,
+            'switches',
+            self._callback_switches,
+            1,
+            callback_group=self._sub_cb_group,
+        )
 
     def _activate_raspimouse(self):
         self._set_mouse_lifecycle_state(Transition.TRANSITION_CONFIGURE)
         self._set_mouse_lifecycle_state(Transition.TRANSITION_ACTIVATE)
-        self._node_logger.info('Mouse state is '
-                               + self._get_mouse_lifecycle_state())
+        self._node_logger.info('Mouse state is ' + self._get_mouse_lifecycle_state())
 
     def _set_mouse_lifecycle_state(self, transition_id):
         request = ChangeState.Request()
@@ -196,8 +213,10 @@ class JoyWrapper(Node):
         self._mouse_switches = msg
 
     def _joy_shutdown(self, joy_msg):
-        if joy_msg.buttons[self._BUTTON_SHUTDOWN_1] and\
-                joy_msg.buttons[self._BUTTON_SHUTDOWN_2]:
+        if (
+            joy_msg.buttons[self._BUTTON_SHUTDOWN_1]
+            and joy_msg.buttons[self._BUTTON_SHUTDOWN_2]
+        ):
             self._pub_leds.publish(Leds())
             self._motor_off()
             self._set_mouse_lifecycle_state(Transition.TRANSITION_DEACTIVATE)
@@ -212,13 +231,20 @@ class JoyWrapper(Node):
             self._motor_off()
 
     def _joy_cmdvel(self, joy_msg):
-        cmdvel = Twist()
+        cmdvel = TwistStamped()
         if joy_msg.buttons[self._BUTTON_CMD_ENABLE]:
-            cmdvel.linear.x = self._vel_linear_x * joy_msg.axes[self._AXIS_CMD_LINEAR_X]
-            cmdvel.angular.z = self._vel_angular_z * joy_msg.axes[self._AXIS_CMD_ANGULAR_Z]
+            cmdvel.twist.linear.x = (
+                self._vel_linear_x * joy_msg.axes[self._AXIS_CMD_LINEAR_X]
+            )
+            cmdvel.twist.angular.z = (
+                self._vel_angular_z * joy_msg.axes[self._AXIS_CMD_ANGULAR_Z]
+            )
             self._node_logger.info(
-                'linear_x:' + str(cmdvel.linear.x) +
-                ', angular_z:' + str(cmdvel.angular.z))
+                'linear_x:'
+                + str(cmdvel.twist.linear.x)
+                + ', angular_z:'
+                + str(cmdvel.twist.angular.z)
+            )
             self._pub_cmdvel.publish(cmdvel)
 
             self._cmdvel_has_value = True
@@ -277,20 +303,17 @@ class JoyWrapper(Node):
     def _joy_buzzer_freq(self, joy_msg):
         freq = Int16()
         buttons = [
-                self._dpad(joy_msg, self._DPAD_BUZZER0),
-                self._dpad(joy_msg, self._DPAD_BUZZER1),
-                self._dpad(joy_msg, self._DPAD_BUZZER2),
-                self._dpad(joy_msg, self._DPAD_BUZZER3),
-                joy_msg.buttons[self._BUTTON_BUZZER4],
-                joy_msg.buttons[self._BUTTON_BUZZER5],
-                joy_msg.buttons[self._BUTTON_BUZZER6],
-                joy_msg.buttons[self._BUTTON_BUZZER7],
-                ]
+            self._dpad(joy_msg, self._DPAD_BUZZER0),
+            self._dpad(joy_msg, self._DPAD_BUZZER1),
+            self._dpad(joy_msg, self._DPAD_BUZZER2),
+            self._dpad(joy_msg, self._DPAD_BUZZER3),
+            joy_msg.buttons[self._BUTTON_BUZZER4],
+            joy_msg.buttons[self._BUTTON_BUZZER5],
+            joy_msg.buttons[self._BUTTON_BUZZER6],
+            joy_msg.buttons[self._BUTTON_BUZZER7],
+        ]
         # buzzer frequency Hz
-        SCALES = [
-                523, 587, 659, 699,
-                784, 880, 987, 1046
-                ]
+        SCALES = [523, 587, 659, 699, 784, 880, 987, 1046]
 
         if joy_msg.buttons[self._BUTTON_BUZZER_ENABLE]:
             for i, button in enumerate(buttons):
@@ -338,28 +361,38 @@ class JoyWrapper(Node):
 
         if joy_msg.buttons[self._BUTTON_CONFIG_ENABLE]:
             any_switch_pressed = False
-            if any([self._mouse_switches.switch0,
+            if any(
+                [
+                    self._mouse_switches.switch0,
                     self._mouse_switches.switch1,
-                    self._mouse_switches.switch2]):
+                    self._mouse_switches.switch2,
+                ]
+            ):
                 any_switch_pressed = True
 
             if not self._switch_has_been_pressed:
                 if self._mouse_switches.switch0:
                     self._vel_linear_x = self._config_velocity(
-                            self._vel_linear_x, ADD_VEL_LINEAR_X,
-                            0, self._MAX_VEL_LINEAR_X)
+                        self._vel_linear_x, ADD_VEL_LINEAR_X, 0, self._MAX_VEL_LINEAR_X
+                    )
                     self._vel_angular_z = self._config_velocity(
-                            self._vel_angular_z, ADD_VEL_ANGULAR_Z,
-                            0, self._MAX_VEL_ANGULAR_Z)
+                        self._vel_angular_z,
+                        ADD_VEL_ANGULAR_Z,
+                        0,
+                        self._MAX_VEL_ANGULAR_Z,
+                    )
                     self._beep_buzzer(BUZZER_FREQ_ADD, BUZZER_BEEP_TIME)
 
                 elif self._mouse_switches.switch2:
                     self._vel_linear_x = self._config_velocity(
-                            self._vel_linear_x, -ADD_VEL_LINEAR_X,
-                            0, self._MAX_VEL_LINEAR_X)
+                        self._vel_linear_x, -ADD_VEL_LINEAR_X, 0, self._MAX_VEL_LINEAR_X
+                    )
                     self._vel_angular_z = self._config_velocity(
-                            self._vel_angular_z, -ADD_VEL_ANGULAR_Z,
-                            0, self._MAX_VEL_ANGULAR_Z)
+                        self._vel_angular_z,
+                        -ADD_VEL_ANGULAR_Z,
+                        0,
+                        self._MAX_VEL_ANGULAR_Z,
+                    )
                     self._beep_buzzer(BUZZER_FREQ_SUB, BUZZER_BEEP_TIME)
 
                 elif self._mouse_switches.switch1:
@@ -369,9 +402,11 @@ class JoyWrapper(Node):
 
             self._switch_has_been_pressed = any_switch_pressed
             self._node_logger.info(
-                    'linear_x:' + str(self._vel_linear_x) +
-                    ', angular_z:' + str(self._vel_angular_z)
-                    )
+                'linear_x:'
+                + str(self._vel_linear_x)
+                + ', angular_z:'
+                + str(self._vel_angular_z)
+            )
 
     def _config_velocity(self, current, add, lowerlimit, upperlimit):
         output = current + add
@@ -409,7 +444,9 @@ def main(args=None):
     try:
         rclpy.spin(joy_wrapper)
     except SystemExit:
-        rclpy.logging.get_logger("joystick_control").info('_joy_shutdown() has been executed')
+        rclpy.logging.get_logger('joystick_control').info(
+            '_joy_shutdown() has been executed'
+        )
 
     joy_wrapper.destroy_node()
 

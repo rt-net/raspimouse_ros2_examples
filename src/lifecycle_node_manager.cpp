@@ -1,4 +1,4 @@
-// Copyright 2020 RT Corporation
+// Copyright 2020-2024 RT Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,17 +33,14 @@ using SrvGetState = lifecycle_msgs::srv::GetState;
 using SrvChangeState = lifecycle_msgs::srv::ChangeState;
 
 std::uint8_t state_of(
-  std::string target_node_name,
-  rclcpp::Node::SharedPtr node, std::chrono::seconds time_out = 10s)
+  std::string target_node_name, rclcpp::Node::SharedPtr node, std::chrono::seconds time_out = 10s)
 {
   auto request = std::make_shared<SrvGetState::Request>();
   auto service_name = target_node_name + "/get_state";
   auto client = node->create_client<SrvGetState>(service_name);
 
   if (!client->wait_for_service(time_out)) {
-    RCLCPP_ERROR(
-      node->get_logger(),
-      "Service %s is not avaliable.", service_name.c_str());
+    RCLCPP_ERROR(node->get_logger(), "Service %s is not avaliable.", service_name.c_str());
     return MsgState::PRIMARY_STATE_UNKNOWN;
   }
 
@@ -52,8 +49,7 @@ std::uint8_t state_of(
 
   if (future_status != rclcpp::FutureReturnCode::SUCCESS) {
     RCLCPP_ERROR(
-      node->get_logger(),
-      "Service %s time out while getting current state.", service_name.c_str());
+      node->get_logger(), "Service %s time out while getting current state.", service_name.c_str());
     return MsgState::PRIMARY_STATE_UNKNOWN;
   }
 
@@ -61,41 +57,32 @@ std::uint8_t state_of(
 }
 
 bool all_nodes_are_unconfigured(
-  rclcpp::Node::SharedPtr node,
-  const std::vector<std::string> & target_node_names)
+  rclcpp::Node::SharedPtr node, const std::vector<std::string> & target_node_names)
 {
-  return std::all_of(
-    target_node_names.begin(), target_node_names.end(),
-    [&](std::string s) {
-      return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_UNCONFIGURED;
-    });
+  return std::all_of(target_node_names.begin(), target_node_names.end(), [&](std::string s) {
+             return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_UNCONFIGURED;
+  });
 }
 
 bool all_nodes_are_inactive(
-  rclcpp::Node::SharedPtr node,
-  const std::vector<std::string> & target_node_names)
+  rclcpp::Node::SharedPtr node, const std::vector<std::string> & target_node_names)
 {
-  return std::all_of(
-    target_node_names.begin(), target_node_names.end(),
-    [&](std::string s) {
-      return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_INACTIVE;
-    });
+  return std::all_of(target_node_names.begin(), target_node_names.end(), [&](std::string s) {
+             return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_INACTIVE;
+  });
 }
 
 bool all_nodes_are_active(
-  rclcpp::Node::SharedPtr node,
-  const std::vector<std::string> & target_node_names)
+  rclcpp::Node::SharedPtr node, const std::vector<std::string> & target_node_names)
 {
-  return std::all_of(
-    target_node_names.begin(), target_node_names.end(),
-    [&](std::string s) {
-      return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_ACTIVE;
-    });
+  return std::all_of(target_node_names.begin(), target_node_names.end(), [&](std::string s) {
+             return state_of(s, node, 10s) == MsgState::PRIMARY_STATE_ACTIVE;
+  });
 }
 
 bool change_state(
-  std::string target_node_name, rclcpp::Node::SharedPtr node,
-  std::uint8_t transition, std::chrono::seconds time_out = 10s)
+  std::string target_node_name, rclcpp::Node::SharedPtr node, std::uint8_t transition,
+  std::chrono::seconds time_out = 10s)
 {
   auto request = std::make_shared<SrvChangeState::Request>();
   request->transition.id = transition;
@@ -104,9 +91,7 @@ bool change_state(
   auto client = node->create_client<SrvChangeState>(service_name);
 
   if (!client->wait_for_service(time_out)) {
-    RCLCPP_ERROR(
-      node->get_logger(),
-      "Service %s is not avaliable.", service_name.c_str());
+    RCLCPP_ERROR(node->get_logger(), "Service %s is not avaliable.", service_name.c_str());
     return false;
   }
 
@@ -115,8 +100,8 @@ bool change_state(
 
   if (future_status != rclcpp::FutureReturnCode::SUCCESS) {
     RCLCPP_ERROR(
-      node->get_logger(),
-      "Service %s time out while changing current state.", service_name.c_str());
+      node->get_logger(), "Service %s time out while changing current state.",
+      service_name.c_str());
     return false;
   }
 
@@ -124,27 +109,20 @@ bool change_state(
 }
 
 bool configure_all_nodes(
-  rclcpp::Node::SharedPtr node,
-  const std::vector<std::string> & target_node_names)
+  rclcpp::Node::SharedPtr node, const std::vector<std::string> & target_node_names)
 {
-  return std::all_of(
-    target_node_names.begin(), target_node_names.end(),
-    [&](std::string s) {
-      return change_state(s, node, MsgTransition::TRANSITION_CONFIGURE, 10s);
-    });
+  return std::all_of(target_node_names.begin(), target_node_names.end(), [&](std::string s) {
+             return change_state(s, node, MsgTransition::TRANSITION_CONFIGURE, 10s);
+  });
 }
 
 bool activate_all_nodes(
-  rclcpp::Node::SharedPtr node,
-  const std::vector<std::string> & target_node_names)
+  rclcpp::Node::SharedPtr node, const std::vector<std::string> & target_node_names)
 {
-  return std::all_of(
-    target_node_names.begin(), target_node_names.end(),
-    [&](std::string s) {
-      return change_state(s, node, MsgTransition::TRANSITION_ACTIVATE, 10s);
-    });
+  return std::all_of(target_node_names.begin(), target_node_names.end(), [&](std::string s) {
+             return change_state(s, node, MsgTransition::TRANSITION_ACTIVATE, 10s);
+  });
 }
-
 
 int main(int argc, char * argv[])
 {

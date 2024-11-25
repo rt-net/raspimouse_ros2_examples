@@ -1,4 +1,4 @@
-// Copyright 2020 RT Corporation
+// Copyright 2020-2024 RT Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,14 +18,14 @@
 #include <memory>
 #include <string>
 
-#include "raspimouse_ros2_examples/visibility_control.h"
+#include "raspimouse_ros2_examples/visibility_control.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/set_bool.hpp"
 #include "sensor_msgs/msg/image.hpp"
-#include "geometry_msgs/msg/twist.hpp"
+#include "geometry_msgs/msg/twist_stamped.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
 namespace object_tracking
@@ -46,30 +46,29 @@ private:
   bool object_is_detected_;
   cv::Point2d object_normalized_point_;
   double object_normalized_area_;
-  geometry_msgs::msg::Twist cmd_vel_;
+  geometry_msgs::msg::TwistStamped cmd_vel_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> result_image_pub_;
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::Twist>> cmd_vel_pub_;
+  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::TwistStamped>>
+  cmd_vel_pub_;
   std::shared_ptr<rclcpp::Client<std_srvs::srv::SetBool>> motor_power_client_;
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
   rclcpp::TimerBase::SharedPtr cmd_vel_timer_;
 
   std::string mat_type2encoding(int mat_type);
-  void convert_frame_to_message(
-    const cv::Mat & frame,
-    sensor_msgs::msg::Image & msg);
+  void convert_frame_to_message(const cv::Mat & frame, sensor_msgs::msg::Image & msg);
 
   void tracking(const cv::Mat & input_frame, cv::Mat & result_frame);
 
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_configure(const rclcpp_lifecycle::State &);
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_activate(const rclcpp_lifecycle::State &);
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_deactivate(const rclcpp_lifecycle::State &);
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_cleanup(const rclcpp_lifecycle::State &);
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_shutdown(const rclcpp_lifecycle::State &);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_configure(
+    const rclcpp_lifecycle::State &);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_activate(
+    const rclcpp_lifecycle::State &);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_deactivate(
+    const rclcpp_lifecycle::State &);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_cleanup(
+    const rclcpp_lifecycle::State &);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_shutdown(
+    const rclcpp_lifecycle::State &);
 };
 
 }  // namespace object_tracking

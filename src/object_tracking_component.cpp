@@ -1,4 +1,4 @@
-// Copyright 2020 RT Corporation
+// Copyright 2020-2024 RT Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "lifecycle_msgs/srv/change_state.hpp"
-#include "cv_bridge/cv_bridge.h"
+#include "cv_bridge/cv_bridge.hpp"
 
 using namespace std::chrono_literals;
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
@@ -34,8 +34,7 @@ namespace object_tracking
 {
 
 Tracker::Tracker(const rclcpp::NodeOptions & options)
-: rclcpp_lifecycle::LifecycleNode("tracker", options),
-  object_is_detected_(false)
+: rclcpp_lifecycle::LifecycleNode("tracker", options), object_is_detected_(false)
 {
 }
 
@@ -59,21 +58,21 @@ void Tracker::image_callback(const sensor_msgs::msg::Image::SharedPtr msg_image)
 
 void Tracker::on_cmd_vel_timer()
 {
-  const double LINEAR_VEL = -0.5;  // unit: m/s
-  const double ANGULAR_VEL = -0.8;  // unit: rad/s
-  const double TARGET_AREA = 0.1;  // 0.0 ~ 1.0
+  const double LINEAR_VEL = -0.5;             // unit: m/s
+  const double ANGULAR_VEL = -0.8;            // unit: rad/s
+  const double TARGET_AREA = 0.1;             // 0.0 ~ 1.0
   const double OBJECT_AREA_THRESHOLD = 0.01;  // 0.0 ~ 1.0
 
   // Detects an object and tracks it
   // when the number of pixels of the object is greater than the threshold.
   if (object_is_detected_ && object_normalized_area_ > OBJECT_AREA_THRESHOLD) {
-    cmd_vel_.linear.x = LINEAR_VEL * (object_normalized_area_ - TARGET_AREA);
-    cmd_vel_.angular.z = ANGULAR_VEL * object_normalized_point_.x;
+    cmd_vel_.twist.linear.x = LINEAR_VEL * (object_normalized_area_ - TARGET_AREA);
+    cmd_vel_.twist.angular.z = ANGULAR_VEL * object_normalized_point_.x;
   } else {
-    cmd_vel_.linear.x = 0.0;
-    cmd_vel_.angular.z = 0.0;
+    cmd_vel_.twist.linear.x = 0.0;
+    cmd_vel_.twist.angular.z = 0.0;
   }
-  auto msg = std::make_unique<geometry_msgs::msg::Twist>(cmd_vel_);
+  auto msg = std::make_unique<geometry_msgs::msg::TwistStamped>(cmd_vel_);
   cmd_vel_pub_->publish(std::move(msg));
 }
 
@@ -95,8 +94,7 @@ std::string Tracker::mat_type2encoding(int mat_type)
 }
 
 // Ref: https://github.com/ros2/demos/blob/dashing/image_tools/src/cam2image.cpp
-void Tracker::convert_frame_to_message(
-  const cv::Mat & frame, sensor_msgs::msg::Image & msg)
+void Tracker::convert_frame_to_message(const cv::Mat & frame, sensor_msgs::msg::Image & msg)
 {
   // copy cv information into ros message
   msg.height = frame.rows;
@@ -147,21 +145,17 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
 
     // Normalize the centroid coordinates to [-1.0, 1.0].
     object_normalized_point_ = cv::Point2d(
-      2.0 * mt_point.x / input_frame.cols - 1.0,
-      2.0 * mt_point.y / input_frame.rows - 1.0
-    );
+      2.0 * mt_point.x / input_frame.cols - 1.0, 2.0 * mt_point.y / input_frame.rows - 1.0);
     // Normalize the the contour area to [0.0, 1.0].
     object_normalized_area_ = max_area / (input_frame.rows * input_frame.cols);
     object_is_detected_ = true;
 
     std::string text = "Area:" + std::to_string(object_normalized_area_ * 100) + "%";
     cv::drawContours(
-      result_frame, contours, max_area_index,
-      cv::Scalar(0, 255, 0), 2, cv::LINE_4, hierarchy);
+      result_frame, contours, max_area_index, cv::Scalar(0, 255, 0), 2, cv::LINE_4, hierarchy);
     cv::circle(result_frame, mt_point, 30, cv::Scalar(0, 0, 255), 2, cv::LINE_4);
     cv::putText(
-      result_frame, text, cv::Point(0, 30),
-      cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 0, 0), 2);
+      result_frame, text, cv::Point(0, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 0, 0), 2);
   } else {
     object_is_detected_ = false;
   }
@@ -176,7 +170,7 @@ CallbackReturn Tracker::on_configure(const rclcpp_lifecycle::State &)
   cmd_vel_timer_->cancel();
 
   result_image_pub_ = create_publisher<sensor_msgs::msg::Image>("result_image", 1);
-  cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
+  cmd_vel_pub_ = create_publisher<geometry_msgs::msg::TwistStamped>("cmd_vel", 1);
   image_sub_ = create_subscription<sensor_msgs::msg::Image>(
     "camera/color/image_raw", rclcpp::SensorDataQoS(),
     std::bind(&Tracker::image_callback, this, std::placeholders::_1));
@@ -190,9 +184,7 @@ CallbackReturn Tracker::on_activate(const rclcpp_lifecycle::State &)
 
   motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
   if (!motor_power_client_->wait_for_service(5s)) {
-    RCLCPP_ERROR(
-      this->get_logger(),
-      "Service motor_power is not avaliable.");
+    RCLCPP_ERROR(this->get_logger(), "Service motor_power is not avaliable.");
     return CallbackReturn::FAILURE;
   }
   auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
@@ -214,7 +206,7 @@ CallbackReturn Tracker::on_deactivate(const rclcpp_lifecycle::State &)
   cmd_vel_timer_->cancel();
 
   object_is_detected_ = false;
-  cmd_vel_ = geometry_msgs::msg::Twist();
+  cmd_vel_ = geometry_msgs::msg::TwistStamped();
 
   return CallbackReturn::SUCCESS;
 }

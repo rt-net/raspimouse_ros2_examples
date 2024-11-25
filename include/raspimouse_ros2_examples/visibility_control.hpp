@@ -1,4 +1,4 @@
-// Copyright 2020 RT Corporation
+// Copyright 2020-2024 RT Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RASPIMOUSE_ROS2_EXAMPLES__VISIBILITY_CONTROL_H_
-#define RASPIMOUSE_ROS2_EXAMPLES__VISIBILITY_CONTROL_H_
+#ifndef RASPIMOUSE_ROS2_EXAMPLES__VISIBILITY_CONTROL_HPP_
+#define RASPIMOUSE_ROS2_EXAMPLES__VISIBILITY_CONTROL_HPP_
 
 #ifdef __cplusplus
 extern "C"
@@ -55,4 +55,4 @@ extern "C"
 }
 #endif
 
-#endif  // RASPIMOUSE_ROS2_EXAMPLES__VISIBILITY_CONTROL_H_
+#endif  // RASPIMOUSE_ROS2_EXAMPLES__VISIBILITY_CONTROL_HPP_

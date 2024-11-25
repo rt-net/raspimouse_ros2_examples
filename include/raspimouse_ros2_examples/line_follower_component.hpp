@@ -1,4 +1,4 @@
-// Copyright 2020 RT Corporation
+// Copyright 2020-2024 RT Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-#include "raspimouse_ros2_examples/visibility_control.h"
+#include "raspimouse_ros2_examples/visibility_control.hpp"
 #include "raspimouse_msgs/msg/switches.hpp"
 #include "raspimouse_msgs/msg/light_sensors.hpp"
 #include "raspimouse_msgs/msg/leds.hpp"
@@ -29,7 +29,7 @@
 #include "std_msgs/msg/int16.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/set_bool.hpp"
-#include "geometry_msgs/msg/twist.hpp"
+#include "geometry_msgs/msg/twist_stamped.hpp"
 
 namespace line_follower
 {
@@ -72,7 +72,8 @@ private:
   bool can_publish_cmdvel_;
 
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Int16>> buzzer_pub_;
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::Twist>> cmd_vel_pub_;
+  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::TwistStamped>>
+  cmd_vel_pub_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<raspimouse_msgs::msg::Leds>> leds_pub_;
   rclcpp::Subscription<raspimouse_msgs::msg::LightSensors>::SharedPtr light_sensors_sub_;
   rclcpp::Subscription<raspimouse_msgs::msg::Switches>::SharedPtr switches_sub_;
@@ -97,16 +98,16 @@ private:
   int median(const int value1, const int value2);
   void set_line_thresholds(void);
 
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_configure(const rclcpp_lifecycle::State &);
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_activate(const rclcpp_lifecycle::State &);
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_deactivate(const rclcpp_lifecycle::State &);
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_cleanup(const rclcpp_lifecycle::State &);
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_shutdown(const rclcpp_lifecycle::State &);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_configure(
+    const rclcpp_lifecycle::State &);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_activate(
+    const rclcpp_lifecycle::State &);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_deactivate(
+    const rclcpp_lifecycle::State &);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_cleanup(
+    const rclcpp_lifecycle::State &);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_shutdown(
+    const rclcpp_lifecycle::State &);
 };
 
 }  // namespace line_follower

@@ -1,4 +1,4 @@
-// Copyright 2020 RT Corporation
+// Copyright 2020-2024 RT Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ Controller::Controller(const rclcpp::NodeOptions & options)
 
   cmd_vel_timer_ = create_wall_timer(16ms, std::bind(&Controller::on_cmd_vel_timer, this));
 
-  cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
+  cmd_vel_pub_ = create_publisher<geometry_msgs::msg::TwistStamped>("cmd_vel", 1);
   buzzer_pub_ = create_publisher<std_msgs::msg::Int16>("buzzer", 1);
   heading_angle_pub_ = create_publisher<std_msgs::msg::Float64>("heading_angle", 1);
   switches_sub_ = create_subscription<raspimouse_msgs::msg::Switches>(
@@ -73,8 +73,7 @@ Controller::Controller(const rclcpp::NodeOptions & options)
   this->declare_parameter("d_gain", 20.0, descriptor);
 
   omega_pid_controller_.set_gain(
-    this->get_parameter("p_gain").as_double(),
-    this->get_parameter("i_gain").as_double(),
+    this->get_parameter("p_gain").as_double(), this->get_parameter("i_gain").as_double(),
     this->get_parameter("d_gain").as_double());
 
   pressed_switch_number_ = -1;
@@ -104,8 +103,7 @@ void Controller::on_cmd_vel_timer()
   }
 
   omega_pid_controller_.set_gain(
-    this->get_parameter("p_gain").as_double(),
-    this->get_parameter("i_gain").as_double(),
+    this->get_parameter("p_gain").as_double(), this->get_parameter("i_gain").as_double(),
     this->get_parameter("d_gain").as_double());
 
   if (released_switch_number != -1 || filtered_acc_.z > 0.0) {
@@ -170,9 +168,7 @@ void Controller::callback_imu_data_raw(const sensor_msgs::msg::Imu::SharedPtr ms
 bool Controller::set_motor_power(const bool motor_on)
 {
   if (!motor_power_client_->wait_for_service(5s)) {
-    RCLCPP_ERROR(
-      this->get_logger(),
-      "Service motor_power is not avaliable.");
+    RCLCPP_ERROR(this->get_logger(), "Service motor_power is not avaliable.");
     return false;
   }
   auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
@@ -189,9 +185,8 @@ bool Controller::omega_calibration(const double omega)
   omega_samples_.push_back(omega);
 
   if (omega_samples_.size() >= SAMPLE_NUM) {
-    omega_bias_ = std::accumulate(
-      std::begin(omega_samples_),
-      std::end(omega_samples_), 0.0) / omega_samples_.size();
+    omega_bias_ = std::accumulate(std::begin(omega_samples_), std::end(omega_samples_), 0.0) /
+      omega_samples_.size();
     omega_samples_.clear();
     complete = true;
   }
@@ -225,8 +220,8 @@ void Controller::angle_control(const double target_angle)
 {
   const double SIGN = 1.0;
 
-  auto cmd_vel = std::make_unique<geometry_msgs::msg::Twist>();
-  cmd_vel->angular.z = SIGN * omega_pid_controller_.update(heading_angle_, target_angle);
+  auto cmd_vel = std::make_unique<geometry_msgs::msg::TwistStamped>();
+  cmd_vel->twist.angular.z = SIGN * omega_pid_controller_.update(heading_angle_, target_angle);
 
   cmd_vel_pub_->publish(std::move(cmd_vel));
 }
@@ -267,10 +262,7 @@ void Controller::beep_buzzer(const int freq, const std::chrono::nanoseconds & be
   buzzer_pub_->publish(std::move(msg));
 }
 
-void Controller::beep_start(void)
-{
-  beep_buzzer(1000, 500ms);
-}
+void Controller::beep_start(void) {beep_buzzer(1000, 500ms);}
 
 void Controller::beep_success(void)
 {
@@ -286,7 +278,6 @@ void Controller::beep_failure(void)
     rclcpp::sleep_for(100ms);
   }
 }
-
 
 }  // namespace direction_controller
 

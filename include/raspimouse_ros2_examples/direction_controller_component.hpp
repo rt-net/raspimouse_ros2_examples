@@ -1,4 +1,4 @@
-// Copyright 2020 RT Corporation
+// Copyright 2020-2024 RT Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-#include "raspimouse_ros2_examples/visibility_control.h"
+#include "raspimouse_ros2_examples/visibility_control.hpp"
 #include "raspimouse_msgs/msg/switches.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/imu.hpp"
@@ -27,7 +27,7 @@
 #include "std_msgs/msg/float64.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/set_bool.hpp"
-#include "geometry_msgs/msg/twist.hpp"
+#include "geometry_msgs/msg/twist_stamped.hpp"
 #include "geometry_msgs/msg/vector3.hpp"
 
 namespace direction_controller
@@ -37,8 +37,7 @@ class PIDController
 {
 public:
   PIDController()
-  : p_gain_(0.0), i_gain_(0.0), d_gain_(0.0),
-    error1_(0.0), error2_(0.0), output_(0.0)
+  : p_gain_(0.0), i_gain_(0.0), d_gain_(0.0), error1_(0.0), error2_(0.0), output_(0.0)
   {
   }
 
@@ -95,7 +94,7 @@ private:
   sensor_msgs::msg::Imu imu_data_raw_;
 
   rclcpp::Publisher<std_msgs::msg::Int16>::SharedPtr buzzer_pub_;
-  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
+  rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr cmd_vel_pub_;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr heading_angle_pub_;
   rclcpp::Subscription<raspimouse_msgs::msg::Switches>::SharedPtr switches_sub_;
   rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_data_raw_sub_;

@@ -1,4 +1,4 @@
-# Copyright 2020 RT Corporation
+# Copyright 2020-2024 RT Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ def generate_launch_description():
         package='raspimouse_ros2_examples',
         executable='line_follower',
         output='screen',
-        parameters=[{'use_pulse_counters': False}]
+        parameters=[{'use_pulse_counters': False}],
     )
 
     manager = Node(
@@ -30,7 +30,7 @@ def generate_launch_description():
         package='raspimouse_ros2_examples',
         executable='lifecycle_node_manager',
         output='screen',
-        parameters=[{'components': ['raspimouse', 'follower']}]
+        parameters=[{'components': ['raspimouse', 'follower']}],
     )
 
     return launch.LaunchDescription([line_follower, manager])

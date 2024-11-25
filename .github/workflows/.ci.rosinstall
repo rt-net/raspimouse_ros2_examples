@@ -1,0 +1,8 @@
+- git:
+    uri: https://github.com/rt-net/raspimouse2.git
+    local-name: raspimouse2
+    version: jazzy
+- git:
+    uri: https://github.com/rt-net/rt_usb_9axisimu_driver.git
+    local-name: rt_usb_9axisimu_driver
+    version: jazzy

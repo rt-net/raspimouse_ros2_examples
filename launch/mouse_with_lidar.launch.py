@@ -1,4 +1,4 @@
-# Copyright 2020 RT Corporation
+# Copyright 2020-2024 RT Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,25 +25,40 @@ from launch_ros.actions import LifecycleNode
 
 def generate_launch_description():
     declare_lidar = DeclareLaunchArgument(
-        'lidar', default_value='lds',
-        description='LiDAR: lds only, for now.'
+        'lidar', default_value='lds', description='LiDAR: lds only, for now.'
     )
 
     mouse_node = LifecycleNode(
-        name='raspimouse', namespace="",
-        package='raspimouse', executable='raspimouse', output='screen',
-        parameters=[os.path.join(get_package_share_directory(
-            'raspimouse_ros2_examples'), 'config', 'mouse.yml')]
+        name='raspimouse',
+        namespace='',
+        package='raspimouse',
+        executable='raspimouse',
+        output='screen',
+        parameters=[
+            os.path.join(
+                get_package_share_directory('raspimouse_ros2_examples'),
+                'config',
+                'mouse.yml',
             )
+        ],
+    )
 
     def func_launch_lidar_node(context):
         if context.launch_configurations['lidar'] == 'lds':
-            return [IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([os.path.join(
-                    get_package_share_directory('hls_lfcd_lds_driver'),
-                    'launch'),
-                    '/hlds_laser.launch.py'
-                    ]),)]
+            return [
+                IncludeLaunchDescription(
+                    PythonLaunchDescriptionSource(
+                        [
+                            os.path.join(
+                                get_package_share_directory('hls_lfcd_lds_driver'),
+                                'launch',
+                            ),
+                            '/hlds_laser.launch.py',
+                        ]
+                    ),
+                )
+            ]
+
     launch_lidar_node = OpaqueFunction(function=func_launch_lidar_node)
 
     ld = LaunchDescription()
