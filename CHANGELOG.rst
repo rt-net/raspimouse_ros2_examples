@@ -2,7 +2,7 @@
 Changelog for package raspimouse_ros2_examples
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-3.0.0
+3.0.0 (2024-11-25)
 -----------
 * Support ROS 2 Jazzy (`#62 <https://github.com/rt-net/raspimouse_ros2_examples/issues/62>`_)
 * Replaced "Twist" with "TwistStamped"
