@@ -95,7 +95,7 @@ $ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
 
 ## How to Use Examples
 
-サンプルプログラムの詳細な動作方法は、[EXAMPLES](./EXAMPLES.md)で説明しています。
+サンプルプログラムの詳細な動作方法は、[Examples](./Examples.md)で説明しています。
 
 ## License
 
