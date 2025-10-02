@@ -58,7 +58,7 @@ Gazebo（シミュレータ）でも動作します。詳細は[こちら](https
 ### Binary Installation
 
 ```sh
-sudo apt install <パッケージ名>
+sudo apt install raspimouse-ros2-examples
 ```
 
 ### Source Build
@@ -88,9 +88,9 @@ source ~/ros2_ws/install/setup.bash
   - [SONY DUALSHOCK 3](https://www.jp.playstation.com/ps3/peripheral/cechzc2j.html)
 
 ```sh
-## on RaspberryPiMouse
+# on RaspberryPiMouse
 $ ros2 run raspimouse raspimouse
-## on remote computer
+# on remote computer
 $ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
 ```
 
