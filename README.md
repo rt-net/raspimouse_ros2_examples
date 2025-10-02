@@ -2,7 +2,6 @@
 
 # raspimouse_ros2_examples
 
-<!-- 本リポジトリのワークフローステータスバッジを添付します（詳細：https://wiki.moon-rabbit.rt-net.jp/670f811056b3aca9041b9aa3）-->
 [![industrial_ci](https://github.com/rt-net/<リポジトリのパス>/actions/workflows/industrial_ci.yml/badge.svg?branch=<対象のブランチ>)](https://github.com/rt-net/<リポジトリのパス>/actions/workflows/industrial_ci.yml)
 
 Raspberry Pi MouseのROS 2サンプルコード集です。
@@ -11,7 +10,7 @@ ROS1のサンプルコード集は[こちら](https://github.com/rt-net/raspimou
 
 Gazebo（シミュレータ）でも動作します。詳細は[こちら](https://github.com/rt-net/raspimouse_sim/blob/ros2/README.md)。
 
-![raspberry_pi_mouse](https://rt-net.github.io/images/raspberry-pi-mouse/raspberry_pi_mouse.JPG)
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/raspberry_pi_mouse.JPG width=500 />
 
 ## Table of Contents
 
