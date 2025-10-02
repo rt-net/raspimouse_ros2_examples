@@ -4,7 +4,7 @@
 
 ジョイスティックコントローラでRaspberryPiMouseを動かすコード例です。
 
-[![joystick_control](http://img.youtube.com/vi/GswxdB8Ia0Y/sddefault.jpg)](https://youtu.be/GswxdB8Ia0Y)
+<a href="ttps://youtu.be/GswxdB8Ia0Y"><img src="http://img.youtube.com/vi/GswxdB8Ia0Y/sddefault.jpg" alt="joystick_control" width="100%" ></a>
 
 次のコマンドでノードを起動します。
 
@@ -26,7 +26,7 @@ $ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
 
 Logicool Wireless Gamepad F710を使う場合はモード切替スイッチを __D__ (DirectInput Mode)に設定します。
 
-![](https://rt-net.github.io/images/raspberry-pi-mouse/joystick_control_keyconfig.png)
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/joystick_control_keyconfig.png width=500 />
 
 [back to example list](#how-to-use-examples)
 
@@ -37,7 +37,7 @@ Logicool Wireless Gamepad F710を使う場合はモード切替スイッチを _
 色情報をもとにオレンジ色のボールの追跡を行うコード例です。
 USB接続のWebカメラとOpenCVを使ってボール追跡をします。
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking.JPG width=500 />
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking.JPG width=100% />
 
 次のスクリプトを実行して、カメラの自動調節機能（自動露光，オートホワイトバランス等）を切ります。
 
@@ -54,19 +54,21 @@ $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/
 
 
 カメラ画像は`camera/color/image_raw`、物体検出画像は`result_image`というトピックとして発行されます。
-これらの画像は[RViz](https://index.ros.org/r/rviz/)
-や[rqt_image_view](https://index.ros.org/p/rqt_image_view/)
-で表示できます。
+これらの画像は[RViz](https://index.ros.org/r/rviz/)や[rqt_image_view](https://index.ros.org/p/rqt_image_view/)で表示できます。
 
 **画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。**
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking_ros2.png width=500 />
 
+[back to example list](#how-to-use-examples)
+
+---
+
 ## line_follower
 
 ライントレースのコード例です。
 
-![mouse_with_line_trace_sensor](https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_line_trace_sensor.JPG)
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_line_trace_sensor.JPG width=100% />
 
 次のコマンドでノードを起動します。
 
@@ -98,7 +100,7 @@ Raspberry Pi Mouseをフィールドに置き、SW2を押してフィールド�
 
 RGBカメラによるライントレースのコード例です。
 
-![mouse_camera_line_trace_2](https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace_2.png)
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace_2.png width=100% />
 
 ```bash
 # Terminal 1
@@ -129,7 +131,7 @@ $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_devi
 
 IMUセンサを使用した角度制御のコード例です。
 
-<img src=https://www.rt-shop.jp/images/RT/RT-USB-9axisIMU.png width=400 /> <img src=https://www.rt-shop.jp/images/RT/%E8%A3%BD%E5%93%81%E5%86%99%E7%9C%9F.JPG height=400>
+<img src=https://www.rt-shop.jp/images/RT/RT-USB-9axisIMU.png width=750 /> <img src=https://www.rt-shop.jp/images/RT/%E8%A3%BD%E5%93%81%E5%86%99%E7%9C%9F.JPG height=750>
 
 次のコマンドでノードを起動します。
 
@@ -144,6 +146,10 @@ SW0 ~ SW2を押して動作モードを切り替えます。
   - SW0 ~ SW2を押すか、ラズパイマウス本体を横に傾けると終了します
 - SW2: 方位角を`-π ~ π rad`に変化させる角度制御を開始します
   - SW0 ~ SW2を押すか、ラズパイマウス本体を横に傾けると終了します
+
+[back to example list](#how-to-use-examples)
+
+---
 
 ## SLAM
 
