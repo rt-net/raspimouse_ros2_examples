@@ -131,7 +131,7 @@ $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_devi
 
 IMUセンサを使用した角度制御のコード例です。
 
-<img src=https://www.rt-shop.jp/images/RT/RT-USB-9axisIMU.png width=750 /> <img src=https://www.rt-shop.jp/images/RT/%E8%A3%BD%E5%93%81%E5%86%99%E7%9C%9F.JPG height=750>
+<img src=https://www.rt-shop.jp/images/RT/RT-USB-9axisIMU.png height=500 /><img src=https://www.rt-shop.jp/images/RT/%E8%A3%BD%E5%93%81%E5%86%99%E7%9C%9F.JPG height=500 />
 
 次のコマンドでノードを起動します。
 
@@ -153,11 +153,10 @@ SW0 ~ SW2を押して動作モードを切り替えます。
 
 ## SLAM
 
-![注意]
+> [!NOTE]
+> Raspberry Pi MouseでSLAMとNavigationを行うサンプルは[rt-net/raspimouse_slam_navigation_ros2](https://github.com/rt-net/raspimouse_slam_navigation_ros2)へ移行しました。
 
-Raspberry Pi MouseでSLAMとNavigationを行うサンプルは[rt-net/raspimouse_slam_navigation_ros2](https://github.com/rt-net/raspimouse_slam_navigation_ros2)へ移行しました。
-
-![slam_toolbox_ros2](https://rt-net.github.io/images/raspberry-pi-mouse/slam_toolbox_ros2.png)
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/slam_toolbox_ros2.png height=100% />
 
 [back to example list](#how-to-use-examples)
 
