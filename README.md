@@ -81,23 +81,11 @@ source ~/ros2_ws/install/setup.bash
 
 ## QuickStart
 
-ジョイスティックコントローラでRaspberryPiMouseを動かすコード例です。
+ジョイスティックコントローラで、Raspberry Pi Mouseをリモート操作します。
 
 - 対応コントローラ
   - [Logicool Wireless Gamepad F710](https://gaming.logicool.co.jp/ja-jp/products/gamepads/f710-wireless-gamepad.html#940-0001440)
   - [SONY DUALSHOCK 3](https://www.jp.playstation.com/ps3/peripheral/cechzc2j.html)
-
-### Controlled directly on Raspberry Pi Mouse
-
-```sh
-# Controlled directly on Raspberry Pi Mouse
-## Use F710
-$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=f710 mouse:=true
-## Use DUALSHOCK 3
-$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=dualshock3 mouse:=true
-```
-
-### Control from remote computer
 
 ```sh
 ## on RaspberryPiMouse
