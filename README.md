@@ -24,18 +24,8 @@ Gazebo（シミュレータ）でも動作します。詳細は[こちら](https
     - [Source Build](#source-build)
   - [QuickStart](#quickstart)
   - [How To Use Examples](#how-to-use-examples)
-    - [<Sample名>](#sample名)
-  - [Packages](#packages)
-  - [Topics](#topics)
-    - [Subscribed](#subscribed)
-    - [Published](#published)
-  - [Services](#services)
-  - [Actions](#actions)
-  - [Parameters](#parameters)
-  - [<etc...Lifecycle,Description)>](#etc-lifecycle-description等)
   - [License](#license)
   - [Contributing](#contributing)
-  - [Contributors](#contributors)
 
 ## Supported ROS distributions
 
@@ -67,13 +57,13 @@ Gazebo（シミュレータ）でも動作します。詳細は[こちら](https
 
 ### Binary Installation
 
-```bash
+```sh
 sudo apt install <パッケージ名>
 ```
 
 ### Source Build
 
-```bash
+```sh
 # Create workspace directory
 mkdir -p ~/ros2_ws/src && cd ~/ros2_ws/src
 
@@ -91,80 +81,34 @@ source ~/ros2_ws/install/setup.bash
 
 ## QuickStart
 
-```bash
-# Terminal 1
-ros2 run ...
+ジョイスティックコントローラでRaspberryPiMouseを動かすコード例です。
 
-# Terminal 2
-ros2 launch ...
+- 対応コントローラ
+  - [Logicool Wireless Gamepad F710](https://gaming.logicool.co.jp/ja-jp/products/gamepads/f710-wireless-gamepad.html#940-0001440)
+  - [SONY DUALSHOCK 3](https://www.jp.playstation.com/ps3/peripheral/cechzc2j.html)
+
+### Controlled directly on Raspberry Pi Mouse
+
+```sh
+# Controlled directly on Raspberry Pi Mouse
+## Use F710
+$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=f710 mouse:=true
+## Use DUALSHOCK 3
+$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=dualshock3 mouse:=true
+```
+
+### Control from remote computer
+
+```sh
+## on RaspberryPiMouse
+$ ros2 run raspimouse raspimouse
+## on remote computer
+$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
 ```
 
 ## How to Use Examples
 
 サンプルプログラムの詳細な動作方法は、[EXAMPLES](./EXAMPLES.md)で説明しています。
-
-### <Sample名>
-
-サンプルプログラムの説明
-
-<!-- 可能な限り画像や動画を用いて説明します -->
-![画像](画像ファイルパス)
-[![動画名](表示画像パス)](Youtubeのリンクパス)
-
-<!-- 動作コマンドや注意事項を説明します -->
-
-```bash
-# Terminal 1
-ros2 run ...
-
-# Terminal 2
-ros2 launch ...
-```
-
-## Topics
-
-<!-- 説明が必要な場合は記述します -->
-
-### Subscribed
-
-- `<Topic名>`
-  - Type: `<型名>`
-  - 説明の記述
-  
-### Published
-
-- `<Topic名>`
-  - Type: `<型名>`
-  - 説明の記述
-
-## Services
-
-<!-- 説明が必要な場合は記述します -->
-
-- `<Service名>`
-  - Type: `<型名>`
-  - 説明の記述
-
-## Actions
-
-<!-- 説明が必要な場合は記述します -->
-
-- `<Action名>`
-  - Type: `<型名>`
-  - 説明の記述
-
-## Parameters
-
-<!-- 説明が必要な場合は記述します -->
-
-- `<Parameter名>`
-  - Type: `<型名>`
-  - Default: `<デフォルト値>`
-  - 説明の記述
-
-## <etc... (Lifecycle, Description、等)>
-
-<!-- Lifecycleの管理方法や独自の使用方法があれば記述します -->
 
 ## License
 
