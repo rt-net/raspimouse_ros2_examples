@@ -261,7 +261,7 @@ IMUセンサを使用した角度制御のコード例です。
 
 IMUセンサモジュールを取り付けたLiDAR MountをRaspberry Pi Mouseに取り付けます。詳細は、[マルチLiDARマウント組み立てマニュアル](https://rt-net.jp/wp-content/uploads/2020/04/RaspberryPiMouseOptionKitManual_No08.pdf)を参照してください。
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_2.JPG width=250 /><img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_1.JPG width=250 />
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_2.JPG width=250 /> <img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_1.JPG width=250 />
 
 ### Usages
 
