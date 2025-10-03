@@ -44,8 +44,7 @@ Logicool Wireless Gamepad F710を使う場合はモード切替スイッチを _
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/joystick_control_keyconfig.png width=450 />
 
-[./config/joy_f710.yml](./config/joy_f710.yml)、[./config/joy_dualshock3.yml](./config/joy_dualshock3.yml)
-のキー番号を編集することで、キー割り当てを変更できます。
+[./config/joy_f710.yml](./config/joy_f710.yml)、[./config/joy_dualshock3.yml](./config/joy_dualshock3.yml)のキー番号を編集することで、キー割り当てを変更できます。
 
 ```yaml
 button_shutdown_1       : 8
@@ -98,7 +97,8 @@ $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/
 カメラ画像は`camera/color/image_raw`、物体検出画像は`result_image`というトピックとして発行されます。
 これらの画像は[RViz](https://index.ros.org/r/rviz/)や[rqt_image_view](https://index.ros.org/p/rqt_image_view/)で表示できます。
 
-**画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。**
+> [!NOTE]
+> 画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking_ros2.png width=450 />
 
