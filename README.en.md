@@ -93,7 +93,7 @@ $ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
 
 ## How to Use Examples
 
-The detailed operation of the sample program is explained in[Examples](./Examples.en.md).
+The detailed operation of the sample program is explained in d[Examples](./Examples.en.md).
 
 - Examples
   - Joystick Control
@@ -105,11 +105,11 @@ The detailed operation of the sample program is explained in[Examples](./Example
 
 ## License
 
-(C) 2022 RT Corporation \<support@rt-net.jp\>
+(C) 2022 RT Corporation <support@rt-net.jp>
 
 Each file is licensed as stated in their headers.  
-If no license is specified, the file is licensed under the MIT License.  
-The full license text is available in the [LICENSE](./LICENSE) file or at [https://opensource.org/license/MIT](https://opensource.org/license/MIT).
+If no license is specified, the file is licensed under the Apache License, Version 2.0.  
+The full license text is available in the [LICENSE](./LICENSE) file or at [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 ## Contributing
 

@@ -105,10 +105,11 @@ $ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
 
 ## License
 
-(C) 2022 RT Corporation \<support@rt-net.jp\>
+(C) 2022 RT Corporation <support@rt-net.jp>
 
-各ファイルはライセンスがファイル中に明記されている場合、そのライセンスに従います。 特に明記されていない場合は、Apache License, Version 2.0に基づき公開されています。
-ライセンスの全文は[LICENSE](./LICENSE)または[https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)から確認できます。
+各ファイルはライセンスがファイル中に明記されている場合、そのライセンスに従います。
+特に明記されていない場合は、Apache License, Version 2.0に基づき公開されています。
+ライセンスの全文はLICENSEまたはhttps://www.apache.org/licenses/LICENSE-2.0から確認できます。
 
 ## Contributing
 
