@@ -18,9 +18,9 @@ This is an example with a joystick controller to operate a Raspberry Pi Mouse.
   <img src="https://img.youtube.com/vi/GswxdB8Ia0Y/sddefault.jpg" alt="joystick_control" width="650">
 </a>
 
-### Usages
+### Usage
 
-launch the nodes with the following command:
+Launch nodes with the following command:
 
 ```sh
 # Controlled directly on Raspberry Pi Mouse
@@ -56,7 +56,7 @@ button_motor_on         : 9
 button_cmd_enable       : 4
 ```
 
-[back to example list](#how-to-use-examples)
+[back to example list](#examples)
 
 ---
 
@@ -73,22 +73,22 @@ The ball tracking is performed with a USB webcam and the OpenCV library.
   - [Logicool HD WEBCAM C310N](https://www.logicool.co.jp/ja-jp/product/hd-webcam-c310n)
 - Camera mount
   - [Raspberry Pi Mouse Option kit No.4 \[Webcam mount\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3584&language=en)
-- Orange ball（Optional）
+- Orange ball (Optional)
   - [Soft Ball (Orange)](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1307&products_id=3701&language=en)
 - Software
   - OpenCV
   - v4l-utils
 
-### Usages
+### Usage
 
-Disable the automatic camera adjustment parameters (auto focus, auto white balance, etc.) with the following command:
+Disable the automatic camera adjustment parameters (autofocus, auto white balance, etc.) with the following command:
 
 ```sh
 $ cd ~/ros2_ws/src/raspimouse_ros2_examples/config
 $ ./configure_camera.bash
 ```
 
-Then, launch the nodes with the following command:
+Then, launch nodes with the following command:
 
 ```sh
 $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/dev/video0
@@ -116,7 +116,7 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
   // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);  // Blue
 ```
 
-[back to example list](#how-to-use-examples)
+[back to example list](#examples)
 
 ---
 
@@ -132,7 +132,7 @@ This is an example for line following.
   - [Raspberry Pi Mouse Option kit No.3 \[Line follower\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3591&language=en)
 - Field and lines for following (Optional)
 
-### Usages
+### Usage
 
 Launch nodes with the following command:
 
@@ -155,7 +155,7 @@ Finally, place the Raspberry Pi Mouse on the line and press SW0 to start line fo
 Press SW0 again to stop the line following.
 
 <a href="https://youtu.be/oPm0sW2V_tY" target="_blank" rel="noopener noreferrer">
-  <img src="http://img.youtube.com/vi/oPm0sW2V_tY/sddefault.jpg" alt="joystick_control" width="450">
+  <img src="http://img.youtube.com/vi/oPm0sW2V_tY/sddefault.jpg" alt="line_follwer" width="450">
 </a>
 
 ### Configure
@@ -165,12 +165,12 @@ Edit [`./src/line_follower_component.cpp`](./src/line_follower_component.cpp) to
 ```cpp
 void Follower::publish_cmdvel_for_line_following(void)
 {
-  const double VEL_LINEAR_X = 0.08;  // m/s
-  const double VEL_ANGULAR_Z = 0.8;  // rad/s
-  const double LOW_VEL_ANGULAR_Z = 0.5;  // rad/s
+  const double VEL_LINEAR_X = 0.08;  // [m/s]
+  const double VEL_ANGULAR_Z = 0.8;  // [rad/s]
+  const double LOW_VEL_ANGULAR_Z = 0.5;  // [rad/s]
 ```
 
-[back to example list](#how-to-use-examples)
+[back to example list](#examples)
 
 ---
 
@@ -187,9 +187,9 @@ This is an example for line following by RGB camera.
 - Camera mount
   - [Raspberry Pi Mouse Option kit No.4 \[Webcam mount\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3584&language=en)
 
-### Usages
+### Usage
 
-launch nodes with the following command:
+Launch nodes with the following command:
 
 ```sh
 $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_device:=/dev/video0
@@ -199,7 +199,7 @@ Place Raspberry Pi Mouse on the line and press SW2 to start line following.
 Press SW0 to stop the line following.
 
 This sample publishes two topics: `camera/color/image_raw` for the camera image and `result_image` for the object detection image.
-These images can be viewed in [RViz](https://index.ros.org/r/rviz/)or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
+These images can be viewed in [RViz](https://index.ros.org/r/rviz/) or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
 
 > [!NOTE]
 > Viewing the images may cause the node to become unstable, resulting in cmd_vel or image topics not being published.
@@ -239,7 +239,7 @@ Run the following command to set the parameters:
 ros2 param set /camera_follower max_brightness 80
 ```
 
-[back to example list](#how-to-use-examples)
+[back to example list](#examples)
 
 ---
 
@@ -263,7 +263,7 @@ Attach the LiDAR mount with the IMU sensor module to the Raspberry Pi Mouse. For
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_2.JPG width=250 /> <img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_1.JPG width=250 />
 
-### Usages
+### Usage
 
 Launch nodes on the Raspberry Pi Mouse with the following command:
 
@@ -271,13 +271,13 @@ Launch nodes on the Raspberry Pi Mouse with the following command:
 $ ros2 launch raspimouse_ros2_examples direction_controller.launch.py
 ```
 
-Then, press SW0 ~ SW2 to change the control mode as follows:
+Then, press SW0–SW2 to change the control mode as follows:
 
-- SW0: Calibrate the gyroscope bias and reset the Raspberry Pi Mouse's heading angle to 0 rad.
-- SW1: Start direction control to keep the heading angle at 0 rad.
-  - Press SW0 ~ SW2 or tilt the body sideways to terminate the control.
-- SW2: Start direction control to change the heading angle between -π and π rad.
-  - Press SW0 ~ SW2 or tilt the body sideways to terminate the control.
+- SW0: Calibrate the gyroscope bias and reset the Raspberry Pi Mouse's heading angle to `0`[rad].
+- SW1: Start direction control to keep the heading angle at `0`[rad].
+  - Press SW0–SW2 or tilt the body sideways to terminate the control.
+- SW2: Start direction control to change the heading angle between `-π` and `π`[rad].
+  - Press SW0–SW2 or tilt the body sideways to terminate the control.
 
 > [!NOTE]
 > The IMU might not be connected correctly.
@@ -299,7 +299,7 @@ Then, press SW0 ~ SW2 to change the control mode as follows:
   - Derivative gain of a PID controller for the direction control
 - `target_angle`
   - Type: `double`
-  - default: 0.0, min:-π, max:+π
+  - Default: 0.0, min:-π, max:+π
   - Target angle for the SW1 (direction control mode).
 
 ### Published
@@ -308,7 +308,7 @@ Then, press SW0 ~ SW2 to change the control mode as follows:
   - Type: `std_msgs/Float64`
   - Heading angle of the robot calculated from IMU module sensor values
 
-[back to example list](#how-to-use-examples)
+[back to example list](#examples)
 
 ---
 
@@ -321,6 +321,6 @@ This is an example of SLAM & Navigation.
 > [!NOTE]
 > The sample for SLAM and Navigation with Raspberry Pi Mouse has been moved to [rt-net/raspimouse_slam_navigation_ros2](https://github.com/rt-net/raspimouse_slam_navigation_ros2).
 
-[back to example list](#how-to-use-examples)
+[back to example list](#examples)
 
 ---

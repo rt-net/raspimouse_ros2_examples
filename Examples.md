@@ -18,7 +18,7 @@ Raspberry Pi Mouseを動作させるサンプル集です。
   <img src="https://img.youtube.com/vi/GswxdB8Ia0Y/sddefault.jpg" alt="joystick_control" width="650">
 </a>
 
-### Usages
+### Usage
 
 次のコマンドでノードを起動します。
 
@@ -56,7 +56,7 @@ button_motor_on         : 9
 button_cmd_enable       : 4
 ```
 
-[back to example list](#how-to-use-examples)
+[back to example list](#examples)
 
 ---
 
@@ -79,9 +79,9 @@ USB接続のWebカメラとOpenCVを使ってボール追跡をします。
   - OpenCV
   - v4l-utils
 
-### Usages
+### Usage
 
-次のスクリプトを実行して、カメラの自動調節機能（自動露光，オートホワイトバランス等）を切ります。
+次のスクリプトを実行して、カメラの自動調節機能（自動露光、オートホワイトバランス等）を切ります。
 
 ```sh
 $ cd ~/ros2_ws/src/raspimouse_ros2_examples/config
@@ -118,7 +118,7 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
   // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);  // Blue
 ```
 
-[back to example list](#how-to-use-examples)
+[back to example list](#examples)
 
 ---
 
@@ -134,7 +134,7 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
   - [Raspberry Pi Mouse オプションキット No.3 \[ライントレース\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3591)
 - フィールドとライン (Optional)
 
-### Usages
+### Usage
 
 次のコマンドでノードを起動します。
 
@@ -172,7 +172,7 @@ void Follower::publish_cmdvel_for_line_following(void)
   const double LOW_VEL_ANGULAR_Z = 0.5;  // rad/s
 ```
 
-[back to example list](#how-to-use-examples)
+[back to example list](#examples)
 
 ---
 
@@ -189,7 +189,7 @@ RGBカメラによるライントレースのコード例です。
 - カメラマウント
   - [Raspberry Pi Mouse オプションキット No.4 \[Webカメラマウント\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3584)
 
-### Usages
+### Usage
 
 次のコマンドでノードを起動します。
 
@@ -242,7 +242,7 @@ $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_devi
 ros2 param set /camera_follower max_brightness 80
 ```
 
-[back to example list](#how-to-use-examples)
+[back to example list](#examples)
 
 ---
 
@@ -263,7 +263,7 @@ IMUセンサモジュールを取り付けたLiDAR MountをRaspberry Pi Mouseに
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_2.JPG width=250 /> <img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_1.JPG width=250 />
 
-### Usages
+### Usage
 
 次のコマンドでノードを起動します。
 
@@ -271,13 +271,13 @@ IMUセンサモジュールを取り付けたLiDAR MountをRaspberry Pi Mouseに
 $ ros2 launch raspimouse_ros2_examples direction_controller.launch.py
 ```
 
-SW0 ~ SW2を押して動作モードを切り替えます。
+SW0-SW2を押して動作モードを切り替えます。
 
-- SW0: ジャイロセンサのバイアスをキャリブレーションし、ラズパイマウスの方位角を`0 rad`にリセットします
-- SW1: 方位角を`0 rad`に維持する角度制御を開始します
-  - SW0 ~ SW2を押すか、ラズパイマウス本体を横に傾けると終了します
-- SW2: 方位角を`-π ~ π rad`に変化させる角度制御を開始します
-  - SW0 ~ SW2を押すか、ラズパイマウス本体を横に傾けると終了します
+- SW0: ジャイロセンサのバイアスをキャリブレーションし、ラズパイマウスの方位角を`0`[rad]にリセットします
+- SW1: 方位角を`0`[rad]に維持する角度制御を開始します
+  - SW0–SW2を押すか、ラズパイマウス本体を横に傾けると終了します
+- SW2: 方位角を`-π ~ π`[rad]に変化させる角度制御を開始します
+  - SW0–SW2を押すか、ラズパイマウス本体を横に傾けると終了します
 
 > [!NOTE]
 > IMUの接続が正常に行われない場合があります。
@@ -299,7 +299,7 @@ SW0 ~ SW2を押して動作モードを切り替えます。
   - 角度制御用PIDコントローラの微分ゲイン
 - `target_angle`
   - Type: `double`
-  - default: 0.0, min:-π, max:+π
+  - Default: 0.0, min:-π, max:+π
   - SW1（角度制御モード）の目標角度
 
 ### Published
@@ -307,7 +307,7 @@ SW0 ~ SW2を押して動作モードを切り替えます。
   - Type: `std_msgs/Float64`
   - IMUモジュールのセンサ値をもとに計算されたロボットの向き（進行方向の角度）
 
-[back to example list](#how-to-use-examples)
+[back to example list](#examples)
 
 ---
 
@@ -320,6 +320,6 @@ SLAMとNavigationを行います。
 > [!NOTE]
 > Raspberry Pi MouseでSLAMとNavigationを行うサンプルは[rt-net/raspimouse_slam_navigation_ros2](https://github.com/rt-net/raspimouse_slam_navigation_ros2)へ移行しました。
 
-[back to example list](#how-to-use-examples)
+[back to example list](#examples)
 
 ---
