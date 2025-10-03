@@ -3,14 +3,14 @@
 Raspberry Pi Mouseを動作させるサンプル集です。
 
 - [Examples](#examples)
-  - [joystick/_control](#joystick_control)
-  - [object/_tracking](#object_tracking)
-  - [line](#line_follower)
-  - [camera/_line/_follower](#camera_line_follower)
-  - [direction/_controller](#direction_controller)
-  - [slam](#slam)
+  - [Joystick Control](#joystick-control)
+  - [Object Tracking](#object-tracking)
+  - [Line Follower](#line-follower)
+  - [Camera Line Follower](#camera-line-follower)
+  - [Direction Controller](#direction-controller)
+  - [SLAM & Navigation](#slam--navigation)
 
-## joystick_control
+## Joystick Control
 
 ジョイスティックコントローラでRaspberryPiMouseを動かすコード例です。
 
@@ -61,7 +61,7 @@ button_cmd_enable       : 4
 
 ---
 
-## object_tracking
+## Object Tracking
 
 色情報をもとにオレンジ色のボールの追跡を行うコード例です。
 USB接続のWebカメラとOpenCVを使ってボール追跡をします。
@@ -122,7 +122,7 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
 
 ---
 
-## line_follower
+## Line Follower
 
 ライントレースのコード例です。
 
@@ -176,7 +176,7 @@ void Follower::publish_cmdvel_for_line_following(void)
 
 ---
 
-## camera_line_follower
+## Camera Line Follower
 
 RGBカメラによるライントレースのコード例です。
 
@@ -246,7 +246,7 @@ ros2 param set /camera_follower max_brightness 80
 
 ---
 
-## direction_controller
+## Direction Controller
 
 IMUセンサを使用した角度制御のコード例です。
 
@@ -311,7 +311,7 @@ SW0 ~ SW2を押して動作モードを切り替えます。
 
 ---
 
-## SLAM/Navigation
+## SLAM & Navigation
 
 SLAMとNavigationを行います。
 
