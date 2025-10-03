@@ -164,6 +164,7 @@ This sample publishes two topics: `camera/color/image_raw` for the camera image 
 These images can be viewed with [RViz](https://index.ros.org/r/rviz/)
 or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
 
+> {!}
 **Viewing an image may cause the node to behave unstable and not publish cmd_vel or image topics.**
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking_ros2.png width=500 />
