@@ -236,6 +236,8 @@ $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_devi
   - Default: 0.20
   - 走行を開始するためのライン面積のしきい値
 
+各種パラメータを設定する際は、以下のコマンドを実行します。
+
 ```sh
 ros2 param set /camera_follower max_brightness 80
 ```
@@ -257,7 +259,7 @@ IMUセンサを使用した角度制御のコード例です。
 - RT-USB-9axisIMU ROS Package
   - https://github.com/rt-net/rt_usb_9axisimu_driver
 
-IMUセンサモジュールを取り付けたLiDAR MountをRaspberry Pi Mouseに取り付けます。
+IMUセンサモジュールを取り付けたLiDAR MountをRaspberry Pi Mouseに取り付けます。詳細は、[マルチLiDARマウント組み立てマニュアル](https://rt-net.jp/wp-content/uploads/2020/04/RaspberryPiMouseOptionKitManual_No08.pdf)を参照してください。
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_2.JPG width=250 /><img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_1.JPG width=250 />
 
