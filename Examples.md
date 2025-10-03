@@ -4,7 +4,7 @@
 
 ジョイスティックコントローラでRaspberryPiMouseを動かすコード例です。
 
-<a href="ttps://youtu.be/GswxdB8Ia0Y"><img src="http://img.youtube.com/vi/GswxdB8Ia0Y/sddefault.jpg" alt="joystick_control" width="100%" ></a>
+<a href="ttps://youtu.be/GswxdB8Ia0Y"><img src="http://img.youtube.com/vi/GswxdB8Ia0Y/sddefault.jpg" alt="joystick_control" width="500" ></a>
 
 次のコマンドでノードを起動します。
 
@@ -37,7 +37,7 @@ Logicool Wireless Gamepad F710を使う場合はモード切替スイッチを _
 色情報をもとにオレンジ色のボールの追跡を行うコード例です。
 USB接続のWebカメラとOpenCVを使ってボール追跡をします。
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking.JPG width=100% />
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking.JPG width=500 />
 
 次のスクリプトを実行して、カメラの自動調節機能（自動露光，オートホワイトバランス等）を切ります。
 
@@ -68,7 +68,7 @@ $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/
 
 ライントレースのコード例です。
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_line_trace_sensor.JPG width=100% />
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_line_trace_sensor.JPG width=500 />
 
 次のコマンドでノードを起動します。
 
@@ -100,7 +100,7 @@ Raspberry Pi Mouseをフィールドに置き、SW2を押してフィールド�
 
 RGBカメラによるライントレースのコード例です。
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace_2.png width=100% />
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace_2.png width=500 />
 
 ```bash
 # Terminal 1
@@ -156,7 +156,7 @@ SW0 ~ SW2を押して動作モードを切り替えます。
 > [!NOTE]
 > Raspberry Pi MouseでSLAMとNavigationを行うサンプルは[rt-net/raspimouse_slam_navigation_ros2](https://github.com/rt-net/raspimouse_slam_navigation_ros2)へ移行しました。
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/slam_toolbox_ros2.png height=100% />
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/slam_toolbox_ros2.png height=500 />
 
 [back to example list](#how-to-use-examples)
 
