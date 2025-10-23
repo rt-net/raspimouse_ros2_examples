@@ -117,6 +117,9 @@ Raspberry Pi Mouseを動作させるサンプル集です。
   <img src="https://img.youtube.com/vi/GswxdB8Ia0Y/sddefault.jpg" alt="joystick_control" width="650">
 </a>
 
+<details>
+<summary>Usage</summary>
+
 #### Usage
 
 次のコマンドでノードを起動します。
@@ -155,6 +158,8 @@ button_motor_on         : 9
 button_cmd_enable       : 4
 ```
 
+</details>
+
 [back to example list](#examples)
 
 ---
@@ -165,6 +170,9 @@ button_cmd_enable       : 4
 USB接続のWebカメラとOpenCVを使ってボール追跡をします。
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking.JPG width=650 />
+
+<details>
+<summary>Usage</summary>
 
 #### Requirements
 
@@ -217,6 +225,8 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
   // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);  // Blue
 ```
 
+</details>
+
 [back to example list](#examples)
 
 ---
@@ -226,6 +236,9 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
 ライントレースのコード例です。
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_line_trace_sensor.JPG width=650 />
+
+<details>
+<summary>Usage</summary>
 
 #### Requirements
 
@@ -271,6 +284,8 @@ void Follower::publish_cmdvel_for_line_following(void)
   const double LOW_VEL_ANGULAR_Z = 0.5;  // rad/s
 ```
 
+</details>
+
 [back to example list](#examples)
 
 ---
@@ -280,6 +295,9 @@ void Follower::publish_cmdvel_for_line_following(void)
 RGBカメラによるライントレースのコード例です。
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace_2.png width=650 />
+
+<details>
+<summary>Usage</summary>
 
 #### Requirements
 
@@ -341,6 +359,8 @@ $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_devi
 ros2 param set /camera_follower max_brightness 80
 ```
 
+</details>
+
 [back to example list](#examples)
 
 ---
@@ -350,6 +370,9 @@ ros2 param set /camera_follower max_brightness 80
 IMUセンサを使用した角度制御のコード例です。
 
 <img src=https://www.rt-shop.jp/images/RT/RT-USB-9axisIMU.png height=280 /><img src=https://www.rt-shop.jp/images/RT/%E8%A3%BD%E5%93%81%E5%86%99%E7%9C%9F.JPG height=280 />
+
+<details>
+<summary>Usage</summary>
 
 #### Requirements
 
@@ -405,6 +428,8 @@ SW0-SW2を押して動作モードを切り替えます。
 - `heading_angle`
   - Type: `std_msgs/Float64`
   - IMUモジュールのセンサ値をもとに計算されたロボットの向き（進行方向の角度）
+
+</details>
 
 [back to example list](#examples)
 
