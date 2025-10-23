@@ -117,6 +117,9 @@ This is an example with a joystick controller to operate a Raspberry Pi Mouse.
   <img src="https://img.youtube.com/vi/GswxdB8Ia0Y/sddefault.jpg" alt="joystick_control" width="650">
 </a>
 
+<details>
+<summary>Details</summary>
+
 #### Usage
 
 Launch nodes with the following command:
@@ -155,6 +158,8 @@ button_motor_on         : 9
 button_cmd_enable       : 4
 ```
 
+</details>
+
 [back to example list](#examples)
 
 ---
@@ -165,6 +170,9 @@ This is a code example for tracking an orange ball based on color information.
 The ball tracking is performed with a USB webcam and the OpenCV library.
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking.JPG width=650 />
+
+<details>
+<summary>Details</summary>
 
 #### Requirements
 
@@ -215,6 +223,8 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
   // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);  // Blue
 ```
 
+</details>
+
 [back to example list](#examples)
 
 ---
@@ -224,6 +234,9 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
 This is an example for line following.
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_line_trace_sensor.JPG width=650 />
+
+<details>
+<summary>Details</summary>
 
 #### Requirements
 
@@ -269,6 +282,8 @@ void Follower::publish_cmdvel_for_line_following(void)
   const double LOW_VEL_ANGULAR_Z = 0.5;  // [rad/s]
 ```
 
+</details>
+
 [back to example list](#examples)
 
 ---
@@ -278,6 +293,9 @@ void Follower::publish_cmdvel_for_line_following(void)
 This is an example for line following by RGB camera.
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace_2.png width=650 />
+
+<details>
+<summary>Details</summary>
 
 #### Requirements
 
@@ -338,6 +356,8 @@ Run the following command to set the parameters:
 ros2 param set /camera_follower max_brightness 80
 ```
 
+</details>
+
 [back to example list](#examples)
 
 ---
@@ -347,6 +367,9 @@ ros2 param set /camera_follower max_brightness 80
 This is an example of using an IMU sensor for direction control.
 
 <img src=https://www.rt-shop.jp/images/RT/RT-USB-9axisIMU.png height=280 /><img src=https://www.rt-shop.jp/images/RT/%E8%A3%BD%E5%93%81%E5%86%99%E7%9C%9F.JPG height=280 />
+
+<details>
+<summary>Details</summary>
 
 #### Requirements
 
@@ -406,6 +429,8 @@ Then, press SW0–SW2 to change the control mode as follows:
 - `heading_angle`
   - Type: `std_msgs/Float64`
   - Heading angle of the robot calculated from IMU module sensor values
+
+</details>
 
 [back to example list](#examples)
 
