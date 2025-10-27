@@ -171,8 +171,8 @@ USB接続のWebカメラとOpenCVを使ってボール追跡をします。
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking.JPG width=650 />
 
-<details>
-<summary>Details</summary>
+<!-- <details>
+<summary>Details</summary> -->
 
 #### Requirements
 
@@ -225,7 +225,7 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
   // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);  // Blue
 ```
 
-</details>
+<!-- </details> -->
 
 [Back to example list](#how-to-use-examples)
 
