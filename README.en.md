@@ -378,9 +378,6 @@ This is an example of using an IMU sensor for direction control.
 - RT-USB-9axisIMU ROS Package.
   - https://github.com/rt-net/rt_usb_9axisimu_driver
 
-
-IMUセンサモジュールを取り付けたLiDAR MountをRaspberry Pi Mouseに取り付けます。詳細は、[マルチLiDARマウント組み立てマニュアル](https://rt-net.jp/wp-content/uploads/2020/04/RaspberryPiMouseOptionKitManual_No08.pdf)を参照してください。
-
 Attach the LiDAR mount with the IMU sensor module to the Raspberry Pi Mouse. For details, refer to the [Multi-LiDAR Mount Assembly Manual (in Japanese)](https://rt-net.jp/wp-content/uploads/2020/04/RaspberryPiMouseOptionKitManual_No08.pdf).
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_2.JPG width=250 /> <img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_1.JPG width=250 />
