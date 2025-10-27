@@ -207,14 +207,17 @@ $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/
 > [!NOTE]
 > 画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。
 
+
 :warning: NOTE1
-テスト1
+> パターン1の場合はこちら
+> 2段目
 
-> :warning: NOTE1
-> テスト1
 
-:note: NOTE2
-テスト2
+> :warning: NOTE2
+>
+> パターン2の場合はこちら
+> 2段目
+
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking_ros2.png width=450 />
 
