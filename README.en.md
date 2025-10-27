@@ -204,7 +204,8 @@ $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/
 This sample publishes two topics: `camera/color/image_raw` for the camera image and `result_image` for the object detection image.  
 These images can be viewed with [RViz](https://index.ros.org/r/rviz/) or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
 
-> [!NOTE]
+> :warning: Note
+>
 > Viewing the images may cause the node to become unstable, resulting in cmd_vel or image topics not being published.
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking_ros2.png width=450 />
@@ -318,7 +319,8 @@ Press SW0 to stop the line following.
 This sample publishes two topics: `camera/color/image_raw` for the camera image and `result_image` for the object detection image.
 These images can be viewed in [RViz](https://index.ros.org/r/rviz/) or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
 
-> [!NOTE]
+> :warning: Note
+>
 > Viewing the images may cause the node to become unstable, resulting in cmd_vel or image topics not being published.
 
 #### Configure
@@ -398,7 +400,8 @@ Then, press SW0–SW2 to change the control mode as follows:
 - SW2: Start direction control to change the heading angle between `-π` and `π`[rad].
   - Press SW0–SW2 or tilt the body sideways to terminate the control.
 
-> [!NOTE]
+> :warning: Note
+>
 > The IMU might not be connected correctly.
 > If this happens, unplug and reconnect the USB cable, then run the above command again.
 
@@ -439,7 +442,8 @@ This is an example of SLAM & Navigation.
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/slam_toolbox_ros2.png height=650 />
 
-> [!NOTE]
+> :warning: Note
+>
 > The sample for SLAM and Navigation with Raspberry Pi Mouse has been moved to [rt-net/raspimouse_slam_navigation_ros2](https://github.com/rt-net/raspimouse_slam_navigation_ros2).
 
 [Back to example list](#how-to-use-examples)

@@ -204,19 +204,9 @@ $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/
 カメラ画像は`camera/color/image_raw`、物体検出画像は`result_image`というトピックとして発行されます。
 これらの画像は[RViz](https://index.ros.org/r/rviz/)や[rqt_image_view](https://index.ros.org/p/rqt_image_view/)で表示できます。
 
-> :grey_exclamation: Note
->
-> 画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。
-
-> :exclamation: Note
->
-> 画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。
-
 > :warning: Note
 >
 > 画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。
-
-
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking_ros2.png width=450 />
 
@@ -332,7 +322,8 @@ $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_devi
 これらの画像は[RViz](https://index.ros.org/r/rviz/)や[rqt_image_view](https://index.ros.org/p/rqt_image_view/)
 で表示できます。
 
-> [!NOTE]
+> :warning: Note
+>
 > 画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。
 
 #### Configure
@@ -412,7 +403,8 @@ SW0-SW2を押して動作モードを切り替えます。
 - SW2: 方位角を`-π ~ π`[rad]に変化させる角度制御を開始します
   - SW0–SW2を押すか、ラズパイマウス本体を横に傾けると終了します
 
-> [!NOTE]
+> :warning: Note
+>
 > IMUの接続が正常に行われない場合があります。
 > その際は、IMUのUSBケーブルを抜き差しした後、コマンドを再度実行してください。
 
@@ -452,7 +444,8 @@ SLAMとNavigationを行います。
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/slam_toolbox_ros2.png height=650 />
 
-> [!NOTE]
+> :warning: Note
+>
 > Raspberry Pi MouseでSLAMとNavigationを行うサンプルは[rt-net/raspimouse_slam_navigation_ros2](https://github.com/rt-net/raspimouse_slam_navigation_ros2)へ移行しました。
 
 [Back to example list](#how-to-use-examples)
