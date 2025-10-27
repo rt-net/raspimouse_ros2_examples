@@ -204,11 +204,11 @@ $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/
 カメラ画像は`camera/color/image_raw`、物体検出画像は`result_image`というトピックとして発行されます。
 これらの画像は[RViz](https://index.ros.org/r/rviz/)や[rqt_image_view](https://index.ros.org/p/rqt_image_view/)で表示できます。
 
-> :grey_exclamation:
+> :grey_exclamation: Note
 >
 > 画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。
 
-> :exclamation:
+> :exclamation: Note
 >
 > 画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。
 
