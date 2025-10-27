@@ -92,7 +92,6 @@ Raspberry Pi Mouseを動作させるサンプル集です。
   - [Camera Line Follower](#camera-line-follower)
   - [Direction Controller](#direction-controller)
   - [SLAM & Navigation](#slam--navigation) ([rt-net/raspimouse_slam_navigation_ros2](https://github.com/rt-net/raspimouse_slam_navigation_ros2)に移動しました)
-
 ### Joystick Control
 
 ジョイスティックコントローラでRaspberryPiMouseを動かすコード例です。
