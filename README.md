@@ -19,7 +19,6 @@ Gazebo（シミュレータ）で動作させる場合は、[rt-net/raspimouse_s
   - [Installation](#installation)
     - [Binary Installation](#binary-installation)
     - [Source Build](#source-build)
-  - [QuickStart](#quickstart)
   - [How To Use Examples](#how-to-use-examples)
     - [Joystick Control](#joystick-control)
     - [Object Tracking](#object-tracking)
@@ -80,21 +79,6 @@ rosdep install -r -y -i --from-paths .
 cd ~/ros2_ws
 colcon build --symlink-install
 source ~/ros2_ws/install/setup.bash
-```
-
-## QuickStart
-
-ジョイスティックコントローラで、Raspberry Pi Mouseをリモート操作します。
-
-- 対応コントローラ
-  - [Logicool Wireless Gamepad F710](https://gaming.logicool.co.jp/ja-jp/products/gamepads/f710-wireless-gamepad.html#940-0001440)
-  - [SONY DUALSHOCK 3](https://www.jp.playstation.com/ps3/peripheral/cechzc2j.html)
-
-```sh
-# on RaspberryPiMouse
-$ ros2 run raspimouse raspimouse
-# on remote computer
-$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
 ```
 
 ## How to Use Examples
