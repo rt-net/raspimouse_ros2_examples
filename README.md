@@ -61,7 +61,7 @@ Gazebo（シミュレータ）で動作させる場合は、[rt-net/raspimouse_s
 ### Binary Installation
 
 ```sh
-sudo apt install raspimouse-ros2-examples
+sudo apt install ros-$ROS_DISTRO-raspimouse-ros2-examples
 ```
 
 ### Source Build
