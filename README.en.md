@@ -61,7 +61,7 @@ For running in Gazebo (simulator), see the [rt-net/raspimouse_sim](https://githu
 ### Binary Installation
 
 ```sh
-sudo apt install raspimouse-ros2-examples
+sudo apt install ros-$ROS_DISTRO-raspimouse-ros2-examples
 ```
 
 ### Source Build
