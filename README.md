@@ -432,7 +432,7 @@ SW0-SW2を押して動作モードを切り替えます。
   - Type: `std_msgs/Float64`
   - IMUモジュールのセンサ値をもとに計算されたロボットの向き（進行方向の角度）
 
-
+</details>
 
 [Back to example list](#how-to-use-examples)
 
