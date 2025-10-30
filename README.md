@@ -20,12 +20,6 @@ Gazebo（シミュレータ）で動作させる場合は、[rt-net/raspimouse_s
     - [Binary Installation](#binary-installation)
     - [Source Build](#source-build)
   - [How To Use Examples](#how-to-use-examples)
-    - [Joystick Control](#joystick-control)
-    - [Object Tracking](#object-tracking)
-    - [Line Follower](#line-follower)
-    - [Camera Line Follower](#camera-line-follower)
-    - [Direction Controller](#direction-controller)
-    - [SLAM & Navigation](#slam--navigation) ([rt-net/raspimouse_slam_navigation_ros2](https://github.com/rt-net/raspimouse_slam_navigation_ros2)に移動しました)
   - [License](#license)
   - [Contributing](#contributing)
 

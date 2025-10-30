@@ -20,12 +20,6 @@ For running in Gazebo (simulator), see the [rt-net/raspimouse_sim](https://githu
     - [Binary Installation](#binary-installation)
     - [Source Build](#source-build)
   - [How To Use Examples](#how-to-use-examples)
-    - [Joystick Control](#joystick-control)
-    - [Object Tracking](#object-tracking)
-    - [Line Follower](#line-follower)
-    - [Camera Line Follower](#camera-line-follower)
-    - [Direction Controller](#direction-controller)
-    - [SLAM & Navigation](#slam--navigation) (Relocated [rt-net/raspimouse_slam_navigation_ros2](https://github.com/rt-net/raspimouse_slam_navigation_ros2))
   - [License](#license)
   - [Contributing](#contributing)
 
