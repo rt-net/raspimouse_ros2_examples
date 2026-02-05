@@ -6,16 +6,29 @@
 
 Raspberry Pi MouseのROS 2サンプルコード集です。
 
-ROS1のサンプルコード集は[こちら](https://github.com/rt-net/raspimouse_ros_examples/blob/master/README.md)。
-
-Gazebo（シミュレータ）でも動作します。詳細は[こちら](https://github.com/rt-net/raspimouse_sim/blob/ros2/README.md)。
+Gazebo（シミュレータ）で動作させる場合は、[rt-net/raspimouse_sim](https://github.com/rt-net/raspimouse_sim/blob/ros2/README.md)パッケージを参照してください。
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/raspberry_pi_mouse.JPG width=500 />
 
-## Supported ROS 2 distributions
+## Table of Contents
 
-- [Humble](https://github.com/rt-net/raspimouse_ros2_examples/tree/humble)
-- [Jazzy](https://github.com/rt-net/raspimouse_ros2_examples/tree/jazzy) (This branch)
+- [raspimouse_ros2_examples](#raspimouse_ros2_examples)
+  - [Table of Contents](#table-of-contents)
+  - [Supported ROS distributions](#supported-ros-distributions)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+    - [Binary Installation](#binary-installation)
+    - [Source Build](#source-build)
+  - [How To Use Examples](#how-to-use-examples)
+  - [License](#license)
+  - [Contributing](#contributing)
+
+## Supported ROS distributions
+
+### ROS 2
+
+- [Humble Hawksbill](https://github.com/rt-net/raspimouse_ros2_examples/tree/humble)
+- [Jazzy Jalisco](https://github.com/rt-net/raspimouse_ros2_examples/tree/jazzy)
 
 ## Requirements
 
@@ -25,67 +38,75 @@ Gazebo（シミュレータ）でも動作します。詳細は[こちら](https
     - Ubuntu server 24.04
   - Device Driver
     - [rt-net/RaspberryPiMouse](https://github.com/rt-net/RaspberryPiMouse)
-  - ROS
+  - ROS 2
     - [Jazzy Jalisco](https://docs.ros.org/en/jazzy/index.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 - Remote Computer (Optional)
-  - ROS
+  - ROS 2
     - [Jazzy Jalisco](https://docs.ros.org/en/jazzy/index.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 
+
 ## Installation
 
+### Binary Installation
+
 ```sh
-$ cd ~/ros2_ws/src
-# Clone package
-$ git clone -b $ROS_DISTRO https://github.com/rt-net/raspimouse_ros2_examples.git
-
-# Install dependencies
-$ rosdep install -r -y --from-paths . --ignore-src
-
-# Build & Install
-$ cd ~/ros2_ws
-$ colcon build --symlink-install
-$ source ~/ros2_ws/install/setup.bash
+sudo apt install ros-$ROS_DISTRO-raspimouse-ros2-examples
 ```
 
-## License
+### Source Build
 
-このリポジトリはApache 2.0ライセンスの元、公開されています。
-ライセンスについては[LICENSE](./LICENSE)を参照ください。
+```sh
+# Create workspace directory
+mkdir -p ~/ros2_ws/src && cd ~/ros2_ws/src
 
-## How To Use Examples
+# Clone package
+git clone -b $ROS_DISTRO https://github.com/rt-net/raspimouse_ros2_examples.git
 
-- [joystick_control](#joystick_control)
-- [object_tracking](#object_tracking)
-- [line_follower](#line_follower)
-- [camera_line_follower](#camera_line_follower)
-- [SLAM](#slam)
-- [direction_controller](#direction_controller)
+# Install dependencies
+rosdep install -r -y -i --from-paths .
 
----
+# Build & Install
+cd ~/ros2_ws
+colcon build --symlink-install
+source ~/ros2_ws/install/setup.bash
+```
 
-### joystick_control
+## How to Use Examples
+
+Raspberry Pi Mouseを動作させるサンプル集です。
+
+- Examples
+  - [Joystick Control](#joystick-control)
+  - [Object Tracking](#object-tracking)
+  - [Line Follower](#line-follower)
+  - [Camera Line Follower](#camera-line-follower)
+  - [Direction Controller](#direction-controller)
+  - [SLAM & Navigation](#slam--navigation) ([rt-net/raspimouse_slam_navigation_ros2](https://github.com/rt-net/raspimouse_slam_navigation_ros2)に移動しました)
+
+### Joystick Control
 
 ジョイスティックコントローラでRaspberryPiMouseを動かすコード例です。
 
-#### Requirements
+<a href="https://youtu.be/GswxdB8Ia0Y" target="_blank" rel="noopener noreferrer">
+  <img src="https://img.youtube.com/vi/GswxdB8Ia0Y/sddefault.jpg" alt="joystick_control" width="650">
+</a>
 
-- Joystick Controller
-  - [Logicool Wireless Gamepad F710](https://gaming.logicool.co.jp/ja-jp/products/gamepads/f710-wireless-gamepad.html#940-0001440)
-  - [SONY DUALSHOCK 3](https://www.jp.playstation.com/ps3/peripheral/cechzc2j.html)
+<details>
+<summary>Details</summary>
 
-#### How to use
+#### Usage
 
 次のコマンドでノードを起動します。
 
 ```sh
-# Use F710
+# Controlled directly on Raspberry Pi Mouse
+## Use F710
 $ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=f710 mouse:=true
-
-# Use DUALSHOCK 3
+## Use DUALSHOCK 3
 $ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=dualshock3 mouse:=true
 
 # Control from remote computer
@@ -95,16 +116,15 @@ $ ros2 run raspimouse raspimouse
 $ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
 ```
 
+#### Configure
+
 デフォルトのキー割り当てはこちらです。
 
 Logicool Wireless Gamepad F710を使う場合はモード切替スイッチを __D__ (DirectInput Mode)に設定します。
 
-![](https://rt-net.github.io/images/raspberry-pi-mouse/joystick_control_keyconfig.png)
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/joystick_control_keyconfig.png width=450 />
 
-#### Configure
-
-[./config/joy_f710.yml](./config/joy_f710.yml)、[./config/joy_dualshock3.yml](./config/joy_dualshock3.yml)
-のキー番号を編集することで、キー割り当てを変更できます。
+[./config/joy_f710.yml](./config/joy_f710.yml)、[./config/joy_dualshock3.yml](./config/joy_dualshock3.yml)のキー番号を編集することで、キー割り当てを変更できます。
 
 ```yaml
 button_shutdown_1       : 8
@@ -116,20 +136,21 @@ button_motor_on         : 9
 button_cmd_enable       : 4
 ```
 
-#### Videos
+</details>
 
-[![joystick_control](http://img.youtube.com/vi/GswxdB8Ia0Y/sddefault.jpg)](https://youtu.be/GswxdB8Ia0Y)
-
-[back to example list](#how-to-use-examples)
+[Back to example list](#how-to-use-examples)
 
 ---
 
-### object_tracking
-
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking.JPG width=500 />
+### Object Tracking
 
 色情報をもとにオレンジ色のボールの追跡を行うコード例です。
 USB接続のWebカメラとOpenCVを使ってボール追跡をします。
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking.JPG width=650 />
+
+<details>
+<summary>Details</summary>
 
 #### Requirements
 
@@ -143,13 +164,9 @@ USB接続のWebカメラとOpenCVを使ってボール追跡をします。
   - OpenCV
   - v4l-utils
 
-#### Installation
+#### Usage
 
-Raspberry Pi Mouseにカメラマウントを取り付け、WebカメラをRaspberry Piに接続します。
-
-#### How to use
-
-次のスクリプトを実行して、カメラの自動調節機能（自動露光，オートホワイトバランス等）を切ります。
+次のスクリプトを実行して、カメラの自動調節機能（自動露光、オートホワイトバランス等）を切ります。
 
 ```sh
 $ cd ~/ros2_ws/src/raspimouse_ros2_examples/config
@@ -163,13 +180,13 @@ $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/
 ```
 
 カメラ画像は`camera/color/image_raw`、物体検出画像は`result_image`というトピックとして発行されます。
-これらの画像は[RViz](https://index.ros.org/r/rviz/)
-や[rqt_image_view](https://index.ros.org/p/rqt_image_view/)
-で表示できます。
+これらの画像は[RViz](https://index.ros.org/r/rviz/)や[rqt_image_view](https://index.ros.org/p/rqt_image_view/)で表示できます。
 
-**画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。**
+> :warning: Note
+>
+> 画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking_ros2.png width=500 />
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking_ros2.png width=450 />
 
 #### Configure
 
@@ -187,19 +204,20 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
   // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);  // Blue
 ```
 
-#### Videos
+</details>
 
-[![object_tracking](http://img.youtube.com/vi/8lgmSTScP98/sddefault.jpg)](https://youtu.be/8lgmSTScP98)
-
-[back to example list](#how-to-use-examples)
+[Back to example list](#how-to-use-examples)
 
 ---
 
-### line_follower
-
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_line_trace_sensor.JPG width=500 />
+### Line Follower
 
 ライントレースのコード例です。
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_line_trace_sensor.JPG width=650 />
+
+<details>
+<summary>Details</summary>
 
 #### Requirements
 
@@ -207,11 +225,7 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
   - [Raspberry Pi Mouse オプションキット No.3 \[ライントレース\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3591)
 - フィールドとライン (Optional)
 
-#### Installation
-
-Raspberry Pi Mouseにライントレースセンサを取り付けます。
-
-#### How to use
+#### Usage
 
 次のコマンドでノードを起動します。
 
@@ -221,17 +235,21 @@ $ ros2 launch raspimouse_ros2_examples line_follower.launch.py
 
 Raspberry Pi Mouseをフィールドに置き、SW2を押してフィールド上のセンサ値をサンプリングします。
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/field_calibration.JPG width=500 />
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/field_calibration.JPG width=450 />
 
 次に、センサとラインが重なるようにRaspberry Pi Mouseを置き、SW1を押してライン上のセンサ値をサンプリングします。
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/line_calibration.JPG width=500 />
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/line_calibration.JPG width=450 />
 
 最後に、ライン上にRaspberry Pi Mouseを置き、SW0を押してライントレースを開始します。
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/start_trace.JPG width=500 />
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/start_trace.JPG width=450 />
 
 もう一度SW0を押すとライントレースを停止します。
+
+<a href="https://youtu.be/oPm0sW2V_tY" target="_blank" rel="noopener noreferrer">
+  <img src="http://img.youtube.com/vi/oPm0sW2V_tY/sddefault.jpg" alt="joystick_control" width="450">
+</a>
 
 #### Configure
 
@@ -245,19 +263,20 @@ void Follower::publish_cmdvel_for_line_following(void)
   const double LOW_VEL_ANGULAR_Z = 0.5;  // rad/s
 ```
 
-#### Videos
+</details>
 
-[![line_follower](http://img.youtube.com/vi/oPm0sW2V_tY/sddefault.jpg)](https://youtu.be/oPm0sW2V_tY)
-
-[back to example list](#how-to-use-examples)
+[Back to example list](#how-to-use-examples)
 
 ---
 
-### camera_line_follower
-
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace_2.png width=500 />
+### Camera Line Follower
 
 RGBカメラによるライントレースのコード例です。
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace_2.png width=650 />
+
+<details>
+<summary>Details</summary>
 
 #### Requirements
 
@@ -266,11 +285,7 @@ RGBカメラによるライントレースのコード例です。
 - カメラマウント
   - [Raspberry Pi Mouse オプションキット No.4 \[Webカメラマウント\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3584)
 
-#### Installation
-
-Raspberry Pi Mouseにカメラマウントを取り付け、WebカメラをRaspberry Piに接続します。
-
-#### How to use
+#### Usage
 
 次のコマンドでノードを起動します。
 
@@ -282,15 +297,18 @@ $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_devi
 停止させる場合はSW0を押します。
 
 カメラ画像は`camera/color/image_raw`、物体検出画像は`result_image`というトピックとして発行されます。
-これらの画像は[RViz](https://index.ros.org/r/rviz/)
-や[rqt_image_view](https://index.ros.org/p/rqt_image_view/)
+これらの画像は[RViz](https://index.ros.org/r/rviz/)や[rqt_image_view](https://index.ros.org/p/rqt_image_view/)
 で表示できます。
 
-**画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。**
+> :warning: Note
+>
+> 画像を表示するとノードの動作が不安定になり、cmd_velや画像トピックが発行されないことがあります。
 
-**ラインの検出精度が悪い場合はカメラの露光やホワイトバランスの調整を行ってください。**
+#### Configure
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/camera_line_trace.png width=500 />
+ラインの検出精度が悪い場合はカメラの露光やホワイトバランスの調整を行ってください。
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/camera_line_trace.png width=450 />
 
 #### Parameters
 
@@ -315,29 +333,26 @@ $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_devi
   - Default: 0.20
   - 走行を開始するためのライン面積のしきい値
 
+各種パラメータを設定する際は、以下のコマンドを実行します。
+
 ```sh
 ros2 param set /camera_follower max_brightness 80
 ```
 
-[back to example list](#how-to-use-examples)
+</details>
+
+[Back to example list](#how-to-use-examples)
 
 ---
 
-### SLAM
-
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/slam_toolbox_ros2.png width=500 />
-
-Raspberry Pi MouseでSLAMとNavigationを行うサンプルは[rt-net/raspimouse_slam_navigation_ros2](https://github.com/rt-net/raspimouse_slam_navigation_ros2)へ移行しました。
-
-[back to example list](#how-to-use-examples)
-
----
-
-### direction_controller
-
-<img src=https://www.rt-shop.jp/images/RT/RT-USB-9axisIMU.png width=200 /> <img src=https://www.rt-shop.jp/images/RT/%E8%A3%BD%E5%93%81%E5%86%99%E7%9C%9F.JPG height=200>
+### Direction Controller
 
 IMUセンサを使用した角度制御のコード例です。
+
+<img src=https://www.rt-shop.jp/images/RT/RT-USB-9axisIMU.png height=280 /><img src=https://www.rt-shop.jp/images/RT/%E8%A3%BD%E5%93%81%E5%86%99%E7%9C%9F.JPG height=280 />
+
+<details>
+<summary>Details</summary>
 
 #### Requirements
 
@@ -346,17 +361,11 @@ IMUセンサを使用した角度制御のコード例です。
 - RT-USB-9axisIMU ROS Package
   - https://github.com/rt-net/rt_usb_9axisimu_driver
 
-#### Installation
+IMUセンサモジュールを取り付けたLiDAR MountをRaspberry Pi Mouseに取り付けます。詳細は、[マルチLiDARマウント組み立てマニュアル](https://rt-net.jp/wp-content/uploads/2020/04/RaspberryPiMouseOptionKitManual_No08.pdf)を参照してください。
 
-LiDAR MountにIMUセンサモジュールを取り付けます。
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_2.JPG width=250 /> <img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_1.JPG width=250 />
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_2.JPG width=500 />
-
-Raspberry Pi Mouse にLiDAR Mountを取り付けます。
-
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_1.JPG width=500 />
-
-#### How to use
+#### Usage
 
 次のコマンドでノードを起動します。
 
@@ -364,61 +373,76 @@ Raspberry Pi Mouse にLiDAR Mountを取り付けます。
 $ ros2 launch raspimouse_ros2_examples direction_controller.launch.py
 ```
 
-SW0 ~ SW2を押して動作モードを切り替えます。
+SW0-SW2を押して動作モードを切り替えます。
 
-- SW0: ジャイロセンサのバイアスをキャリブレーションし、ラズパイマウスの方位角を`0 rad`にリセットします
-- SW1: 方位角を`0 rad`に維持する角度制御を開始します
-  - SW0 ~ SW2を押すか、ラズパイマウス本体を横に傾けると終了します
-- SW2: 方位角を`-π ~ π rad`に変化させる角度制御を開始します
-  - SW0 ~ SW2を押すか、ラズパイマウス本体を横に傾けると終了します
+- SW0: ジャイロセンサのバイアスをキャリブレーションし、ラズパイマウスの方位角を`0`[rad]にリセットします
+- SW1: 方位角を`0`[rad]に維持する角度制御を開始します
+  - SW0–SW2を押すか、ラズパイマウス本体を横に傾けると終了します
+- SW2: 方位角を`-π ~ π`[rad]に変化させる角度制御を開始します
+  - SW0–SW2を押すか、ラズパイマウス本体を横に傾けると終了します
 
-### Troubleshooting
-
-IMUの接続が正常に行われない場合があります。
-その時は、IMUのUSBケーブルを抜き差ししてください。
-抜き差し実施後は、コマンドを再度実行してください。
-
-#### Configure
-
-パラメータで角度制御に使うPIDゲインを変更できます。
-
-```sh
-$ ros2 param set /direction_controller p_gain 10.0
-Set parameter successful
-
-$ ros2 param set /direction_controller i_gain 0.5
-Set parameter successful
-
-$ ros2 param set /direction_controller d_gain 0.0
-Set parameter successful
-```
+> :warning: Note
+>
+> IMUの接続が正常に行われない場合があります。
+> その際は、IMUのUSBケーブルを抜き差しした後、コマンドを再度実行してください。
 
 #### Parameters
 
-- p_gain
-  - Proportional gain of a PID controller for the direction control
-  - default: 10.0, min:0.0, max:30.0
-  - type: double
-- i_gain
-  - Integral gain of a PID controller for the direction control
-  - default: 0.0, min:0.0, max:5.0
-  - type: double
-- d_gain
-  - Derivative gain of a PID controller for the direction control
-  - default: 20.0, min:0.0, max:30.0
-  - type: double
-- target_angle
-  - Target angle for the SW1 control mode.
-  - default: 0.0, min:-π, max:+π
-  - type: double
+- `p_gain`
+  - Type: `double`
+  - Default: 10.0, min:0.0, max:30.0
+  - 角度制御用PIDコントローラの比例ゲイン
+- `i_gain`
+  - Type: `double`
+  - Default: 0.0, min:0.0, max:5.0
+  - 角度制御用PIDコントローラの積分ゲイン
+- `d_gain`
+  - Type: `double`
+  - Default: 20.0, min:0.0, max:30.0
+  - 角度制御用PIDコントローラの微分ゲイン
+- `target_angle`
+  - Type: `double`
+  - Default: 0.0, min:-π, max:+π
+  - SW1（角度制御モード）の目標角度
 
-#### Publish topics
-- heading_angle
-  - Heading angle of the robot that calculated from the IMU module sensor values.
-  - type: std_msgs/Float64
+#### Published
+- `heading_angle`
+  - Type: `std_msgs/Float64`
+  - IMUモジュールのセンサ値をもとに計算されたロボットの向き（進行方向の角度）
 
-#### Videos
+</details>
 
-[![](http://img.youtube.com/vi/ghcCYOh9_MM/sddefault.jpg)](https://youtu.be/ghcCYOh9_MM)
+[Back to example list](#how-to-use-examples)
 
-[back to example list](#how-to-use-examples)
+---
+
+### SLAM & Navigation
+
+SLAMとNavigationを行います。
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/slam_toolbox_ros2.png height=650 />
+
+> :warning: Note
+>
+> Raspberry Pi MouseでSLAMとNavigationを行うサンプルは[rt-net/raspimouse_slam_navigation_ros2](https://github.com/rt-net/raspimouse_slam_navigation_ros2)へ移行しました。
+
+[Back to example list](#how-to-use-examples)
+
+---
+
+## License
+
+(C) 2022 RT Corporation <support@rt-net.jp>
+
+各ファイルはライセンスがファイル中に明記されている場合、そのライセンスに従います。
+特に明記されていない場合は、Apache License, Version 2.0に基づき公開されています。
+ライセンスの全文はLICENSEまたはhttps://www.apache.org/licenses/LICENSE-2.0から確認できます。
+
+## Contributing
+
+- 本ソフトウェアはオープンソースですが、開発はオープンではありません。
+- 本ソフトウェアは基本的にオープンソースソフトウェアとして「AS IS」（現状有姿のまま）で提供しています。
+- 本ソフトウェアに関する無償サポートはありません。
+- バグの修正や誤字脱字の修正に関するリクエストは常に受け付けていますが、
+それ以外の機能追加等のリクエストについては社内のガイドラインを優先します。
+詳しくは[コントリビューションガイドライン](https://github.com/rt-net/.github/blob/master/CONTRIBUTING.md)に従ってください。

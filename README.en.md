@@ -6,16 +6,29 @@
 
 ROS 2 examples for Raspberry Pi Mouse.
 
-ROS1 examples is [here](https://github.com/rt-net/raspimouse_ros_examples/blob/master/README.en.md).
-
-To run on Gazebo, click [here](https://github.com/rt-net/raspimouse_sim/blob/ros2/README.en.md).
+For running in Gazebo (simulator), see the [rt-net/raspimouse_sim](https://github.com/rt-net/raspimouse_sim/blob/ros2/README.md) packages.
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/raspberry_pi_mouse.JPG width=500 />
 
-## Supported ROS 2 distributions
+## Table of Contents
 
-- [Humble](https://github.com/rt-net/raspimouse_ros2_examples/tree/humble)
-- [Jazzy](https://github.com/rt-net/raspimouse_ros2_examples/tree/jazzy) (This branch)
+- [raspimouse_ros2_examples](#raspimouse_ros2_examples)
+  - [Table of Contents](#table-of-contents)
+  - [Supported ROS distributions](#supported-ros-distributions)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+    - [Binary Installation](#binary-installation)
+    - [Source Build](#source-build)
+  - [How To Use Examples](#how-to-use-examples)
+  - [License](#license)
+  - [Contributing](#contributing)
+
+## Supported ROS distributions
+
+### ROS 2
+
+- [Humble Hawksbill](https://github.com/rt-net/raspimouse_ros2_examples/tree/humble)
+- [Jazzy Jalisco](https://github.com/rt-net/raspimouse_ros2_examples/tree/jazzy)
 
 ## Requirements
 
@@ -25,66 +38,75 @@ To run on Gazebo, click [here](https://github.com/rt-net/raspimouse_sim/blob/ros
     - Ubuntu server 24.04
   - Device Driver
     - [rt-net/RaspberryPiMouse](https://github.com/rt-net/RaspberryPiMouse)
-  - ROS
+  - ROS 2
     - [Jazzy Jalisco](https://docs.ros.org/en/jazzy/index.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 - Remote Computer (Optional)
-  - ROS
+  - ROS 2
     - [Jazzy Jalisco](https://docs.ros.org/en/jazzy/index.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 
+
 ## Installation
 
+### Binary Installation
+
 ```sh
-$ cd ~/ros2_ws/src
-# Clone package
-$ git clone -b $ROS_DISTRO https://github.com/rt-net/raspimouse_ros2_examples.git
-
-# Install dependencies
-$ rosdep install -r -y --from-paths . --ignore-src
-
-# Build & Install
-$ cd ~/ros2_ws
-$ colcon build --symlink-install
-$ source ~/ros2_ws/install/setup.bash
+sudo apt install ros-$ROS_DISTRO-raspimouse-ros2-examples
 ```
 
-## License
+### Source Build
 
-This repository is licensed under the Apache 2.0, see [LICENSE](./LICENSE) for details.
+```sh
+# Create workspace directory
+mkdir -p ~/ros2_ws/src && cd ~/ros2_ws/src
 
-## How To Use Examples
+# Clone package
+git clone -b $ROS_DISTRO https://github.com/rt-net/raspimouse_ros2_examples.git
 
-- [joystick_control](#joystick_control)
-- [object_tracking](#object_tracking)
-- [line_follower](#line_follower)
-- [camera_line_follower](#camera_line_follower)
-- [SLAM](#slam)
-- [direction_controller](#direction_controller)
+# Install dependencies
+rosdep install -r -y -i --from-paths .
 
----
+# Build & Install
+cd ~/ros2_ws
+colcon build --symlink-install
+source ~/ros2_ws/install/setup.bash
+```
 
-### joystick_control
+## How to Use Examples
 
-This is an example to use joystick controller to control a Raspberry Pi Mouse.
+Sample programs for the Raspberry Pi Mouse.
 
-#### Requirements
+- [Examples](#examples)
+  - [Joystick Control](#joystick-control)
+  - [Object Tracking](#object-tracking)
+  - [Line Follower](#line-follower)
+  - [Camera Line Follower](#camera-line-follower)
+  - [Direction Controller](#direction-controller)
+  - [SLAM & Navigation](#slam--navigation) (Relocated [rt-net/raspimouse_slam_navigation_ros2](https://github.com/rt-net/raspimouse_slam_navigation_ros2))
 
-- Joystick Controller
-  - [Logicool Wireless Gamepad F710](https://gaming.logicool.co.jp/ja-jp/products/gamepads/f710-wireless-gamepad.html#940-0001440)
-  - [SONY DUALSHOCK 3](https://www.jp.playstation.com/ps3/peripheral/cechzc2j.html)
+### Joystick Control
 
-#### How to use
+This is an example with a joystick controller to operate a Raspberry Pi Mouse.
+
+<a href="https://youtu.be/GswxdB8Ia0Y" target="_blank" rel="noopener noreferrer">
+  <img src="https://img.youtube.com/vi/GswxdB8Ia0Y/sddefault.jpg" alt="joystick_control" width="650">
+</a>
+
+<details>
+<summary>Details</summary>
+
+#### Usage
 
 Launch nodes with the following command:
 
 ```sh
-# Use F710
+# Controlled directly on Raspberry Pi Mouse
+## Use F710
 $ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=f710 mouse:=true
-
-# Use DUALSHOCK 3
+## Use DUALSHOCK 3
 $ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=dualshock3 mouse:=true
 
 # Control from remote computer
@@ -94,16 +116,15 @@ $ ros2 run raspimouse raspimouse
 $ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
 ```
 
+#### Configure
+
 This picture shows the default key configuration.
 
 To use Logicool Wireless Gamepad F710, set the input mode to  __D__ (DirectInput Mode).
 
-![](https://rt-net.github.io/images/raspberry-pi-mouse/joystick_control_keyconfig.png)
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/joystick_control_keyconfig.png width=450 />
 
-#### Configure
-
-Key assignments can be edited with key numbers in [./config/joy_f710.yml](./config/joy_f710.yml) or
-[./config/joy_dualshock3.yml](./config/joy_dualshock3.yml).
+Key assignments can be edited with key numbers in [./config/joy_f710.yml](./config/joy_f710.yml) or [./config/joy_dualshock3.yml](./config/joy_dualshock3.yml).
 
 ```yaml
 button_shutdown_1       : 8
@@ -115,19 +136,21 @@ button_motor_on         : 9
 button_cmd_enable       : 4
 ```
 
-#### Videos
+</details>
 
-[![joystick_control](http://img.youtube.com/vi/GswxdB8Ia0Y/sddefault.jpg)](https://youtu.be/GswxdB8Ia0Y)
-
-[back to example list](#how-to-use-examples)
+[Back to example list](#how-to-use-examples)
 
 ---
 
-### object_tracking
+### Object Tracking
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking.JPG width=500 />
+This is a code example for tracking an orange ball based on color information.
+The ball tracking is performed with a USB webcam and the OpenCV library.
 
-This is an example to use RGB camera images and OpenCV library for object tracking.
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking.JPG width=650 />
+
+<details>
+<summary>Details</summary>
 
 #### Requirements
 
@@ -135,19 +158,15 @@ This is an example to use RGB camera images and OpenCV library for object tracki
   - [Logicool HD WEBCAM C310N](https://www.logicool.co.jp/ja-jp/product/hd-webcam-c310n)
 - Camera mount
   - [Raspberry Pi Mouse Option kit No.4 \[Webcam mount\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3584&language=en)
-- Orange ball（Optional）
+- Orange ball (Optional)
   - [Soft Ball (Orange)](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1307&products_id=3701&language=en)
 - Software
   - OpenCV
   - v4l-utils
 
-#### Installation
+#### Usage
 
-Install a camera mount and a web camera to Raspberry Pi Mouse, then connect the camera to the Raspberry Pi．
-
-#### How to use
-
-Turn off automatic adjustment parameters of a camera (auto focus, auto while balance, etc.) with the following command:
+Disable the automatic camera adjustment parameters (autofocus, auto white balance, etc.) with the following command:
 
 ```sh
 $ cd ~/ros2_ws/src/raspimouse_ros2_examples/config
@@ -160,20 +179,20 @@ Then, launch nodes with the following command:
 $ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/dev/video0
 ```
 
-This sample publishes two topics: `camera/color/image_raw` for the camera image and `result_image` for the object detection image.
-These images can be viewed with [RViz](https://index.ros.org/r/rviz/)
-or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
+This sample publishes two topics: `camera/color/image_raw` for the camera image and `result_image` for the object detection image.  
+These images can be viewed with [RViz](https://index.ros.org/r/rviz/) or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
 
-**Viewing an image may cause the node to behave unstable and not publish cmd_vel or image topics.**
+> :warning: Note
+>
+> Viewing the images may cause the node to become unstable, resulting in cmd_vel or image topics not being published.
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking_ros2.png width=500 />
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/object_tracking_ros2.png width=450 />
 
 #### Configure
 
-Edit [`./src/object_tracking_component.cpp`](./src/object_tracking_component.cpp)
-to change a color of tracking target.
+Edit [`./src/object_tracking_component.cpp`](./src/object_tracking_component.cpp) to change the color of the tracking target.
 
-If the object detection accuracy is poor, adjust the camera exposure and parameters in the function
+If the object detection accuracy is poor, adjust the camera exposure and the parameters in the function.
 
 ```cpp
 void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
@@ -183,19 +202,20 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
   // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);  // Blue
 ```
 
-#### Videos
+</details>
 
-[![object_tracking](http://img.youtube.com/vi/8lgmSTScP98/sddefault.jpg)](https://youtu.be/8lgmSTScP98)
-
-[back to example list](#how-to-use-examples)
+[Back to example list](#how-to-use-examples)
 
 ---
 
-### line_follower
-
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_line_trace_sensor.JPG width=500 />
+### Line Follower
 
 This is an example for line following.
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_line_trace_sensor.JPG width=650 />
+
+<details>
+<summary>Details</summary>
 
 #### Requirements
 
@@ -203,11 +223,7 @@ This is an example for line following.
   - [Raspberry Pi Mouse Option kit No.3 \[Line follower\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3591&language=en)
 - Field and lines for following (Optional)
 
-#### Installation
-
-Install a line following sensor unit to Raspberry Pi Mouse.
-
-#### How to use
+#### Usage
 
 Launch nodes with the following command:
 
@@ -215,45 +231,50 @@ Launch nodes with the following command:
 $ ros2 launch raspimouse_ros2_examples line_follower.launch.py
 ```
 
-Next, place Raspberry Pi Mouse on a field and press SW2 to sample sensor values on the field.
+Next, place the Raspberry Pi Mouse on a field and press SW2 to sample sensor values on the field.
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/field_calibration.JPG width=500 />
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/field_calibration.JPG width=450 />
 
-Then, place Raspberry Pi Mouse to detect a line and press SW1 to sample sensor values on the line.
+Then, place the Raspberry Pi Mouse on the line and press SW1 to sample sensor values.
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/line_calibration.JPG width=500 />
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/line_calibration.JPG width=450 />
 
-Last, place Raspberry Pi Mouse on the line and press SW0 to start line following.
+Finally, place the Raspberry Pi Mouse on the line and press SW0 to start line following.
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/start_trace.JPG width=500 />
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/start_trace.JPG width=450 />
 
-Press SW0 again to stop the following.
+Press SW0 again to stop the line following.
+
+<a href="https://youtu.be/oPm0sW2V_tY" target="_blank" rel="noopener noreferrer">
+  <img src="http://img.youtube.com/vi/oPm0sW2V_tY/sddefault.jpg" alt="line_follwer" width="450">
+</a>
 
 #### Configure
 
-Edit [`./src/line_follower_component.cpp`](./src/line_follower_component.cpp) to change a velocity command.
+Edit [`./src/line_follower_component.cpp`](./src/line_follower_component.cpp) to change the robot velocity.
 
 ```cpp
 void Follower::publish_cmdvel_for_line_following(void)
 {
-  const double VEL_LINEAR_X = 0.08;  // m/s
-  const double VEL_ANGULAR_Z = 0.8;  // rad/s
-  const double LOW_VEL_ANGULAR_Z = 0.5;  // rad/s
+  const double VEL_LINEAR_X = 0.08;  // [m/s]
+  const double VEL_ANGULAR_Z = 0.8;  // [rad/s]
+  const double LOW_VEL_ANGULAR_Z = 0.5;  // [rad/s]
 ```
 
-#### Videos
+</details>
 
-[![line_follower](http://img.youtube.com/vi/oPm0sW2V_tY/sddefault.jpg)](https://youtu.be/oPm0sW2V_tY)
-
-[back to example list](#how-to-use-examples)
+[Back to example list](#how-to-use-examples)
 
 ---
 
-### camera_line_follower
-
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace_2.png width=500 />
+### Camera Line Follower
 
 This is an example for line following by RGB camera.
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_camera_line_trace_2.png width=650 />
+
+<details>
+<summary>Details</summary>
 
 #### Requirements
 
@@ -262,42 +283,40 @@ This is an example for line following by RGB camera.
 - Camera mount
   - [Raspberry Pi Mouse Option kit No.4 \[Webcam mount\]](https://www.rt-shop.jp/index.php?main_page=product_info&cPath=1299_1395&products_id=3584&language=en)
 
-#### Installation
+#### Usage
 
-Install a camera mount and a web camera to Raspberry Pi Mouse, then connect the camera to the Raspberry Pi．
-
-#### How to use
-
-Then, launch nodes with the following command:
+Launch nodes with the following command:
 
 ```sh
 $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_device:=/dev/video0
 ```
 
 Place Raspberry Pi Mouse on the line and press SW2 to start line following.
-
-Press SW0 to stop the following.
+Press SW0 to stop the line following.
 
 This sample publishes two topics: `camera/color/image_raw` for the camera image and `result_image` for the object detection image.
-These images can be viewed with [RViz](https://index.ros.org/r/rviz/)
-or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
+These images can be viewed in [RViz](https://index.ros.org/r/rviz/) or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
 
-**Viewing an image may cause the node to behave unstable and not publish cmd_vel or image topics.**
+> :warning: Note
+>
+> Viewing the images may cause the node to become unstable, resulting in cmd_vel or image topics not being published.
 
-**If the line detection accuracy is poor, please adjust the camera's exposure and white balance.**
+#### Configure
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/camera_line_trace.png width=500 />
+If the line detection accuracy is poor, adjust the camera exposure and white balance.
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/camera_line_trace.png width=450 />
 
 #### Parameters
 
 - `max_brightness`
   - Type: `int`
   - Default: 90
-  - Maximum threshold value for image binarisation.
+  - Maximum threshold value for image binarization.
 - `min_brightness`
   - Type: `int`
   - Default: 0
-  - Minimum threshold value for image binarisation.
+  - Minimum threshold value for image binarization.
 - `max_linear_vel`
   - Type: `double`
   - Default: 0.05
@@ -306,34 +325,31 @@ or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
   - Type: `double`
   - Default: 0.8
   - Maximum angular velocity.
-- `area_threthold`
+- `area_threshold`
   - Type: `double`
   - Default: 0.20
   - Threshold value of the area of the line to start following.
+
+Run the following command to set the parameters:
 
 ```sh
 ros2 param set /camera_follower max_brightness 80
 ```
 
-[back to example list](#how-to-use-examples)
+</details>
+
+[Back to example list](#how-to-use-examples)
 
 ---
 
-### SLAM
+### Direction Controller
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/slam_toolbox_ros2.png width=500 />
+This is an example of using an IMU sensor for direction control.
 
-SLAM and Navigation examples for Raspberry Pi Mouse is [here](https://github.com/rt-net/raspimouse_slam_navigation_ros2).
+<img src=https://www.rt-shop.jp/images/RT/RT-USB-9axisIMU.png height=280 /><img src=https://www.rt-shop.jp/images/RT/%E8%A3%BD%E5%93%81%E5%86%99%E7%9C%9F.JPG height=280 />
 
-[back to example list](#how-to-use-examples)
-
----
-
-### direction_controller
-
-<img src=https://www.rt-shop.jp/images/RT/RT-USB-9axisIMU.png width=200 /> <img src=https://www.rt-shop.jp/images/RT/%E8%A3%BD%E5%93%81%E5%86%99%E7%9C%9F.JPG height=200>
-
-This is an example to use an IMU sensor for direction control.
+<details>
+<summary>Details</summary>
 
 #### Requirements
 
@@ -342,79 +358,87 @@ This is an example to use an IMU sensor for direction control.
 - RT-USB-9axisIMU ROS Package.
   - https://github.com/rt-net/rt_usb_9axisimu_driver
 
-#### Installation
+Attach the LiDAR mount with the IMU sensor module to the Raspberry Pi Mouse. For details, refer to the [Multi-LiDAR Mount Assembly Manual (in Japanese)](https://rt-net.jp/wp-content/uploads/2020/04/RaspberryPiMouseOptionKitManual_No08.pdf).
 
-Install the IMU sensor module to the LiDAR mount.
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_2.JPG width=250 /> <img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_1.JPG width=250 />
 
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_2.JPG width=500 />
+#### Usage
 
-Install the LiDAR mount to the Raspberry Pi Mouse.
-
-<img src=https://rt-net.github.io/images/raspberry-pi-mouse/mouse_with_imu_1.JPG width=500 />
-
-#### How to use
-
-Launch nodes on Raspberry Pi Mouse with the following command:
+Launch nodes on the Raspberry Pi Mouse with the following command:
 
 ```sh
 $ ros2 launch raspimouse_ros2_examples direction_controller.launch.py
 ```
 
-Then, press SW0 ~ SW2 to change the control mode as following,
+Then, press SW0–SW2 to change the control mode as follows:
 
-- SW0: Calibrate the gyroscope bias and reset a heading angle of Raspberry Pi Mouse to 0 rad.
-- SW1: Start a direction control to keep the heading angle to 0 rad.
-  - Press SW0 ~ SW2 or tilt the body to sideways to finish the control.
-- SW2: Start a direction control to change the heading angle to `-π ~ π rad`.
-  - Press SW0 ~ SW2 or tilt the body to sideways to finish the control.
+- SW0: Calibrate the gyroscope bias and reset the Raspberry Pi Mouse's heading angle to `0`[rad].
+- SW1: Start direction control to keep the heading angle at `0`[rad].
+  - Press SW0–SW2 or tilt the body sideways to terminate the control.
+- SW2: Start direction control to change the heading angle between `-π` and `π`[rad].
+  - Press SW0–SW2 or tilt the body sideways to terminate the control.
 
-### Troubleshooting
+> :warning: Note
+>
+> The IMU might not be connected correctly.
+> If this happens, unplug and reconnect the USB cable, then run the above command again.
 
-The IMU might not be connected correctly.
-Reconnect the USB cable several times and re-execute the above command.
-
-#### Configure
-
-
-Set parameters to configure gains of a PID controller for the direction control.
-
-```sh
-$ ros2 param set /direction_controller p_gain 10.0
-Set parameter successful
-
-$ ros2 param set /direction_controller i_gain 0.5
-Set parameter successful
-
-$ ros2 param set /direction_controller d_gain 0.0
-Set parameter successful
-```
 #### Parameters
 
-- p_gain
+- `p_gain`
+  - Type: `double`
+  - Default: 10.0, min:0.0, max:30.0
   - Proportional gain of a PID controller for the direction control
-  - default: 10.0, min:0.0, max:30.0
-  - type: double
-- i_gain
+- `i_gain`
+  - Type: `double`
+  - Default: 0.0, min:0.0, max:5.0
   - Integral gain of a PID controller for the direction control
-  - default: 0.0, min:0.0, max:5.0
-  - type: double
-- d_gain
+- `d_gain`
+  - Type: `double`
+  - Default: 20.0, min:0.0, max:30.0
   - Derivative gain of a PID controller for the direction control
-  - default: 20.0, min:0.0, max:30.0
-  - type: double
-- target_angle
-  - Target angle for the SW1 control mode.
-  - default: 0.0, min:-π, max:+π
-  - type: double
+- `target_angle`
+  - Type: `double`
+  - Default: 0.0, min:-π, max:+π
+  - Target angle for the SW1 (direction control mode).
 
-#### Publish topics
+#### Published
 
-- heading_angle
-  - Heading angle of the robot that calculated from the IMU module sensor values.
-  - type: std_msgs/Float64
+- `heading_angle`
+  - Type: `std_msgs/Float64`
+  - Heading angle of the robot calculated from IMU module sensor values
 
-#### Videos
+</details>
 
-[![](http://img.youtube.com/vi/ghcCYOh9_MM/sddefault.jpg)](https://youtu.be/ghcCYOh9_MM)
+[Back to example list](#how-to-use-examples)
 
-[back to example list](#how-to-use-examples)
+---
+
+### SLAM & Navigation
+
+This is an example of SLAM & Navigation.
+
+<img src=https://rt-net.github.io/images/raspberry-pi-mouse/slam_toolbox_ros2.png height=650 />
+
+> :warning: Note
+>
+> The sample for SLAM and Navigation with Raspberry Pi Mouse has been moved to [rt-net/raspimouse_slam_navigation_ros2](https://github.com/rt-net/raspimouse_slam_navigation_ros2).
+
+[Back to example list](#how-to-use-examples)
+
+---
+
+## License
+
+(C) 2022 RT Corporation <support@rt-net.jp>
+
+Each file is licensed as stated in their headers.  
+If no license is specified, the file is licensed under the Apache License, Version 2.0.  
+The full license text is available in the [LICENSE](./LICENSE) file or at [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+## Contributing
+
+- This software is open source, but its development is not open.
+- This software is essentially provided as open source software on an “AS IS” (in its current state) basis.
+- No free support is available for this software.
+- Requests for bug fixes and corrections of typographical errors are always accepted; however, requests for additional features will be subject to our internal guidelines. For further details, please refer to the [Contribution Guidelines](https://github.com/rt-net/.github/blob/master/CONTRIBUTING.md).
