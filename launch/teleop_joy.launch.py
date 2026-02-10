@@ -16,7 +16,6 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch import LaunchIntrospector
 from launch.actions import DeclareLaunchArgument
 from launch.actions import LogInfo
 from launch.actions import OpaqueFunction
@@ -59,9 +58,7 @@ def generate_launch_description():
 
     get_joyconfig_file_name = OpaqueFunction(function=func_get_joyconfig_file_name)
 
-    joy_node = Node(
-        package='joy_linux', executable='joy_linux_node', parameters=[{'dev': joydev}]
-    )
+    joy_node = Node(package='joy_linux', executable='joy_linux_node', parameters=[{'dev': joydev}])
 
     joystick_control_node = Node(
         package='raspimouse_ros2_examples',
@@ -91,17 +88,14 @@ def generate_launch_description():
 
     mouse_node = OpaqueFunction(function=func_launch_mouse_node)
 
-    ld = LaunchDescription()
-    ld.add_action(declare_joydev)
-    ld.add_action(declare_joyconfig)
-    ld.add_action(declare_mouse)
-
-    ld.add_action(get_joyconfig_file_name)
-
-    ld.add_action(joy_node)
-    ld.add_action(joystick_control_node)
-    ld.add_action(mouse_node)
-
-    print(LaunchIntrospector().format_launch_description(ld))
-
-    return ld
+    return LaunchDescription(
+        [
+            declare_joydev,
+            declare_joyconfig,
+            declare_mouse,
+            get_joyconfig_file_name,
+            joy_node,
+            joystick_control_node,
+            mouse_node,
+        ]
+    )

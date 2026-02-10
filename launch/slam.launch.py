@@ -36,8 +36,7 @@ def generate_launch_description():
         output='screen',
         arguments=[
             '-d',
-            get_package_share_directory('raspimouse_ros2_examples')
-            + '/config/default.rviz',
+            get_package_share_directory('raspimouse_ros2_examples') + '/config/default.rviz',
         ],
     )
 

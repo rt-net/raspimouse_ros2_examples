@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import launch
+from launch import LaunchDescription
 from launch_ros.actions import Node
 
 
@@ -33,4 +34,4 @@ def generate_launch_description():
         parameters=[{'components': ['raspimouse', 'follower']}],
     )
 
-    return launch.LaunchDescription([line_follower, manager])
+    return LaunchDescription([line_follower, manager])

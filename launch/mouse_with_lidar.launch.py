@@ -61,10 +61,10 @@ def generate_launch_description():
 
     launch_lidar_node = OpaqueFunction(function=func_launch_lidar_node)
 
-    ld = LaunchDescription()
-    ld.add_action(declare_lidar)
-
-    ld.add_action(mouse_node)
-    ld.add_action(launch_lidar_node)
-
-    return ld
+    return LaunchDescription(
+        [
+            declare_lidar,
+            mouse_node,
+            launch_lidar_node,
+        ]
+    )
