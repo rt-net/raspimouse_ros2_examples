@@ -309,7 +309,7 @@ $ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_devi
   - Type: `double`
   - Default: 0.8
   - 旋回速度の最大値
-- `area_threthold`
+- `area_threshold`
   - Type: `double`
   - Default: 0.20
   - 走行を開始するためのライン面積のしきい値

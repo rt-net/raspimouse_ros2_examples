@@ -305,7 +305,7 @@ or [rqt_image_view](https://index.ros.org/p/rqt_image_view/).
   - Type: `double`
   - Default: 0.8
   - Maximum angular velocity.
-- `area_threthold`
+- `area_threshold`
   - Type: `double`
   - Default: 0.20
   - Threshold value of the area of the line to start following.

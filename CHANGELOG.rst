@@ -12,7 +12,7 @@ Changelog for package raspimouse_ros2_examples
 ------------------
 * READMEにSLAM&Navigationパッケージの案内を追加 (`#53 <https://github.com/rt-net/raspimouse_ros2_examples/issues/53>`_)
 * Camera_FollowerクラスをCameraFollowerに変更 (`#52 <https://github.com/rt-net/raspimouse_ros2_examples/issues/52>`_)
-* Update camera line follower: Set motor power with switch input. Add area_threthold param. (`#51 <https://github.com/rt-net/raspimouse_ros2_examples/issues/51>`_)
+* Update camera line follower: Set motor power with switch input. Add area_threshold param. (`#51 <https://github.com/rt-net/raspimouse_ros2_examples/issues/51>`_)
 * Add velocity parameters for camera_line_follower (`#50 <https://github.com/rt-net/raspimouse_ros2_examples/issues/50>`_)
 * カメラライントレースを修正 (`#49 <https://github.com/rt-net/raspimouse_ros2_examples/issues/49>`_)
 * Change threthold of line detection
