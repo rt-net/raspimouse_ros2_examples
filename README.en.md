@@ -105,15 +105,15 @@ Launch nodes with the following command:
 ```sh
 # Controlled directly on Raspberry Pi Mouse
 ## Use F710
-$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=f710 mouse:=true
+ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=f710 mouse:=true
 ## Use DUALSHOCK 3
-$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=dualshock3 mouse:=true
+ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=dualshock3 mouse:=true
 
 # Control from remote computer
 ## on RaspberryPiMouse
-$ ros2 run raspimouse raspimouse
+ros2 run raspimouse raspimouse
 ## on remote computer
-$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
+ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
 ```
 
 #### Configure
@@ -169,14 +169,14 @@ The ball tracking is performed with a USB webcam and the OpenCV library.
 Disable the automatic camera adjustment parameters (autofocus, auto white balance, etc.) with the following command:
 
 ```sh
-$ cd ~/ros2_ws/src/raspimouse_ros2_examples/config
-$ ./configure_camera.bash
+cd ~/ros2_ws/src/raspimouse_ros2_examples/config
+./configure_camera.bash
 ```
 
 Then, launch nodes with the following command:
 
 ```sh
-$ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/dev/video0
+ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/dev/video0
 ```
 
 This sample publishes two topics: `camera/color/image_raw` for the camera image and `result_image` for the object detection image.  
@@ -228,7 +228,7 @@ This is an example for line following.
 Launch nodes with the following command:
 
 ```sh
-$ ros2 launch raspimouse_ros2_examples line_follower.launch.py
+ros2 launch raspimouse_ros2_examples line_follower.launch.py
 ```
 
 Next, place the Raspberry Pi Mouse on a field and press SW2 to sample sensor values on the field.
@@ -288,7 +288,7 @@ This is an example for line following by RGB camera.
 Launch nodes with the following command:
 
 ```sh
-$ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_device:=/dev/video0
+ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_device:=/dev/video0
 ```
 
 Place Raspberry Pi Mouse on the line and press SW2 to start line following.
@@ -367,7 +367,7 @@ Attach the LiDAR mount with the IMU sensor module to the Raspberry Pi Mouse. For
 Launch nodes on the Raspberry Pi Mouse with the following command:
 
 ```sh
-$ ros2 launch raspimouse_ros2_examples direction_controller.launch.py
+ros2 launch raspimouse_ros2_examples direction_controller.launch.py
 ```
 
 Then, press SW0–SW2 to change the control mode as follows:
