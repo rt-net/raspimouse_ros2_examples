@@ -19,8 +19,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.events import Shutdown
 from launch.conditions import IfCondition
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
-from launch_ros.substitutions import FindPackageShare
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import LifecycleNode, Node
 
 
@@ -42,12 +41,6 @@ def generate_launch_description():
         'mouse', default_value='true', description='Launch raspimouse node'
     )
 
-    declare_config_pkg = DeclareLaunchArgument(
-        'config_package',
-        default_value='raspimouse_ros2_examples',
-        description='Package name where the config file is located',
-    )
-
     joy_param = [
         os.path.join(get_package_share_directory('raspimouse_ros2_examples')),
         '/config',
@@ -56,9 +49,11 @@ def generate_launch_description():
         '.yml',
     ]
 
-    mouse_param = PathJoinSubstitution(
-        [FindPackageShare(LaunchConfiguration('config_package')), 'config', 'mouse.yaml']
-    )
+    mouse_param = [
+        os.path.join(get_package_share_directory('raspimouse_ros2_examples')),
+        '/config',
+        '/mouse.yaml',
+    ]
 
     joy_node = Node(
         package='joy_linux',
@@ -88,7 +83,6 @@ def generate_launch_description():
             declare_joydev,
             declare_joyconfig,
             declare_mouse,
-            declare_config_pkg,
             joy_node,
             joystick_control_node,
             mouse_node,
