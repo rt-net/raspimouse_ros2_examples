@@ -105,15 +105,15 @@ Raspberry Pi Mouseを動作させるサンプル集です。
 ```sh
 # Controlled directly on Raspberry Pi Mouse
 ## Use F710
-$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=f710 mouse:=true
+ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=f710 mouse:=true
 ## Use DUALSHOCK 3
-$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=dualshock3 mouse:=true
+ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=dualshock3 mouse:=true
 
 # Control from remote computer
 ## on RaspberryPiMouse
-$ ros2 run raspimouse raspimouse
+ros2 run raspimouse raspimouse
 ## on remote computer
-$ ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
+ros2 launch raspimouse_ros2_examples teleop_joy.launch.py mouse:=false
 ```
 
 #### Configure
@@ -169,14 +169,14 @@ USB接続のWebカメラとOpenCVを使ってボール追跡をします。
 次のスクリプトを実行して、カメラの自動調節機能（自動露光、オートホワイトバランス等）を切ります。
 
 ```sh
-$ cd ~/ros2_ws/src/raspimouse_ros2_examples/config
-$ ./configure_camera.bash
+cd ~/ros2_ws/src/raspimouse_ros2_examples/config
+./configure_camera.bash
 ```
 
 次のコマンドでノードを起動します。
 
 ```sh
-$ ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/dev/video0
+ros2 launch raspimouse_ros2_examples object_tracking.launch.py video_device:=/dev/video0
 ```
 
 カメラ画像は`camera/color/image_raw`、物体検出画像は`result_image`というトピックとして発行されます。
@@ -230,7 +230,7 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
 次のコマンドでノードを起動します。
 
 ```sh
-$ ros2 launch raspimouse_ros2_examples line_follower.launch.py
+ros2 launch raspimouse_ros2_examples line_follower.launch.py
 ```
 
 Raspberry Pi Mouseをフィールドに置き、SW2を押してフィールド上のセンサ値をサンプリングします。
@@ -290,7 +290,7 @@ RGBカメラによるライントレースのコード例です。
 次のコマンドでノードを起動します。
 
 ```sh
-$ ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_device:=/dev/video0
+ros2 launch raspimouse_ros2_examples camera_line_follower.launch.py video_device:=/dev/video0
 ```
 
 ライン上にRaspberry Pi Mouseを置き、SW2を押してライントレースを開始します。
@@ -370,7 +370,7 @@ IMUセンサモジュールを取り付けたLiDAR MountをRaspberry Pi Mouseに
 次のコマンドでノードを起動します。
 
 ```sh
-$ ros2 launch raspimouse_ros2_examples direction_controller.launch.py
+ros2 launch raspimouse_ros2_examples direction_controller.launch.py
 ```
 
 SW0-SW2を押して動作モードを切り替えます。
