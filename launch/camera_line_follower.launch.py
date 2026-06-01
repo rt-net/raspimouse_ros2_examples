@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import launch
+from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration
@@ -82,7 +82,7 @@ def generate_launch_description():
         parameters=[{'components': ['raspimouse', 'camera_follower']}],
     )
 
-    return launch.LaunchDescription(
+    return LaunchDescription(
         [
             declare_mouse,
             declare_use_camera_node,

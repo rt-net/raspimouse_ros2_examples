@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import launch
+from launch import LaunchDescription
 from launch_ros.actions import LifecycleNode
 from launch_ros.actions import Node
 
@@ -59,6 +59,4 @@ def generate_launch_description():
         parameters=[{'components': ['raspimouse', 'rt_usb_9axisimu_driver']}],
     )
 
-    return launch.LaunchDescription(
-        [mouse_node, imu_driver, direction_controller, manager]
-    )
+    return LaunchDescription([mouse_node, imu_driver, direction_controller, manager])
