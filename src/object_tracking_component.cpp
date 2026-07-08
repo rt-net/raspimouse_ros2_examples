@@ -126,9 +126,15 @@ bool Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
   cv::Mat hsv;
   cv::cvtColor(input_frame, hsv, cv::COLOR_BGR2HSV);
   cv::Mat extracted_bin;
-  cv::inRange(hsv, cv::Scalar(0, 100, 100), cv::Scalar(29, 255, 255), extracted_bin);  // 赤〜オレンジ
-  // cv::inRange(hsv, cv::Scalar(60, 100, 100), cv::Scalar(80, 255, 255), extracted_bin);  // 緑
-  // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);  // 青
+
+  // 色範囲を設定する
+
+  // 赤〜オレンジ
+  cv::inRange(hsv, cv::Scalar(0, 100, 100), cv::Scalar(29, 255, 255), extracted_bin);
+  // 緑
+  // cv::inRange(hsv, cv::Scalar(60, 100, 100), cv::Scalar(80, 255, 255), extracted_bin);
+  // 青
+  // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);
   input_frame.copyTo(result_frame, extracted_bin);
 
   // モルフォロジー変換でノイズを除去する
