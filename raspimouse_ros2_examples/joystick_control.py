@@ -101,11 +101,24 @@ class JoyWrapper(Node):
         ).value
         self._BUTTON_CONFIG_ENABLE = self.get_parameter('button_config_enable').value
 
-        # for _joy_velocity_config()
-        self._MAX_VEL_LINEAR_X = 2.0  # m/s
+        # 速度指令の上限値とデフォルト値
+        self._MAX_VEL_LINEAR_X = 2.0          # m/s
         self._MAX_VEL_ANGULAR_Z = 2.0 * math.pi  # rad/s
-        self._DEFAULT_VEL_LINEAR_X = 0.5  # m/s
+        self._DEFAULT_VEL_LINEAR_X = 0.5      # m/s
         self._DEFAULT_VEL_ANGULAR_Z = 1.0 * math.pi  # rad/s
+
+        # 速度設定の変化量
+        self._ADD_VEL_LINEAR_X = 0.1          # m/s
+        self._ADD_VEL_ANGULAR_Z = 0.1 * math.pi  # rad/s
+
+        # 速度設定変更時のブザー周波数 [Hz]
+        self._BUZZER_FREQ_ADD = 880
+        self._BUZZER_FREQ_SUB = 440
+        self._BUZZER_FREQ_RESET = 660
+        self._BUZZER_BEEP_TIME = 0.2          # sec
+
+        # ドレミファソラシド（C5〜C6）に相当するブザー周波数 [Hz]
+        self._BUZZER_SCALES = [523, 587, 659, 699, 784, 880, 987, 1046]
 
         self._lightsensors = LightSensors()
         self._mouse_switches = Switches()
@@ -118,13 +131,17 @@ class JoyWrapper(Node):
 
         self._node_logger = self.get_logger()
 
+        # 速度指令・ブザー・LEDのパブリッシャを作成
         self._pub_cmdvel = self.create_publisher(TwistStamped, 'cmd_vel', 1)
         self._pub_buzzer = self.create_publisher(Int16, 'buzzer', 1)
         self._pub_leds = self.create_publisher(Leds, 'leds', 1)
 
+        # コールバックグループを分けることでサービス呼び出しとサブスクライバが
+        # 互いをブロックしないようにする
         self._sub_cb_group = MutuallyExclusiveCallbackGroup()
         self._client_cb_group = MutuallyExclusiveCallbackGroup()
 
+        # ライフサイクルノードの状態を取得・変更するサービスクライアントを作成する
         self._client_get_state = self.create_client(
             GetState, 'raspimouse/get_state', callback_group=self._client_cb_group
         )
@@ -140,8 +157,10 @@ class JoyWrapper(Node):
             self._node_logger.warn(
                 self._client_change_state.srv_name + ' service not available'
             )
+        # RaspiMouseをconfigure → activateして走行可能にする
         self._activate_raspimouse()
 
+        # モータ電源サービスのクライアントを作成してモータをONにする
         self._client_motor_power = self.create_client(
             SetBool, 'motor_power', callback_group=self._client_cb_group
         )
@@ -151,6 +170,7 @@ class JoyWrapper(Node):
             )
         self._motor_on()
 
+        # ジョイスティック・光センサ・スイッチのサブスクライバを作成
         self._sub_joy = self.create_subscription(
             Joy, 'joy', self._callback_joy, 1, callback_group=self._sub_cb_group
         )
@@ -170,11 +190,13 @@ class JoyWrapper(Node):
         )
 
     def _activate_raspimouse(self):
+        # ライフサイクルノードをconfigure → activateの順に遷移させる
         self._set_mouse_lifecycle_state(Transition.TRANSITION_CONFIGURE)
         self._set_mouse_lifecycle_state(Transition.TRANSITION_ACTIVATE)
         self._node_logger.info('Mouse state is ' + self._get_mouse_lifecycle_state())
 
     def _set_mouse_lifecycle_state(self, transition_id):
+        # ライフサイクルノードに状態遷移を要求する
         request = ChangeState.Request()
         request.transition.id = transition_id
         future = self._client_change_state.call_async(request)
@@ -182,6 +204,7 @@ class JoyWrapper(Node):
         return future.result().success
 
     def _get_mouse_lifecycle_state(self):
+        # ライフサイクルノードの現在の状態ラベルを取得する
         future = self._client_get_state.call_async(GetState.Request())
         rclpy.spin_until_future_complete(self, future)
         return future.result().current_state.label
@@ -198,6 +221,7 @@ class JoyWrapper(Node):
         self._motor_request(False)
 
     def _callback_joy(self, msg):
+        # ジョイスティック入力に応じて各機能を処理する
         self._joy_motor_onoff(msg)
         self._joy_cmdvel(msg)
         self._joy_buzzer_freq(msg)
@@ -213,6 +237,7 @@ class JoyWrapper(Node):
         self._mouse_switches = msg
 
     def _joy_shutdown(self, joy_msg):
+        # 2つのボタンを同時押しでノードを終了する
         if (
             joy_msg.buttons[self._BUTTON_SHUTDOWN_1]
             and joy_msg.buttons[self._BUTTON_SHUTDOWN_2]
@@ -224,6 +249,7 @@ class JoyWrapper(Node):
             raise SystemExit
 
     def _joy_motor_onoff(self, joy_msg):
+        # ボタン操作でモータのON/OFFを切り替える
         if joy_msg.buttons[self._BUTTON_MOTOR_ON]:
             self._motor_on()
 
@@ -231,6 +257,8 @@ class JoyWrapper(Node):
             self._motor_off()
 
     def _joy_cmdvel(self, joy_msg):
+        # 有効ボタンを押しながらスティックを操作して速度指令を送信する
+        # cmd_vel.twist.linear.x が前後速度 [m/s]、angular.z が旋回速度 [rad/s]
         cmdvel = TwistStamped()
         if joy_msg.buttons[self._BUTTON_CMD_ENABLE]:
             cmdvel.twist.linear.x = (
@@ -254,8 +282,7 @@ class JoyWrapper(Node):
                 self._cmdvel_has_value = False
 
     def _joy_dpad(self, joy_msg, target_pad, positive_on):
-        # d pad inputs of f710 controller are analog
-        # d pad inputs of dualshock3 controller are digital
+        # F710コントローラの十字キーはアナログ軸、DualShock3はデジタルボタンで入力される
         if self._ANALOG_D_PAD:
             if positive_on:
                 return joy_msg.axes[target_pad] > 0
@@ -293,6 +320,7 @@ class JoyWrapper(Node):
             return False
 
     def _beep_buzzer(self, freq_data, beep_time=0):
+        # 指定した周波数でブザーを鳴らし、指定時間後に停止する
         freq = Int16()
         freq.data = freq_data
         self._pub_buzzer.publish(freq)
@@ -301,6 +329,7 @@ class JoyWrapper(Node):
         self._pub_buzzer.publish(freq)
 
     def _joy_buzzer_freq(self, joy_msg):
+        # 有効ボタンを押しながら十字キー・ボタンでブザーの音階を鳴らす
         freq = Int16()
         buttons = [
             self._dpad(joy_msg, self._DPAD_BUZZER0),
@@ -312,13 +341,11 @@ class JoyWrapper(Node):
             joy_msg.buttons[self._BUTTON_BUZZER6],
             joy_msg.buttons[self._BUTTON_BUZZER7],
         ]
-        # buzzer frequency Hz
-        SCALES = [523, 587, 659, 699, 784, 880, 987, 1046]
 
         if joy_msg.buttons[self._BUTTON_BUZZER_ENABLE]:
             for i, button in enumerate(buttons):
                 if button:
-                    freq.data = SCALES[i]
+                    freq.data = self._BUZZER_SCALES[i]
                     break
             self._pub_buzzer.publish(freq)
             self._node_logger.info(str(freq))
@@ -330,6 +357,7 @@ class JoyWrapper(Node):
                 self._buzzer_has_value = False
 
     def _joy_lightsensor_sound(self, joy_msg):
+        # 有効ボタンを押している間、光センサの値をブザーで音として出力する
         freq = Int16()
         if joy_msg.buttons[self._BUTTON_SENSOR_SOUND_EN]:
             self._node_logger.info(str(self._lightsensors))
@@ -352,13 +380,7 @@ class JoyWrapper(Node):
             return value
 
     def _joy_velocity_config(self, joy_msg):
-        ADD_VEL_LINEAR_X = 0.1  # m/s
-        ADD_VEL_ANGULAR_Z = 0.1 * math.pi  # m/s
-        BUZZER_FREQ_ADD = 880  # Hz
-        BUZZER_FREQ_SUB = 440  # Hz
-        BUZZER_FREQ_RESET = 660  # Hz
-        BUZZER_BEEP_TIME = 0.2  # sec
-
+        # 有効ボタンを押しながらロボット本体のスイッチを押して速度を調整する
         if joy_msg.buttons[self._BUTTON_CONFIG_ENABLE]:
             any_switch_pressed = False
             if any(
@@ -373,32 +395,38 @@ class JoyWrapper(Node):
             if not self._switch_has_been_pressed:
                 if self._mouse_switches.switch0:
                     self._vel_linear_x = self._config_velocity(
-                        self._vel_linear_x, ADD_VEL_LINEAR_X, 0, self._MAX_VEL_LINEAR_X
+                        self._vel_linear_x,
+                        self._ADD_VEL_LINEAR_X,
+                        0,
+                        self._MAX_VEL_LINEAR_X,
                     )
                     self._vel_angular_z = self._config_velocity(
                         self._vel_angular_z,
-                        ADD_VEL_ANGULAR_Z,
+                        self._ADD_VEL_ANGULAR_Z,
                         0,
                         self._MAX_VEL_ANGULAR_Z,
                     )
-                    self._beep_buzzer(BUZZER_FREQ_ADD, BUZZER_BEEP_TIME)
+                    self._beep_buzzer(self._BUZZER_FREQ_ADD, self._BUZZER_BEEP_TIME)
 
                 elif self._mouse_switches.switch2:
                     self._vel_linear_x = self._config_velocity(
-                        self._vel_linear_x, -ADD_VEL_LINEAR_X, 0, self._MAX_VEL_LINEAR_X
+                        self._vel_linear_x,
+                        -self._ADD_VEL_LINEAR_X,
+                        0,
+                        self._MAX_VEL_LINEAR_X,
                     )
                     self._vel_angular_z = self._config_velocity(
                         self._vel_angular_z,
-                        -ADD_VEL_ANGULAR_Z,
+                        -self._ADD_VEL_ANGULAR_Z,
                         0,
                         self._MAX_VEL_ANGULAR_Z,
                     )
-                    self._beep_buzzer(BUZZER_FREQ_SUB, BUZZER_BEEP_TIME)
+                    self._beep_buzzer(self._BUZZER_FREQ_SUB, self._BUZZER_BEEP_TIME)
 
                 elif self._mouse_switches.switch1:
                     self._vel_linear_x = self._DEFAULT_VEL_LINEAR_X
                     self._vel_angular_z = self._DEFAULT_VEL_ANGULAR_Z
-                    self._beep_buzzer(BUZZER_FREQ_RESET, BUZZER_BEEP_TIME)
+                    self._beep_buzzer(self._BUZZER_FREQ_RESET, self._BUZZER_BEEP_TIME)
 
             self._switch_has_been_pressed = any_switch_pressed
             self._node_logger.info(
@@ -419,6 +447,7 @@ class JoyWrapper(Node):
         return output
 
     def _joy_leds(self, joy_msg):
+        # 各有効ボタンの押下状態に応じてLEDを点灯させる
         leds = Leds()
 
         if joy_msg.buttons[self._BUTTON_CMD_ENABLE]:

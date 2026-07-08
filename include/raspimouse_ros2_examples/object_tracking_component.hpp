@@ -42,11 +42,9 @@ protected:
   void on_cmd_vel_timer();
 
 private:
-  cv::VideoCapture cap_;
   bool object_is_detected_;
   cv::Point2d object_normalized_point_;
   double object_normalized_area_;
-  geometry_msgs::msg::TwistStamped cmd_vel_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>> result_image_pub_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::TwistStamped>>
   cmd_vel_pub_;
@@ -54,10 +52,11 @@ private:
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
   rclcpp::TimerBase::SharedPtr cmd_vel_timer_;
 
-  std::string mat_type2encoding(int mat_type);
-  void convert_frame_to_message(const cv::Mat & frame, sensor_msgs::msg::Image & msg);
+  void set_motor_power(const bool motor_on);
+  std::string mat_type2encoding(int mat_type) const;
+  void convert_frame_to_message(const cv::Mat & frame, sensor_msgs::msg::Image & msg) const;
 
-  void tracking(const cv::Mat & input_frame, cv::Mat & result_frame);
+  bool tracking(const cv::Mat & input_frame, cv::Mat & result_frame);
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_configure(
     const rclcpp_lifecycle::State &);

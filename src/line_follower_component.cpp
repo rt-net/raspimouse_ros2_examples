@@ -53,10 +53,12 @@ Follower::Follower(const rclcpp::NodeOptions & options)
 
 void Follower::on_cmd_vel_timer()
 {
+  // サンプリング中は速度指令の処理をスキップする
   if (line_sampling_ || field_sampling_) {
     return;
   }
 
+  // スイッチ操作に応じてライン追従の開始・停止・サンプリングを切り替える
   if (switches_.switch0) {
     if (sampling_is_done() && can_publish_cmdvel_ == false) {
       RCLCPP_INFO(this->get_logger(), "Start following.");
@@ -79,7 +81,8 @@ void Follower::on_cmd_vel_timer()
     beep_start();
     field_sampling_ = true;
   }
-  switches_ = raspimouse_msgs::msg::Switches();  // Reset switch values
+  // スイッチの値をリセットして次の割り込みに備える
+  switches_ = raspimouse_msgs::msg::Switches();
 
   if (can_publish_cmdvel_) {
     publish_cmdvel_for_line_following();
@@ -90,7 +93,7 @@ void Follower::on_cmd_vel_timer()
 
 void Follower::callback_light_sensors(const raspimouse_msgs::msg::LightSensors::SharedPtr msg)
 {
-  // The order of the front distance sensors and the line following sensors are not same
+  // ライン追従用センサと前方距離センサはトピック上での並び順が異なるため、対応付けて格納する
   present_sensor_values_[LEFT] = msg->forward_r;
   present_sensor_values_[MID_LEFT] = msg->right;
   present_sensor_values_[MID_RIGHT] = msg->left;
@@ -125,6 +128,7 @@ void Follower::publish_cmdvel_for_line_following(void)
 
   auto cmd_vel = std::make_unique<geometry_msgs::msg::TwistStamped>();
 
+  // いずれかのセンサがラインを検出しているか確認する
   bool detect_line = std::any_of(
     line_is_detected_by_sensor_.begin(), line_is_detected_by_sensor_.end(),
     [](bool detected) {return detected;});
@@ -132,9 +136,11 @@ void Follower::publish_cmdvel_for_line_following(void)
     line_is_detected_by_sensor_.begin(), line_is_detected_by_sensor_.end(),
     [](bool detected) {return !detected;});
 
+  // ラインとフィールドの両方が検出されているときのみ走行する
   if (detect_line && detect_field) {
     cmd_vel->twist.linear.x = VEL_LINEAR_X;
 
+    // ラインのずれに応じて旋回速度を加減して修正する
     if (line_is_detected_by_sensor_[LEFT]) {
       cmd_vel->twist.angular.z += VEL_ANGULAR_Z;
     }
@@ -160,6 +166,7 @@ void Follower::update_line_detection(void)
   for (int sensor_i = 0; sensor_i < SENSOR_NUM; sensor_i++) {
     bool is_positive = present_sensor_values_[sensor_i] > line_thresholds_[sensor_i];
 
+    // ラインが明るい場合と暗い場合の両方に対応してライン検出フラグを更新する
     if (line_is_bright() == is_positive) {
       line_is_detected_by_sensor_[sensor_i] = true;
     } else {
@@ -170,6 +177,7 @@ void Follower::update_line_detection(void)
 
 bool Follower::line_is_bright(void)
 {
+  // ラインサンプリング値とフィールドサンプリング値を比較してラインの明暗を判定する
   const SensorIndex SAMPLE = RIGHT;
   if (sensor_line_values_[SAMPLE] > sensor_field_values_[SAMPLE]) {
     return true;
@@ -180,6 +188,7 @@ bool Follower::line_is_bright(void)
 
 void Follower::indicate_line_detections(void)
 {
+  // 各センサのライン検出結果をLEDで表示する
   auto msg = std::make_unique<raspimouse_msgs::msg::Leds>();
   msg->led0 = line_is_detected_by_sensor_[RIGHT];
   msg->led1 = line_is_detected_by_sensor_[MID_RIGHT];
@@ -190,6 +199,7 @@ void Follower::indicate_line_detections(void)
 
 void Follower::beep_buzzer(const int freq, const std::chrono::nanoseconds & beep_time)
 {
+  // 指定した周波数でブザーを鳴らし、指定時間後に停止する
   auto msg = std::make_unique<std_msgs::msg::Int16>();
   msg->data = freq;
   buzzer_pub_->publish(std::move(msg));
@@ -230,12 +240,14 @@ bool Follower::sampling_is_done(void)
 void Follower::multisampling(void)
 {
   if (sampling_count_ < NUM_OF_SAMPLES) {
+    // 複数回分のセンサ値を積算する
     for (int sensor_i = 0; sensor_i < SENSOR_NUM; sensor_i++) {
       sampling_values_[sensor_i] += present_sensor_values_[sensor_i];
     }
     sampling_count_++;
 
   } else {
+    // 積算値を平均してサンプリング完了とする
     for (int sensor_i = 0; sensor_i < SENSOR_NUM; sensor_i++) {
       sampling_values_[sensor_i] = sampling_values_[sensor_i] / NUM_OF_SAMPLES;
     }
@@ -277,6 +289,7 @@ void Follower::set_line_thresholds(void)
     return;
   }
 
+  // ラインとフィールドの中間値を閾値として設定する
   for (int sensor_i = 0; sensor_i < SENSOR_NUM; sensor_i++) {
     line_thresholds_[sensor_i] =
       median(sensor_line_values_[sensor_i], sensor_field_values_[sensor_i]);
@@ -293,8 +306,9 @@ CallbackReturn Follower::on_configure(const rclcpp_lifecycle::State &)
 
   RCLCPP_INFO(this->get_logger(), "on_configure() is called.");
 
+  // ライフサイクルノードのconfigure時にパブリッシャ・サブスクライバ・タイマーを作成する
   cmd_vel_timer_ = create_wall_timer(50ms, std::bind(&Follower::on_cmd_vel_timer, this));
-  // Don't actually start publishing data until activated
+  // activate状態に遷移するまでタイマーを停止しておく
   cmd_vel_timer_->cancel();
 
   cmd_vel_pub_ = create_publisher<geometry_msgs::msg::TwistStamped>("cmd_vel", 1);
@@ -307,7 +321,7 @@ CallbackReturn Follower::on_configure(const rclcpp_lifecycle::State &)
 
   motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
   if (!motor_power_client_->wait_for_service(5s)) {
-    RCLCPP_ERROR(this->get_logger(), "Service motor_power is not avaliable.");
+    RCLCPP_ERROR(this->get_logger(), "Service motor_power is not available.");
     return CallbackReturn::FAILURE;
   }
   return CallbackReturn::SUCCESS;
@@ -317,6 +331,7 @@ CallbackReturn Follower::on_activate(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
 
+  // ライフサイクルパブリッシャをアクティブにしてからタイマーを開始する
   buzzer_pub_->on_activate();
   cmd_vel_pub_->on_activate();
   leds_pub_->on_activate();

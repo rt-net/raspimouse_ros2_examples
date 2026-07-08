@@ -21,6 +21,8 @@
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
+  // RaspiMouseドライバとライン追従コントローラを同一プロセスで実行する
+  // LifecycleNodeを含むため、マルチスレッドエグゼキュータを使用する
   rclcpp::executors::MultiThreadedExecutor exec;
   rclcpp::NodeOptions options;
   auto raspimouse = std::make_shared<raspimouse::Raspimouse>(options);

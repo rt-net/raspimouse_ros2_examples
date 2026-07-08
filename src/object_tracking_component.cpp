@@ -40,17 +40,16 @@ Tracker::Tracker(const rclcpp::NodeOptions & options)
 
 void Tracker::image_callback(const sensor_msgs::msg::Image::SharedPtr msg_image)
 {
-  auto cv_img = cv_bridge::toCvShare(msg_image, msg_image->encoding);
-  auto msg = std::make_unique<sensor_msgs::msg::Image>();
+  // 受信した画像メッセージをOpenCV形式に変換する
+  const auto cv_img = cv_bridge::toCvShare(msg_image, msg_image->encoding);
   auto result_msg = std::make_unique<sensor_msgs::msg::Image>();
-  msg->is_bigendian = false;
-  result_msg->is_bigendian = false;
 
   cv::Mat frame, result_frame;
   cv::cvtColor(cv_img->image, frame, CV_RGB2BGR);
 
   if (!frame.empty()) {
-    tracking(frame, result_frame);
+    // 物体追跡を実行し、結果画像をパブリッシュする
+    object_is_detected_ = tracking(frame, result_frame);
     convert_frame_to_message(result_frame, *result_msg);
     result_image_pub_->publish(std::move(result_msg));
   }
@@ -58,27 +57,41 @@ void Tracker::image_callback(const sensor_msgs::msg::Image::SharedPtr msg_image)
 
 void Tracker::on_cmd_vel_timer()
 {
-  const double LINEAR_VEL = -0.5;             // unit: m/s
-  const double ANGULAR_VEL = -0.8;            // unit: rad/s
-  const double TARGET_AREA = 0.1;             // 0.0 ~ 1.0
-  const double OBJECT_AREA_THRESHOLD = 0.01;  // 0.0 ~ 1.0
+  const double LINEAR_VEL = -0.5;             // 前後速度ゲイン [m/s]
+  const double ANGULAR_VEL = -0.8;            // 旋回速度ゲイン [rad/s]
+  const double TARGET_AREA = 0.1;             // 目標物体面積 [0.0〜1.0]
+  const double OBJECT_AREA_THRESHOLD = 0.01;  // 物体検出の面積閾値 [0.0〜1.0]
 
-  // Detects an object and tracks it
-  // when the number of pixels of the object is greater than the threshold.
+  geometry_msgs::msg::TwistStamped cmd_vel;
+
+  // 物体が検出され、かつ面積が閾値以上のときに追跡走行する
   if (object_is_detected_ && object_normalized_area_ > OBJECT_AREA_THRESHOLD) {
-    cmd_vel_.twist.linear.x = LINEAR_VEL * (object_normalized_area_ - TARGET_AREA);
-    cmd_vel_.twist.angular.z = ANGULAR_VEL * object_normalized_point_.x;
+    // 面積の差分で前後速度、重心位置で旋回速度を計算する
+    cmd_vel.twist.linear.x = LINEAR_VEL * (object_normalized_area_ - TARGET_AREA);
+    cmd_vel.twist.angular.z = ANGULAR_VEL * object_normalized_point_.x;
   } else {
-    cmd_vel_.twist.linear.x = 0.0;
-    cmd_vel_.twist.angular.z = 0.0;
+    cmd_vel.twist.linear.x = 0.0;
+    cmd_vel.twist.angular.z = 0.0;
   }
-  auto msg = std::make_unique<geometry_msgs::msg::TwistStamped>(cmd_vel_);
+  auto msg = std::make_unique<geometry_msgs::msg::TwistStamped>(cmd_vel);
   cmd_vel_pub_->publish(std::move(msg));
 }
 
-// Ref: https://github.com/ros2/demos/blob/dashing/image_tools/src/cam2image.cpp
-std::string Tracker::mat_type2encoding(int mat_type)
+void Tracker::set_motor_power(const bool motor_on)
 {
+  if (motor_power_client_ == nullptr) {
+    RCLCPP_ERROR(this->get_logger(), "Service motor_power is not available.");
+    return;
+  }
+  auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
+  request->data = motor_on;
+  auto future_result = motor_power_client_->async_send_request(request);
+}
+
+// Ref: https://github.com/ros2/demos/blob/dashing/image_tools/src/cam2image.cpp
+std::string Tracker::mat_type2encoding(int mat_type) const
+{
+  // OpenCVの画像形式をROSメッセージのエンコーディング文字列に変換する
   switch (mat_type) {
     case CV_8UC1:
       return "mono8";
@@ -94,9 +107,9 @@ std::string Tracker::mat_type2encoding(int mat_type)
 }
 
 // Ref: https://github.com/ros2/demos/blob/dashing/image_tools/src/cam2image.cpp
-void Tracker::convert_frame_to_message(const cv::Mat & frame, sensor_msgs::msg::Image & msg)
+void Tracker::convert_frame_to_message(const cv::Mat & frame, sensor_msgs::msg::Image & msg) const
 {
-  // copy cv information into ros message
+  // OpenCVの画像データをROSのImageメッセージにコピーする
   msg.height = frame.rows;
   msg.width = frame.cols;
   msg.encoding = mat_type2encoding(frame.type());
@@ -107,27 +120,27 @@ void Tracker::convert_frame_to_message(const cv::Mat & frame, sensor_msgs::msg::
   msg.header.frame_id = "camera_frame";
 }
 
-void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
+bool Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
 {
-  // Specific colors are extracted from the input image and converted to binary values.
+  // 入力画像をHSV色空間に変換し、追跡対象の色を二値化する
   cv::Mat hsv;
   cv::cvtColor(input_frame, hsv, cv::COLOR_BGR2HSV);
   cv::Mat extracted_bin;
-  cv::inRange(hsv, cv::Scalar(0, 100, 100), cv::Scalar(29, 255, 255), extracted_bin);  // Red-Orange
-  // cv::inRange(hsv, cv::Scalar(60, 100, 100), cv::Scalar(80, 255, 255), extracted_bin);  // Green
-  // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);  // Blue
+  cv::inRange(hsv, cv::Scalar(0, 100, 100), cv::Scalar(29, 255, 255), extracted_bin);  // 赤〜オレンジ
+  // cv::inRange(hsv, cv::Scalar(60, 100, 100), cv::Scalar(80, 255, 255), extracted_bin);  // 緑
+  // cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(120, 255, 255), extracted_bin);  // 青
   input_frame.copyTo(result_frame, extracted_bin);
 
-  // Remove noise with morphology transformation
+  // モルフォロジー変換でノイズを除去する
   cv::Mat morph_bin;
   cv::morphologyEx(extracted_bin, morph_bin, cv::MORPH_CLOSE, cv::Mat());
 
-  // Extracting contours
+  // 輪郭を抽出する
   std::vector<std::vector<cv::Point>> contours;
   std::vector<cv::Vec4i> hierarchy;
   cv::findContours(morph_bin, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
 
-  // Extracting the largest contours
+  // 最大面積の輪郭を選択する
   double max_area = 0;
   int max_area_index = -1;
   for (unsigned int index = 0; index < contours.size(); index++) {
@@ -138,17 +151,16 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
     }
   }
 
-  // If the contour exists (if the object exists), find the centroid of the contour
+  // 輪郭が存在する場合は重心を計算して正規化する
   if (max_area_index >= 0) {
     cv::Moments mt = cv::moments(contours.at(max_area_index));
     cv::Point mt_point = cv::Point(mt.m10 / mt.m00, mt.m01 / mt.m00);
 
-    // Normalize the centroid coordinates to [-1.0, 1.0].
+    // 重心座標を [-1.0, 1.0] に正規化する
     object_normalized_point_ = cv::Point2d(
       2.0 * mt_point.x / input_frame.cols - 1.0, 2.0 * mt_point.y / input_frame.rows - 1.0);
-    // Normalize the the contour area to [0.0, 1.0].
+    // 輪郭面積を [0.0, 1.0] に正規化する
     object_normalized_area_ = max_area / (input_frame.rows * input_frame.cols);
-    object_is_detected_ = true;
 
     std::string text = "Area:" + std::to_string(object_normalized_area_ * 100) + "%";
     cv::drawContours(
@@ -156,8 +168,9 @@ void Tracker::tracking(const cv::Mat & input_frame, cv::Mat & result_frame)
     cv::circle(result_frame, mt_point, 30, cv::Scalar(0, 0, 255), 2, cv::LINE_4);
     cv::putText(
       result_frame, text, cv::Point(0, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 0, 0), 2);
+    return true;
   } else {
-    object_is_detected_ = false;
+    return false;
   }
 }
 
@@ -165,8 +178,9 @@ CallbackReturn Tracker::on_configure(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_configure() is called.");
 
+  // ライフサイクルノードのconfigure時にパブリッシャ・サブスクライバ・タイマーを作成する
   cmd_vel_timer_ = create_wall_timer(50ms, std::bind(&Tracker::on_cmd_vel_timer, this));
-  // Don't actually start publishing data until activated
+  // activate状態に遷移するまでタイマーを停止しておく
   cmd_vel_timer_->cancel();
 
   result_image_pub_ = create_publisher<sensor_msgs::msg::Image>("result_image", 1);
@@ -182,14 +196,13 @@ CallbackReturn Tracker::on_activate(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
 
+  // モータ電源サービスのクライアントを作成し、モータをONにする
   motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
   if (!motor_power_client_->wait_for_service(5s)) {
-    RCLCPP_ERROR(this->get_logger(), "Service motor_power is not avaliable.");
+    RCLCPP_ERROR(this->get_logger(), "Service motor_power is not available.");
     return CallbackReturn::FAILURE;
   }
-  auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
-  request->data = true;
-  auto future_result = motor_power_client_->async_send_request(request);
+  set_motor_power(true);
 
   result_image_pub_->on_activate();
   cmd_vel_pub_->on_activate();
@@ -201,12 +214,12 @@ CallbackReturn Tracker::on_activate(const rclcpp_lifecycle::State &)
 CallbackReturn Tracker::on_deactivate(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
+
   result_image_pub_->on_deactivate();
   cmd_vel_pub_->on_deactivate();
   cmd_vel_timer_->cancel();
 
   object_is_detected_ = false;
-  cmd_vel_ = geometry_msgs::msg::TwistStamped();
 
   return CallbackReturn::SUCCESS;
 }

@@ -27,12 +27,13 @@ using namespace std::chrono_literals;
 namespace direction_controller
 {
 
+// 制御モードを表す列挙型
 enum CONTROL_MODE
 {
-  MODE_NONE = 0,
-  MODE_CALIBRATION = 1,
-  MODE_KEEP_ZERO_RADIAN = 2,
-  MODE_ROTATION = 3
+  MODE_NONE = 0,              // 待機中
+  MODE_CALIBRATION = 1,       // ジャイロキャリブレーション中
+  MODE_KEEP_ZERO_RADIAN = 2,  // 目標角度を保持する制御中
+  MODE_ROTATION = 3           // 往復回転制御中
 };
 
 Controller::Controller(const rclcpp::NodeOptions & options)
@@ -40,18 +41,24 @@ Controller::Controller(const rclcpp::NodeOptions & options)
 {
   using namespace std::placeholders;  // for _1, _2, _3...
 
+  // 速度指令を定周期で配信するタイマー（約60Hz）
   cmd_vel_timer_ = create_wall_timer(16ms, std::bind(&Controller::on_cmd_vel_timer, this));
 
+  // 速度・ブザー・進行方向角度のパブリッシャを作成
   cmd_vel_pub_ = create_publisher<geometry_msgs::msg::TwistStamped>("cmd_vel", 1);
   buzzer_pub_ = create_publisher<std_msgs::msg::Int16>("buzzer", 1);
   heading_angle_pub_ = create_publisher<std_msgs::msg::Float64>("heading_angle", 1);
+
+  // スイッチとIMUデータのサブスクライバを作成
   switches_sub_ = create_subscription<raspimouse_msgs::msg::Switches>(
     "switches", 1, std::bind(&Controller::callback_switches, this, _1));
   imu_data_raw_sub_ = create_subscription<sensor_msgs::msg::Imu>(
     "imu/data_raw", 1, std::bind(&Controller::callback_imu_data_raw, this, _1));
 
+  // モータ電源サービスのクライアントを作成
   motor_power_client_ = create_client<std_srvs::srv::SetBool>("motor_power");
 
+  // パラメータの値域を定義して宣言する
   rcl_interfaces::msg::FloatingPointRange range;
   rcl_interfaces::msg::ParameterDescriptor descriptor;
   range.from_value = -M_PI;
@@ -72,6 +79,7 @@ Controller::Controller(const rclcpp::NodeOptions & options)
   descriptor.floating_point_range[0] = range;
   this->declare_parameter("d_gain", 20.0, descriptor);
 
+  // PIDゲインを設定する
   omega_pid_controller_.set_gain(
     this->get_parameter("p_gain").as_double(), this->get_parameter("i_gain").as_double(),
     this->get_parameter("d_gain").as_double());
@@ -95,17 +103,19 @@ void Controller::on_cmd_vel_timer()
   } else if (switches_.switch2) {
     pressed_switch_number_ = 2;
   } else {
-    // All switched have released.
+    // すべてのスイッチが離された場合、離されたスイッチ番号を記録する
     if (pressed_switch_number_ != -1) {
       released_switch_number = pressed_switch_number_;
       pressed_switch_number_ = -1;
     }
   }
 
+  // パラメータからPIDゲインを毎回取得することで、ros2 param setによる動的変更に対応する
   omega_pid_controller_.set_gain(
     this->get_parameter("p_gain").as_double(), this->get_parameter("i_gain").as_double(),
     this->get_parameter("d_gain").as_double());
 
+  // スイッチが押されるか、転倒を検出した場合は制御を停止する
   if (released_switch_number != -1 || filtered_acc_.z > 0.0) {
     if (control_mode_ == MODE_KEEP_ZERO_RADIAN || control_mode_ == MODE_ROTATION) {
       control_mode_ = MODE_NONE;
@@ -114,6 +124,7 @@ void Controller::on_cmd_vel_timer()
     }
   }
 
+  // スイッチの操作に応じて制御モードを切り替える
   if (control_mode_ == MODE_NONE) {
     if (released_switch_number == 0) {
       RCLCPP_INFO(this->get_logger(), "SW0 pressed.");
@@ -147,11 +158,13 @@ void Controller::callback_imu_data_raw(const sensor_msgs::msg::Imu::SharedPtr ms
 {
   imu_data_raw_ = *msg;
 
+  // 角速度を積分してヘディング角（進行方向の角度）を更新し、パブリッシュする
   calculate_heading_angle(imu_data_raw_.angular_velocity.z, this->now().seconds());
   auto heading_angle_msg = std::make_unique<std_msgs::msg::Float64>();
   heading_angle_msg->data = heading_angle_;
   heading_angle_pub_->publish(std::move(heading_angle_msg));
 
+  // キャリブレーションモード中はジャイロのゼロ点バイアスを推定する
   if (control_mode_ == MODE_CALIBRATION) {
     if (omega_calibration(imu_data_raw_.angular_velocity.z)) {
       control_mode_ = MODE_NONE;
@@ -162,13 +175,14 @@ void Controller::callback_imu_data_raw(const sensor_msgs::msg::Imu::SharedPtr ms
     }
   }
 
+  // 加速度データをフィルタリングして転倒検出に使用する
   filter_acceleration(imu_data_raw_.linear_acceleration);
 }
 
 bool Controller::set_motor_power(const bool motor_on)
 {
   if (!motor_power_client_->wait_for_service(5s)) {
-    RCLCPP_ERROR(this->get_logger(), "Service motor_power is not avaliable.");
+    RCLCPP_ERROR(this->get_logger(), "Service motor_power is not available.");
     return false;
   }
   auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
@@ -184,6 +198,7 @@ bool Controller::omega_calibration(const double omega)
 
   omega_samples_.push_back(omega);
 
+  // 指定サンプル数分の角速度を平均してバイアスを推定する
   if (omega_samples_.size() >= SAMPLE_NUM) {
     omega_bias_ = std::accumulate(std::begin(omega_samples_), std::end(omega_samples_), 0.0) /
       omega_samples_.size();
@@ -199,6 +214,7 @@ void Controller::calculate_heading_angle(const double omega, const double curren
   const double ALPHA = 1.0;
 
   double diff_time = current_time - prev_heading_calculation_time_;
+  // バイアスを補正した角速度を積分してヘディング角を更新する
   double biased_omega = ALPHA * (omega - omega_bias_);
 
   heading_angle_ += biased_omega * diff_time;
@@ -209,7 +225,7 @@ void Controller::filter_acceleration(const geometry_msgs::msg::Vector3 acc)
 {
   const double ALPHA = 0.1;
 
-  // Simple low pass filter
+  // 一次ローパスフィルタで加速度を平滑化する
   filtered_acc_.x = ALPHA * acc.x + (1.0 - ALPHA) * prev_acc_.x;
   filtered_acc_.y = ALPHA * acc.y + (1.0 - ALPHA) * prev_acc_.y;
   filtered_acc_.z = ALPHA * acc.z + (1.0 - ALPHA) * prev_acc_.z;
@@ -220,6 +236,7 @@ void Controller::angle_control(const double target_angle)
 {
   const double SIGN = 1.0;
 
+  // PID制御で目標角度との誤差を補正する角速度を計算し、速度指令を送信する
   auto cmd_vel = std::make_unique<geometry_msgs::msg::TwistStamped>();
   cmd_vel->twist.angular.z = SIGN * omega_pid_controller_.update(heading_angle_, target_angle);
 
@@ -228,10 +245,11 @@ void Controller::angle_control(const double target_angle)
 
 void Controller::rotation(void)
 {
-  const double ADD_ANGLE = 2.0 * M_PI / 180.0;
+  const double ADD_ANGLE = 2.0 * M_PI / 180.0;  // 1ステップ当たりの目標角度変化量
   const double START_ANGLE = -M_PI * 0.5;
   const double END_ANGLE = M_PI * 0.5;
 
+  // 目標角度を往復させてロボットを左右に回転させる
   if (increase_target_angle_) {
     target_angle_ += ADD_ANGLE;
   } else {
@@ -251,6 +269,7 @@ void Controller::rotation(void)
 
 void Controller::beep_buzzer(const int freq, const std::chrono::nanoseconds & beep_time)
 {
+  // 指定した周波数でブザーを鳴らし、指定時間後に停止する
   auto msg = std::make_unique<std_msgs::msg::Int16>();
   msg->data = freq;
   buzzer_pub_->publish(std::move(msg));
