@@ -23,10 +23,16 @@ from launch_ros.descriptions import ComposableNode
 
 def generate_launch_description():
     declare_mouse = DeclareLaunchArgument(
-        'mouse', default_value='true', description='Launch raspimouse node'
+        'mouse',
+        default_value='true',
+        choices=['true', 'false'],
+        description='Launch raspimouse node',
     )
     declare_use_camera_node = DeclareLaunchArgument(
-        'use_camera_node', default_value='true', description='Use camera node.'
+        'use_camera_node',
+        default_value='true',
+        choices=['true', 'false'],
+        description='Use camera node.',
     )
     declare_video_device = DeclareLaunchArgument(
         'video_device', default_value='/dev/video0', description='Set video device.'

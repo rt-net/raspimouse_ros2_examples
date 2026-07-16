@@ -106,8 +106,6 @@ Launch nodes with the following command:
 # Controlled directly on Raspberry Pi Mouse
 ## Use F710
 ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=f710 mouse:=true
-## Use DUALSHOCK 3
-ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=dualshock3 mouse:=true
 
 # Control from remote computer
 ## on RaspberryPiMouse
@@ -124,7 +122,7 @@ To use Logicool Wireless Gamepad F710, set the input mode to  __D__ (DirectInput
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/joystick_control_keyconfig.png width=450 />
 
-Key assignments can be edited with key numbers in [./config/joy_f710.yml](./config/joy_f710.yml) or [./config/joy_dualshock3.yml](./config/joy_dualshock3.yml).
+Key assignments can be edited with key numbers in [./config/joy_f710.yml](./config/joy_f710.yml).
 
 ```yaml
 button_shutdown_1       : 8

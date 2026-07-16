@@ -34,11 +34,15 @@ def generate_launch_description():
     declare_joyconfig = DeclareLaunchArgument(
         'joyconfig',
         default_value='f710',
-        description='Keyconfig of joystick controllers: supported: f710, dualshock3',
+        choices=['f710'],
+        description='Keyconfig of joystick controller',
     )
 
     declare_mouse = DeclareLaunchArgument(
-        'mouse', default_value='true', description='Launch raspimouse node'
+        'mouse',
+        default_value='true',
+        choices=['true', 'false'],
+        description='Launch raspimouse node',
     )
 
     joy_param = [
