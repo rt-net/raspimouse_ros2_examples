@@ -106,8 +106,6 @@ Raspberry Pi Mouseを動作させるサンプル集です。
 # Controlled directly on Raspberry Pi Mouse
 ## Use F710
 ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=f710 mouse:=true
-## Use DUALSHOCK 3
-ros2 launch raspimouse_ros2_examples teleop_joy.launch.py joydev:="/dev/input/js0" joyconfig:=dualshock3 mouse:=true
 
 # Control from remote computer
 ## on RaspberryPiMouse
@@ -124,7 +122,7 @@ Logicool Wireless Gamepad F710を使う場合はモード切替スイッチを _
 
 <img src=https://rt-net.github.io/images/raspberry-pi-mouse/joystick_control_keyconfig.png width=450 />
 
-[./config/joy_f710.yml](./config/joy_f710.yml)、[./config/joy_dualshock3.yml](./config/joy_dualshock3.yml)のキー番号を編集することで、キー割り当てを変更できます。
+[./config/joy_f710.yml](./config/joy_f710.yml)のキー番号を編集することで、キー割り当てを変更できます。
 
 ```yaml
 button_shutdown_1       : 8

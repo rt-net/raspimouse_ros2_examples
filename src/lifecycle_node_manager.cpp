@@ -32,6 +32,7 @@ using MsgTransition = lifecycle_msgs::msg::Transition;
 using SrvGetState = lifecycle_msgs::srv::GetState;
 using SrvChangeState = lifecycle_msgs::srv::ChangeState;
 
+// 指定したライフサイクルノードの現在の状態IDを取得して返す
 std::uint8_t state_of(
   std::string target_node_name, rclcpp::Node::SharedPtr node, std::chrono::seconds time_out = 10s)
 {
@@ -40,7 +41,7 @@ std::uint8_t state_of(
   auto client = node->create_client<SrvGetState>(service_name);
 
   if (!client->wait_for_service(time_out)) {
-    RCLCPP_ERROR(node->get_logger(), "Service %s is not avaliable.", service_name.c_str());
+    RCLCPP_ERROR(node->get_logger(), "Service %s is not available.", service_name.c_str());
     return MsgState::PRIMARY_STATE_UNKNOWN;
   }
 
@@ -56,6 +57,7 @@ std::uint8_t state_of(
   return future_result.get()->current_state.id;
 }
 
+// 対象ノードがすべてunconfigured状態かどうかを確認する
 bool all_nodes_are_unconfigured(
   rclcpp::Node::SharedPtr node, const std::vector<std::string> & target_node_names)
 {
@@ -64,6 +66,7 @@ bool all_nodes_are_unconfigured(
   });
 }
 
+// 対象ノードがすべてinactive状態かどうかを確認する
 bool all_nodes_are_inactive(
   rclcpp::Node::SharedPtr node, const std::vector<std::string> & target_node_names)
 {
@@ -72,6 +75,7 @@ bool all_nodes_are_inactive(
   });
 }
 
+// 対象ノードがすべてactive状態かどうかを確認する
 bool all_nodes_are_active(
   rclcpp::Node::SharedPtr node, const std::vector<std::string> & target_node_names)
 {
@@ -80,6 +84,7 @@ bool all_nodes_are_active(
   });
 }
 
+// 指定したライフサイクルノードに状態遷移を要求する
 bool change_state(
   std::string target_node_name, rclcpp::Node::SharedPtr node, std::uint8_t transition,
   std::chrono::seconds time_out = 10s)
@@ -91,7 +96,7 @@ bool change_state(
   auto client = node->create_client<SrvChangeState>(service_name);
 
   if (!client->wait_for_service(time_out)) {
-    RCLCPP_ERROR(node->get_logger(), "Service %s is not avaliable.", service_name.c_str());
+    RCLCPP_ERROR(node->get_logger(), "Service %s is not available.", service_name.c_str());
     return false;
   }
 
@@ -108,6 +113,7 @@ bool change_state(
   return future_result.get()->success;
 }
 
+// 対象ノードをすべてconfigure状態に遷移させる
 bool configure_all_nodes(
   rclcpp::Node::SharedPtr node, const std::vector<std::string> & target_node_names)
 {
@@ -116,6 +122,7 @@ bool configure_all_nodes(
   });
 }
 
+// 対象ノードをすべてactive状態に遷移させる
 bool activate_all_nodes(
   rclcpp::Node::SharedPtr node, const std::vector<std::string> & target_node_names)
 {
@@ -126,48 +133,55 @@ bool activate_all_nodes(
 
 int main(int argc, char * argv[])
 {
-  // Force flush of the stdout buffer.
   setvbuf(stdout, NULL, _IONBF, BUFSIZ);
 
   rclcpp::init(argc, argv);
 
   auto node = rclcpp::Node::make_shared("lifecycle_node_manager");
 
+  // パラメータで管理対象のライフサイクルノード名リストを受け取る
   node->declare_parameter("components", std::vector<std::string>());
   auto components = node->get_parameter("components").get_value<std::vector<std::string>>();
 
   if (components.size() == 0) {
     RCLCPP_ERROR(node->get_logger(), "param 'components' has no value.");
     rclcpp::shutdown();
+    return 1;
   }
 
+  // 全ノードが起動済み（unconfigured状態）であることを確認する
   if (!all_nodes_are_unconfigured(node, components)) {
     RCLCPP_ERROR(node->get_logger(), "Failed to launch nodes.");
     rclcpp::shutdown();
+    return 1;
   } else {
     RCLCPP_INFO(node->get_logger(), "Launched all nodes.");
   }
 
+  // 全ノードをconfigure状態に遷移させる
   if (!configure_all_nodes(node, components)) {
     RCLCPP_ERROR(node->get_logger(), "Failed to configure nodes.");
     rclcpp::shutdown();
+    return 1;
   } else {
     RCLCPP_INFO(node->get_logger(), "Configured all nodes.");
   }
 
+  // 全ノードをactive状態に遷移させる
   if (!activate_all_nodes(node, components)) {
     RCLCPP_ERROR(node->get_logger(), "Failed to activate nodes.");
     rclcpp::shutdown();
+    return 1;
   } else {
     RCLCPP_INFO(node->get_logger(), "Activated all nodes.");
   }
 
+  // 全ノードがactive状態を維持しているか定期的に確認する
   while (rclcpp::ok()) {
     rclcpp::sleep_for(10s);
     if (all_nodes_are_active(node, components)) {
       RCLCPP_INFO(node->get_logger(), "All nodes are active.");
     } else {
-      // all node shutdown
       RCLCPP_ERROR(node->get_logger(), "Any node is not active.");
     }
   }

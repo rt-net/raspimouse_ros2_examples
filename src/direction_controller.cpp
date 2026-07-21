@@ -15,13 +15,12 @@
 #include <memory>
 #include "rclcpp/rclcpp.hpp"
 
-#include "raspimouse/raspimouse_component.hpp"
 #include "raspimouse_ros2_examples/direction_controller_component.hpp"
-#include "rt_usb_9axisimu_driver/rt_usb_9axisimu_driver_component.hpp"
 
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
+  // 方向制御コントローラを単一スレッドで実行する
   rclcpp::executors::SingleThreadedExecutor exec;
   rclcpp::NodeOptions options;
   auto direction_controller = std::make_shared<direction_controller::Controller>(options);
