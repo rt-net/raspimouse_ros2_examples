@@ -136,9 +136,7 @@ class JoyWrapper(Node):
         self._pub_buzzer = self.create_publisher(Int16, 'buzzer', 1)
         self._pub_leds = self.create_publisher(Leds, 'leds', 1)
 
-        # サブスクライバコールバック内でspin_until_future_completeによる
-        # サービス呼び出しを行うため、サービスクライアントを別のコールバック
-        # グループに割り当て、応答を受信できるようにする
+        # CallBack Groupの設定
         self._sub_cb_group = MutuallyExclusiveCallbackGroup()
         self._client_cb_group = MutuallyExclusiveCallbackGroup()
 
