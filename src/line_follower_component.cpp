@@ -117,7 +117,7 @@ void Follower::set_motor_power(const bool motor_on)
 {
   auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
   request->data = motor_on;
-  auto future_result = motor_power_client_->async_send_request(request);
+  motor_power_client_->async_send_request(request);
 }
 
 void Follower::publish_cmdvel_for_line_following(void)

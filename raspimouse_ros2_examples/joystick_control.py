@@ -136,8 +136,9 @@ class JoyWrapper(Node):
         self._pub_buzzer = self.create_publisher(Int16, 'buzzer', 1)
         self._pub_leds = self.create_publisher(Leds, 'leds', 1)
 
-        # コールバックグループを分けることでサービス呼び出しとサブスクライバが
-        # 互いをブロックしないようにする
+        # サブスクライバコールバック内でspin_until_future_completeによる
+        # サービス呼び出しを行うため、サービスクライアントを別のコールバック
+        # グループに割り当て、応答を受信できるようにする
         self._sub_cb_group = MutuallyExclusiveCallbackGroup()
         self._client_cb_group = MutuallyExclusiveCallbackGroup()
 
@@ -282,7 +283,7 @@ class JoyWrapper(Node):
                 self._cmdvel_has_value = False
 
     def _joy_dpad(self, joy_msg, target_pad, positive_on):
-        # F710コントローラの十字キーはアナログ軸、DualShock3はデジタルボタンで入力される
+        # F710コントローラの十字キーはアナログ軸で入力される
         if self._ANALOG_D_PAD:
             if positive_on:
                 return joy_msg.axes[target_pad] > 0
