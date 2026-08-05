@@ -161,10 +161,12 @@ The ball tracking is performed with a USB webcam and the OpenCV library.
 - Software
   - OpenCV
   - v4l-utils
+  - v4l2_camera
 
 #### Usage
 
 Disable the automatic camera adjustment parameters (autofocus, auto white balance, etc.) with the following command:
+These settings are applied directly to the camera through `v4l2-ctl`, so run the script before starting the camera node.
 
 ```sh
 cd ~/ros2_ws/src/raspimouse_ros2_examples/config

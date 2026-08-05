@@ -161,10 +161,12 @@ USB接続のWebカメラとOpenCVを使ってボール追跡をします。
 - Software
   - OpenCV
   - v4l-utils
+  - v4l2_camera
 
 #### Usage
 
 次のスクリプトを実行して、カメラの自動調節機能（自動露光、オートホワイトバランス等）を切ります。
+この設定は`v4l2-ctl`を通してカメラに直接適用されるため、カメラノードを起動する前に実行して下さい。
 
 ```sh
 cd ~/ros2_ws/src/raspimouse_ros2_examples/config
