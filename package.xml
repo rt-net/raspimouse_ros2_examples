@@ -15,6 +15,7 @@
   <author email="kurasawa@rt-net.jp">Kazushi Kurasawa</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
 
   <depend>geometry_msgs</depend>
   <depend>joy_linux</depend>
@@ -22,6 +23,7 @@
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
   <depend>rclcpp_lifecycle</depend>
+  <depend>lifecycle_msgs</depend>
   <depend>raspimouse</depend>
   <depend>raspimouse_msgs</depend>
   <depend>rt_usb_9axisimu_driver</depend>
