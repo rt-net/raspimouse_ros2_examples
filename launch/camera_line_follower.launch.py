@@ -66,6 +66,7 @@ def generate_launch_description():
                 remappings=[('image_raw', 'camera/color/image_raw')],
                 parameters=[
                     {'video_device': LaunchConfiguration('video_device')},
+                    {'camera_frame_id': 'camera_color_optical_frame'},
                     {'pixel_format': 'YUYV'},
                     {'output_encoding': 'rgb8'},
                     {'image_size': [320, 240]},
