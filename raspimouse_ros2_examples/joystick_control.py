@@ -36,6 +36,7 @@ from std_srvs.srv import SetBool
 
 
 class JoyWrapper(Node):
+
     def __init__(self):
         super().__init__('joystick_control')
 
