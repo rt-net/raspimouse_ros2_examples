@@ -162,7 +162,6 @@ USB接続のWebカメラとOpenCVを使ってボール追跡をします。
 - Software
   - OpenCV
   - v4l-utils
-  - v4l2_camera
 
 #### Usage
 

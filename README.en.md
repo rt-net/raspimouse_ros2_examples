@@ -162,7 +162,6 @@ The ball tracking is performed with a USB webcam and the OpenCV library.
 - Software
   - OpenCV
   - v4l-utils
-  - v4l2_camera
 
 #### Usage
 
