@@ -14,6 +14,7 @@ on:
 
 env:
   UPSTREAM_WORKSPACE: .github/workflows/.ci.rosinstall
+  ROSDEP_SKIP_KEYS: usb_cam
 
 jobs:
   industrial_ci:
