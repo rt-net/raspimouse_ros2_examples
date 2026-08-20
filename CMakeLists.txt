@@ -6,7 +6,7 @@ if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 99)
 endif()
 
-# ROS 2 Lyrical では C++20 が標準
+# Default to C++20
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 20)
 endif()
@@ -17,7 +17,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -34,9 +33,7 @@ find_package(raspimouse REQUIRED)
 find_package(rt_usb_9axisimu_driver REQUIRED)
 find_package(cv_bridge REQUIRED)
 
-# --- ターゲット定義 ---
 
-# 1. object_tracking_component
 add_library(object_tracking_component SHARED
   src/object_tracking_component.cpp)
 target_compile_definitions(object_tracking_component
@@ -56,7 +53,6 @@ target_link_libraries(object_tracking_component PUBLIC
   ${OpenCV_LIBS})
 rclcpp_components_register_nodes(object_tracking_component "object_tracking::Tracker")
 
-# 2. camera_line_follower_component
 add_library(camera_line_follower_component SHARED
   src/camera_line_follower_component.cpp)
 target_compile_definitions(camera_line_follower_component
@@ -77,7 +73,6 @@ target_link_libraries(camera_line_follower_component PUBLIC
   ${OpenCV_LIBS})
 rclcpp_components_register_nodes(camera_line_follower_component "camera_line_follower::CameraFollower")
 
-# 3. line_follower_component
 add_library(line_follower_component SHARED
   src/line_follower_component.cpp)
 target_compile_definitions(line_follower_component
@@ -95,7 +90,6 @@ target_link_libraries(line_follower_component PUBLIC
   raspimouse_msgs::raspimouse_msgs__rosidl_typesupport_cpp)
 rclcpp_components_register_nodes(line_follower_component "line_follower::Follower")
 
-# 4. direction_controller_component
 add_library(direction_controller_component SHARED
   src/direction_controller_component.cpp)
 target_compile_definitions(direction_controller_component
@@ -139,8 +133,6 @@ target_link_libraries(direction_controller PUBLIC
   direction_controller_component
   rclcpp::rclcpp)
 
-# --- エクスポートとインストール設定 ---
-
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 
 ament_export_dependencies(rclcpp)
@@ -182,13 +174,11 @@ install(TARGETS
   direction_controller
   DESTINATION lib/${PROJECT_NAME})
 
-# python scripts
 ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
     ${PROJECT_NAME}/joystick_control.py
     DESTINATION lib/${PROJECT_NAME})
 
-# launch files
 install(DIRECTORY
   launch
   config
