@@ -39,7 +39,7 @@ For running in Gazebo (simulator), see the [rt-net/raspimouse_sim](https://githu
     - Ubuntu server 26.04
   - Device Driver
     - [rt-net/RaspberryPiMouse](https://github.com/rt-net/RaspberryPiMouse)
-  - ROS 2s
+  - ROS 2
     - [Lyrical Luth](https://docs.ros.org/en/lyrical/index.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2

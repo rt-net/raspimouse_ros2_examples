@@ -102,7 +102,6 @@ target_link_libraries(direction_controller_component PUBLIC
   raspimouse_msgs::raspimouse_msgs__rosidl_typesupport_cpp)
 rclcpp_components_register_nodes(direction_controller_component "direction_controller::Controller")
 
-# Executables
 add_executable(lifecycle_node_manager src/lifecycle_node_manager.cpp)
 target_include_directories(lifecycle_node_manager PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
