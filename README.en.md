@@ -29,22 +29,23 @@ For running in Gazebo (simulator), see the [rt-net/raspimouse_sim](https://githu
 
 - [Humble Hawksbill](https://github.com/rt-net/raspimouse_ros2_examples/tree/humble)
 - [Jazzy Jalisco](https://github.com/rt-net/raspimouse_ros2_examples/tree/jazzy)
+- [Lyrical Luth](https://github.com/rt-net/raspimouse_ros2_examples/tree/lyrical)
 
 ## Requirements
 
 - Raspberry Pi Mouse
   - https://rt-net.jp/products/raspberrypimousev3/
   - Linux OS
-    - Ubuntu server 24.04
+    - Ubuntu server 26.04
   - Device Driver
     - [rt-net/RaspberryPiMouse](https://github.com/rt-net/RaspberryPiMouse)
   - ROS 2
-    - [Jazzy Jalisco](https://docs.ros.org/en/jazzy/index.html)
+    - [Lyrical Luth](https://docs.ros.org/en/lyrical/index.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 - Remote Computer (Optional)
   - ROS 2
-    - [Jazzy Jalisco](https://docs.ros.org/en/jazzy/index.html)
+    - [Lyrical Luth](https://docs.ros.org/en/lyrical/index.html)
   - Raspberry Pi Mouse ROS 2 package
     - https://github.com/rt-net/raspimouse2
 

@@ -14,13 +14,14 @@ on:
 
 env:
   UPSTREAM_WORKSPACE: .github/workflows/.ci.rosinstall
+  ROSDEP_SKIP_KEYS: usb_cam
 
 jobs:
   industrial_ci:
     strategy:
       fail-fast: false
       matrix:
-        ROS_DISTRO: [jazzy]
+        ROS_DISTRO: [lyrical]
         ROS_REPO: [main]
 
     runs-on: ubuntu-latest

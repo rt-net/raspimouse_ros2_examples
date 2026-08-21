@@ -15,6 +15,7 @@
   <author email="kurasawa@rt-net.jp">Kazushi Kurasawa</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
 
   <depend>geometry_msgs</depend>
   <depend>joy_linux</depend>
@@ -22,6 +23,7 @@
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
   <depend>rclcpp_lifecycle</depend>
+  <depend>lifecycle_msgs</depend>
   <depend>raspimouse</depend>
   <depend>raspimouse_msgs</depend>
   <depend>rt_usb_9axisimu_driver</depend>
@@ -29,12 +31,9 @@
   <depend>std_msgs</depend>
   <depend>std_srvs</depend>
   <depend>v4l-utils</depend>
-  <depend>hls_lfcd_lds_driver</depend>
-  <depend>nav2_map_server</depend>
-  <depend>slam_toolbox</depend>
   <depend>cv_bridge</depend>
   <depend>usb_cam</depend>
-
+  
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
