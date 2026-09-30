@@ -2,6 +2,14 @@
 Changelog for package raspimouse_ros2_examples
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+4.0.0 (2026-09-28)
+------------------
+* ROS 2 Lyrical対応 (`#68 <https://github.com/rt-net/raspimouse_ros2_examples/issues/68>`_)
+* リファクタリングの実施 (`#67 <https://github.com/rt-net/raspimouse_ros2_examples/issues/67>`_)
+* launchファイルのリファクタリング (`#65 <https://github.com/rt-net/raspimouse_ros2_examples/issues/65>`_)
+* README更新 (`#64 <https://github.com/rt-net/raspimouse_ros2_examples/issues/64>`_)
+* Contributors: Kazushi Kurasawa, YusukeKato, motty
+
 3.0.0 (2024-11-25)
 -----------
 * Support ROS 2 Jazzy (`#62 <https://github.com/rt-net/raspimouse_ros2_examples/issues/62>`_)
