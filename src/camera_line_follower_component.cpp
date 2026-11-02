@@ -15,7 +15,6 @@
 #include "raspimouse_ros2_examples/camera_line_follower_component.hpp"
 
 #include <chrono>
-#include <iostream>
 #include <memory>
 #include <string>
 #include <utility>
