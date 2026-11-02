@@ -24,7 +24,6 @@
 #include <rclcpp_lifecycle/lifecycle_node.hpp>
 #include <rclcpp_lifecycle/lifecycle_publisher.hpp>
 #include <sensor_msgs/msg/image.hpp>
-#include <std_msgs/msg/string.hpp>
 #include <std_srvs/srv/set_bool.hpp>
 
 #include "raspimouse_ros2_examples/visibility_control.hpp"
