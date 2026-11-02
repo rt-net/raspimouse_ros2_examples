@@ -14,8 +14,8 @@
 
 #include <memory>
 
-#include "raspimouse/raspimouse_component.hpp"
-#include "rclcpp/rclcpp.hpp"
+#include <raspimouse/raspimouse_component.hpp>
+#include <rclcpp/rclcpp.hpp>
 
 #include "raspimouse_ros2_examples/line_follower_component.hpp"
 

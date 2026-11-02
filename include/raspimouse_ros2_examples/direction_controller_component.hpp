@@ -19,15 +19,15 @@
 #include <string>
 #include <vector>
 
-#include "geometry_msgs/msg/twist_stamped.hpp"
-#include "geometry_msgs/msg/vector3.hpp"
-#include "raspimouse_msgs/msg/switches.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/imu.hpp"
-#include "std_msgs/msg/float64.hpp"
-#include "std_msgs/msg/int16.hpp"
-#include "std_msgs/msg/string.hpp"
-#include "std_srvs/srv/set_bool.hpp"
+#include <geometry_msgs/msg/twist_stamped.hpp>
+#include <geometry_msgs/msg/vector3.hpp>
+#include <raspimouse_msgs/msg/switches.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/imu.hpp>
+#include <std_msgs/msg/float64.hpp>
+#include <std_msgs/msg/int16.hpp>
+#include <std_msgs/msg/string.hpp>
+#include <std_srvs/srv/set_bool.hpp>
 
 #include "raspimouse_ros2_examples/visibility_control.hpp"
 
@@ -38,12 +38,7 @@ class PIDController
 {
 public:
   PIDController()
-  : p_gain_(0.0),
-    i_gain_(0.0),
-    d_gain_(0.0),
-    error1_(0.0),
-    error2_(0.0),
-    output_(0.0)
+  : p_gain_(0.0), i_gain_(0.0), d_gain_(0.0), error1_(0.0), error2_(0.0), output_(0.0)
   {
   }
 

@@ -21,11 +21,11 @@
 #include <utility>
 #include <vector>
 
+#include <cv_bridge/cv_bridge.hpp>
+#include <lifecycle_msgs/srv/change_state.hpp>
 #include <opencv2/opencv.hpp>
-#include "cv_bridge/cv_bridge.hpp"
-#include "lifecycle_msgs/srv/change_state.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/string.hpp>
 
 using namespace std::chrono_literals;
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
@@ -257,6 +257,6 @@ CallbackReturn Tracker::on_shutdown(const rclcpp_lifecycle::State &)
 
 }  // namespace object_tracking
 
-#include "rclcpp_components/register_node_macro.hpp"
+#include <rclcpp_components/register_node_macro.hpp>
 
 RCLCPP_COMPONENTS_REGISTER_NODE(object_tracking::Tracker)

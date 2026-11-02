@@ -20,7 +20,7 @@
 #include <numeric>
 #include <utility>
 
-#include "rclcpp/rclcpp.hpp"
+#include <rclcpp/rclcpp.hpp>
 
 using namespace std::chrono_literals;
 
@@ -303,6 +303,6 @@ void Controller::beep_failure(void)
 
 }  // namespace direction_controller
 
-#include "rclcpp_components/register_node_macro.hpp"
+#include <rclcpp_components/register_node_macro.hpp>
 
 RCLCPP_COMPONENTS_REGISTER_NODE(direction_controller::Controller)
