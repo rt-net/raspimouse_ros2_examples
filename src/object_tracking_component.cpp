@@ -19,7 +19,6 @@
 #include <vector>
 
 #include <cv_bridge/cv_bridge.hpp>
-#include <opencv2/opencv.hpp>
 
 using namespace std::chrono_literals;
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
