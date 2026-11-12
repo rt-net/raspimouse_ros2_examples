@@ -33,8 +33,7 @@
   <depend>v4l-utils</depend>
   <depend>cv_bridge</depend>
   <depend>usb_cam</depend>
-  
-  <test_depend>ament_lint_auto</test_depend>
+
   <test_depend>ament_lint_common</test_depend>
 
   <export>
