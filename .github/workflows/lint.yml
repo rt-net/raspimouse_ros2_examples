@@ -1,0 +1,32 @@
+name: lint
+
+on:
+  push:
+    paths-ignore:
+    - 'docs/**'
+    - '**.md'
+  pull_request:
+    paths-ignore:
+    - 'docs/**'
+    - '**.md'
+
+env:
+  ROS_DISTRO: lyrical
+  ROSDEP_SKIP_KEYS: usb_cam raspimouse raspimouse_msgs rt_usb_9axisimu_driver
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container: ros:lyrical@sha256:3224ee150cb02eb89a5e0811bc267b57ed3a91b9c10191df57810726a7e916d7
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Install lint tools
+        run: |
+          apt-get update
+          rosdep update
+          rosdep install -y --from-paths . --skip-keys "${ROSDEP_SKIP_KEYS}"
+      - name: Run lint.sh
+        shell: bash
+        run: |
+          source "/opt/ros/${ROS_DISTRO}/setup.bash"
+          ./lint.sh

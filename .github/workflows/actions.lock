@@ -6,6 +6,8 @@ workflows:
     '.github/workflows/industrial_ci.yml':
         - 'actions/checkout@v7.0.1'
         - 'ros-industrial/industrial_ci@master'
+    '.github/workflows/lint.yml':
+        - 'actions/checkout@v7.0.1'
 dependencies:
     'actions/checkout@v7.0.1':
         ref: 'v7.0.1'
