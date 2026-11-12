@@ -28,4 +28,5 @@ jobs:
       - name: Run lint.sh
         shell: bash
         run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
           ./lint.sh
