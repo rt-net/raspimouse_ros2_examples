@@ -25,8 +25,8 @@ extern "C"
 
 #if defined _WIN32 || defined __CYGWIN__
   #ifdef __GNUC__
-    #define RASPIMOUSE_ROS2_EXAMPLES_EXPORT __attribute__ ((dllexport))
-    #define RASPIMOUSE_ROS2_EXAMPLES_IMPORT __attribute__ ((dllimport))
+    #define RASPIMOUSE_ROS2_EXAMPLES_EXPORT __attribute__((dllexport))
+    #define RASPIMOUSE_ROS2_EXAMPLES_IMPORT __attribute__((dllimport))
   #else
     #define RASPIMOUSE_ROS2_EXAMPLES_EXPORT __declspec(dllexport)
     #define RASPIMOUSE_ROS2_EXAMPLES_IMPORT __declspec(dllimport)
@@ -39,11 +39,11 @@ extern "C"
   #define RASPIMOUSE_ROS2_EXAMPLES_PUBLIC_TYPE RASPIMOUSE_ROS2_EXAMPLES_PUBLIC
   #define RASPIMOUSE_ROS2_EXAMPLES_LOCAL
 #else
-  #define RASPIMOUSE_ROS2_EXAMPLES_EXPORT __attribute__ ((visibility("default")))
+  #define RASPIMOUSE_ROS2_EXAMPLES_EXPORT __attribute__((visibility("default")))
   #define RASPIMOUSE_ROS2_EXAMPLES_IMPORT
   #if __GNUC__ >= 4
-    #define RASPIMOUSE_ROS2_EXAMPLES_PUBLIC __attribute__ ((visibility("default")))
-    #define RASPIMOUSE_ROS2_EXAMPLES_LOCAL  __attribute__ ((visibility("hidden")))
+    #define RASPIMOUSE_ROS2_EXAMPLES_PUBLIC __attribute__((visibility("default")))
+    #define RASPIMOUSE_ROS2_EXAMPLES_LOCAL __attribute__((visibility("hidden")))
   #else
     #define RASPIMOUSE_ROS2_EXAMPLES_PUBLIC
     #define RASPIMOUSE_ROS2_EXAMPLES_LOCAL
