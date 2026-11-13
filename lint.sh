@@ -26,6 +26,16 @@ for linter in "${LINTERS[@]}"; do
   fi
 done
 
+echo "=== ruff check ==="
+if ! ruff check .; then
+  failed+=("ruff check")
+fi
+
+echo "=== ruff format ==="
+if ! ruff format --check .; then
+  failed+=("ruff format")
+fi
+
 echo
 if [ "${#failed[@]}" -ne 0 ]; then
   echo "Failed: ${failed[*]}"
