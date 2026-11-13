@@ -1,0 +1,20 @@
+[tool.ruff]
+target-version = "py312"
+line-length = 99
+indent-width = 4
+
+src = []
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+
+[tool.ruff.lint]
+select = ["E", "F", "I001", "W", "D"]
+ignore = ["D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107", "D203", "D212", "D404"]
+
+[tool.ruff.lint.isort]
+force-single-line = true
+force-sort-within-sections = true
+order-by-type = false
+detect-same-package = false

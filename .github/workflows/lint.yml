@@ -27,6 +27,11 @@ jobs:
           apt-get update
           rosdep update
           rosdep install -y --from-paths . --skip-keys "${ROSDEP_SKIP_KEYS}"
+      - name: Install ruff
+        run: |
+          ./install_lint_tools.sh
+          # pipx でインストールした ruff を以降のステップで使えるようにする
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: Run lint.sh
         shell: bash
         run: |
