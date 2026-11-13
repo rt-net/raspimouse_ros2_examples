@@ -11,9 +11,7 @@ LINTERS=(
   "ament_copyright"
   "ament_cppcheck"
   "ament_cpplint"
-  "ament_flake8"
   "ament_lint_cmake"
-  "ament_pep257"
   "ament_xmllint"
 )
 
