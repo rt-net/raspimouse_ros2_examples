@@ -26,7 +26,6 @@ from lifecycle_msgs.srv import GetState
 from raspimouse_msgs.msg import Leds
 from raspimouse_msgs.msg import LightSensors
 from raspimouse_msgs.msg import Switches
-
 import rclpy
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from rclpy.node import Node
@@ -36,7 +35,6 @@ from std_srvs.srv import SetBool
 
 
 class JoyWrapper(Node):
-
     def __init__(self):
         super().__init__('joystick_control')
 
@@ -97,26 +95,24 @@ class JoyWrapper(Node):
         self._BUTTON_BUZZER6 = self.get_parameter('button_buzzer6').value
         self._BUTTON_BUZZER7 = self.get_parameter('button_buzzer7').value
 
-        self._BUTTON_SENSOR_SOUND_EN = self.get_parameter(
-            'button_sensor_sound_en'
-        ).value
+        self._BUTTON_SENSOR_SOUND_EN = self.get_parameter('button_sensor_sound_en').value
         self._BUTTON_CONFIG_ENABLE = self.get_parameter('button_config_enable').value
 
         # 速度指令の上限値とデフォルト値
-        self._MAX_VEL_LINEAR_X = 2.0          # m/s
+        self._MAX_VEL_LINEAR_X = 2.0  # m/s
         self._MAX_VEL_ANGULAR_Z = 2.0 * math.pi  # rad/s
-        self._DEFAULT_VEL_LINEAR_X = 0.5      # m/s
+        self._DEFAULT_VEL_LINEAR_X = 0.5  # m/s
         self._DEFAULT_VEL_ANGULAR_Z = 1.0 * math.pi  # rad/s
 
         # 速度設定の変化量
-        self._ADD_VEL_LINEAR_X = 0.1          # m/s
+        self._ADD_VEL_LINEAR_X = 0.1  # m/s
         self._ADD_VEL_ANGULAR_Z = 0.1 * math.pi  # rad/s
 
         # 速度設定変更時のブザー周波数 [Hz]
         self._BUZZER_FREQ_ADD = 880
         self._BUZZER_FREQ_SUB = 440
         self._BUZZER_FREQ_RESET = 660
-        self._BUZZER_BEEP_TIME = 0.2          # sec
+        self._BUZZER_BEEP_TIME = 0.2  # sec
 
         # ドレミファソラシド（C5〜C6）に相当するブザー周波数 [Hz]
         self._BUZZER_SCALES = [523, 587, 659, 699, 784, 880, 987, 1046]
@@ -146,17 +142,13 @@ class JoyWrapper(Node):
             GetState, 'raspimouse/get_state', callback_group=self._client_cb_group
         )
         while not self._client_get_state.wait_for_service(timeout_sec=1.0):
-            self._node_logger.warn(
-                self._client_get_state.srv_name + ' service not available'
-            )
+            self._node_logger.warn(self._client_get_state.srv_name + ' service not available')
 
         self._client_change_state = self.create_client(
             ChangeState, 'raspimouse/change_state', callback_group=self._client_cb_group
         )
         while not self._client_change_state.wait_for_service(timeout_sec=1.0):
-            self._node_logger.warn(
-                self._client_change_state.srv_name + ' service not available'
-            )
+            self._node_logger.warn(self._client_change_state.srv_name + ' service not available')
         # RaspiMouseをconfigure → activateして走行可能にする
         self._activate_raspimouse()
 
@@ -165,9 +157,7 @@ class JoyWrapper(Node):
             SetBool, 'motor_power', callback_group=self._client_cb_group
         )
         while not self._client_motor_power.wait_for_service(timeout_sec=1.0):
-            self._node_logger.warn(
-                self._client_motor_power.srv_name + ' service not available'
-            )
+            self._node_logger.warn(self._client_motor_power.srv_name + ' service not available')
         self._motor_on()
 
         # ジョイスティック・光センサ・スイッチのサブスクライバを作成
@@ -238,10 +228,7 @@ class JoyWrapper(Node):
 
     def _joy_shutdown(self, joy_msg):
         # 2つのボタンを同時押しでノードを終了する
-        if (
-            joy_msg.buttons[self._BUTTON_SHUTDOWN_1]
-            and joy_msg.buttons[self._BUTTON_SHUTDOWN_2]
-        ):
+        if joy_msg.buttons[self._BUTTON_SHUTDOWN_1] and joy_msg.buttons[self._BUTTON_SHUTDOWN_2]:
             self._pub_leds.publish(Leds())
             self._motor_off()
             self._set_mouse_lifecycle_state(Transition.TRANSITION_DEACTIVATE)
@@ -261,12 +248,8 @@ class JoyWrapper(Node):
         # cmd_vel.twist.linear.x が前後速度 [m/s]、angular.z が旋回速度 [rad/s]
         cmdvel = TwistStamped()
         if joy_msg.buttons[self._BUTTON_CMD_ENABLE]:
-            cmdvel.twist.linear.x = (
-                self._vel_linear_x * joy_msg.axes[self._AXIS_CMD_LINEAR_X]
-            )
-            cmdvel.twist.angular.z = (
-                self._vel_angular_z * joy_msg.axes[self._AXIS_CMD_ANGULAR_Z]
-            )
+            cmdvel.twist.linear.x = self._vel_linear_x * joy_msg.axes[self._AXIS_CMD_LINEAR_X]
+            cmdvel.twist.angular.z = self._vel_angular_z * joy_msg.axes[self._AXIS_CMD_ANGULAR_Z]
             self._node_logger.info(
                 'linear_x:'
                 + str(cmdvel.twist.linear.x)
@@ -430,10 +413,7 @@ class JoyWrapper(Node):
 
             self._switch_has_been_pressed = any_switch_pressed
             self._node_logger.info(
-                'linear_x:'
-                + str(self._vel_linear_x)
-                + ', angular_z:'
-                + str(self._vel_angular_z)
+                'linear_x:' + str(self._vel_linear_x) + ', angular_z:' + str(self._vel_angular_z)
             )
 
     def _config_velocity(self, current, add, lowerlimit, upperlimit):
@@ -473,9 +453,7 @@ def main(args=None):
     try:
         rclpy.spin(joy_wrapper)
     except SystemExit:
-        rclpy.logging.get_logger('joystick_control').info(
-            '_joy_shutdown() has been executed'
-        )
+        rclpy.logging.get_logger('joystick_control').info('_joy_shutdown() has been executed')
 
     joy_wrapper.destroy_node()
 
