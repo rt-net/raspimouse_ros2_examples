@@ -14,7 +14,6 @@ LINTERS=(
   "ament_flake8"
   "ament_lint_cmake"
   "ament_pep257"
-  "ament_uncrustify"
   "ament_xmllint"
 )
 
@@ -25,6 +24,12 @@ for linter in "${LINTERS[@]}"; do
     failed+=("${linter}")
   fi
 done
+
+echo "=== clang-format ==="
+mapfile -t cpp_files < <(git ls-files '*.c' '*.h' '*.cpp' '*.hpp')
+if ! clang-format --dry-run --Werror "${cpp_files[@]}"; then
+  failed+=("clang-format")
+fi
 
 echo "=== ruff check ==="
 if ! ruff check .; then
