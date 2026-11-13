@@ -11,10 +11,7 @@ LINTERS=(
   "ament_copyright"
   "ament_cppcheck"
   "ament_cpplint"
-  "ament_flake8"
   "ament_lint_cmake"
-  "ament_pep257"
-  "ament_uncrustify"
   "ament_xmllint"
 )
 
@@ -25,6 +22,22 @@ for linter in "${LINTERS[@]}"; do
     failed+=("${linter}")
   fi
 done
+
+echo "=== clang-format ==="
+mapfile -t cpp_files < <(git ls-files '*.c' '*.h' '*.cpp' '*.hpp')
+if ! clang-format --dry-run --Werror "${cpp_files[@]}"; then
+  failed+=("clang-format")
+fi
+
+echo "=== ruff check ==="
+if ! ruff check .; then
+  failed+=("ruff check")
+fi
+
+echo "=== ruff format ==="
+if ! ruff format --check .; then
+  failed+=("ruff format")
+fi
 
 echo
 if [ "${#failed[@]}" -ne 0 ]; then

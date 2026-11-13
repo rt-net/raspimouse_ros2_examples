@@ -281,7 +281,10 @@ void Controller::beep_buzzer(const int freq, const std::chrono::nanoseconds & be
   buzzer_pub_->publish(std::move(msg));
 }
 
-void Controller::beep_start(void) {beep_buzzer(1000, 500ms);}
+void Controller::beep_start(void)
+{
+  beep_buzzer(1000, 500ms);
+}
 
 void Controller::beep_success(void)
 {

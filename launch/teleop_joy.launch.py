@@ -20,7 +20,8 @@ from launch.actions import DeclareLaunchArgument
 from launch.conditions import IfCondition
 from launch.events import Shutdown
 from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import LifecycleNode, Node
+from launch_ros.actions import LifecycleNode
+from launch_ros.actions import Node
 
 
 def generate_launch_description():

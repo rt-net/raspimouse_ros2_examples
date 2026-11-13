@@ -27,8 +27,15 @@ jobs:
           apt-get update
           rosdep update
           rosdep install -y --from-paths . --skip-keys "${ROSDEP_SKIP_KEYS}"
+      - name: Install clang-format and ruff
+        run: |
+          ./install_lint_tools.sh
+          # pipx でインストールした ruff を以降のステップで使えるようにする
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: Run lint.sh
         shell: bash
         run: |
+          # コンテナ内ではリポジトリの所有者が異なるため、git ls-files が使えるように許可する
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           source "/opt/ros/${ROS_DISTRO}/setup.bash"
           ./lint.sh
