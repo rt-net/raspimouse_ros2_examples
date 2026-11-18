@@ -131,10 +131,10 @@ void Follower::publish_cmdvel_for_line_following(void)
   // いずれかのセンサがラインを検出しているか確認する
   bool detect_line = std::any_of(
     line_is_detected_by_sensor_.begin(), line_is_detected_by_sensor_.end(),
-    [](bool detected) {return detected;});
+    [](bool detected) { return detected; });
   bool detect_field = std::any_of(
     line_is_detected_by_sensor_.begin(), line_is_detected_by_sensor_.end(),
-    [](bool detected) {return !detected;});
+    [](bool detected) { return !detected; });
 
   // ラインとフィールドの両方が検出されているときのみ走行する
   if (detect_line && detect_field) {
@@ -211,7 +211,10 @@ void Follower::beep_buzzer(const int freq, const std::chrono::nanoseconds & beep
   buzzer_pub_->publish(std::move(msg));
 }
 
-void Follower::beep_start(void) {beep_buzzer(1000, 500ms);}
+void Follower::beep_start(void)
+{
+  beep_buzzer(1000, 500ms);
+}
 
 void Follower::beep_success(void)
 {

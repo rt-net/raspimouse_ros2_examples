@@ -1,0 +1,55 @@
+# ROS 2 のコードスタイル (https://docs.ros.org/en/rolling/The-ROS2-Project/Contributing/Code-Style-Language-Versions.html)
+# に合わせた clang-format の設定
+# ament_clang_format の設定をもとに、ROS 2 のガイドにあって ament のツールで整形・確認されない規則を追加している
+---
+Language: Cpp
+BasedOnStyle: Google
+
+# ここから ament_clang_format の設定と同じ
+AccessModifierOffset: -2
+AlignAfterOpenBracket: AlwaysBreak
+BraceWrapping:
+  AfterClass: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterEnum: true
+  # 以下は追加
+  # 条件が複数行にわたる if / while などは開き波括弧を改行する
+  AfterControlStatement: MultiLine
+  AfterExternBlock: true
+BreakBeforeBraces: Custom
+ColumnLimit: 100
+ConstructorInitializerIndentWidth: 0
+ContinuationIndentWidth: 2
+DerivePointerAlignment: false
+PointerAlignment: Middle
+ReflowComments: false
+# ここまで ament_clang_format の設定と同じ
+
+# 入れ子のテンプレートの閉じ括弧を >> と書く（> > にしない）
+Standard: c++20
+# if / else / for / while などは本体が 1 行でも波括弧を付ける
+InsertBraces: true
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+# 短い namespace にも閉じ括弧に // namespace foo のコメントを付ける
+ShortNamespaceLines: 0
+# 演算子で折り返した行を縦に揃えず、2 スペースでインデントする
+AlignOperands: DontAlign
+# コンストラクタの初期化リストは「: 」から改行し、1 つずつ改行して書く
+BreakConstructorInitializers: BeforeColon
+PackConstructorInitializers: Never
+# 中身のある関数は 1 行にまとめない
+AllowShortFunctionsOnASingleLine: Empty
+# ラムダ式は関数の引数として渡す場合だけ 1 行にまとめる
+AllowShortLambdasOnASingleLine: Inline
+# extern "C" ブロックの中はインデントしない
+IndentExternBlock: NoIndent
+# ネストしたプリプロセッサ命令は # の前でインデントする
+IndentPPDirectives: BeforeHash
+
+# include の並べ替えとグループ分けは行わない（別PRで対応する）
+SortIncludes: Never
+IncludeBlocks: Preserve
+...

@@ -34,7 +34,8 @@ namespace object_tracking
 {
 
 Tracker::Tracker(const rclcpp::NodeOptions & options)
-: rclcpp_lifecycle::LifecycleNode("tracker", options), object_is_detected_(false)
+: rclcpp_lifecycle::LifecycleNode("tracker", options),
+  object_is_detected_(false)
 {
 }
 
