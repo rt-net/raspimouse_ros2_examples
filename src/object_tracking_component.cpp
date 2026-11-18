@@ -14,18 +14,18 @@
 
 #include "raspimouse_ros2_examples/object_tracking_component.hpp"
 
-#include <memory>
 #include <chrono>
 #include <iostream>
-#include <utility>
+#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <opencv2/opencv.hpp>
+#include "cv_bridge/cv_bridge.hpp"
+#include "lifecycle_msgs/srv/change_state.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
-#include "lifecycle_msgs/srv/change_state.hpp"
-#include "cv_bridge/cv_bridge.hpp"
 
 using namespace std::chrono_literals;
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
