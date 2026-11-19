@@ -14,9 +14,8 @@
 
 #include <memory>
 
-#include <rclcpp/rclcpp.hpp>
-
 #include "raspimouse_ros2_examples/direction_controller_component.hpp"
+#include "rclcpp/rclcpp.hpp"
 
 int main(int argc, char * argv[])
 {

@@ -49,27 +49,4 @@ IndentExternBlock: NoIndent
 # ネストしたプリプロセッサ命令は # の前でインデントする
 IndentPPDirectives: BeforeHash
 
-# include は Google C++ Style Guide の順にグループ分けし、グループ内をアルファベット順に並べる
-#   対応するヘッダ → C システムヘッダ → C++ 標準ヘッダ → 他のライブラリ → このパッケージのヘッダ
-# グループ分けは cpplint (build/include_order) の判定と矛盾しないようにしている
-SortIncludes: CaseSensitive
-IncludeBlocks: Regroup
-IncludeCategories:
-  # このパッケージのヘッダ（パッケージ名はリポジトリごとに書き換える）
-  - Regex: '^"raspimouse_ros2_examples/'
-    Priority: 5
-    SortPriority: 6
-  # C++ 標準ヘッダ（<memory>, <cstdio> など）
-  - Regex: '^<[a-z0-9_]+>$'
-    Priority: 3
-  # 山括弧でも .hpp などは他のライブラリ扱い（<opencv2/opencv.hpp> など）
-  - Regex: '^<.*\.(hpp|hh|hxx|h\+\+)>$'
-    Priority: 4
-  # それ以外の山括弧は C システムヘッダ扱い（<unistd.h>, <sys/types.h> など）
-  - Regex: '^<.*>$'
-    Priority: 2
-  # 他のライブラリ（山括弧の .hpp と同じグループにして、その後ろに並べる）
-  - Regex: '.*'
-    Priority: 4
-    SortPriority: 5
 ...
