@@ -49,7 +49,4 @@ IndentExternBlock: NoIndent
 # ネストしたプリプロセッサ命令は # の前でインデントする
 IndentPPDirectives: BeforeHash
 
-# include の並べ替えとグループ分けは行わない（別PRで対応する）
-SortIncludes: Never
-IncludeBlocks: Preserve
 ...
