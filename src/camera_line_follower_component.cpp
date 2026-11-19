@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-#include <opencv2/opencv.hpp>
+#include "opencv2/opencv.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "geometry_msgs/msg/twist_stamped.hpp"

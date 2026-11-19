@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-#include <opencv2/opencv.hpp>
+#include "opencv2/opencv.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "lifecycle_msgs/srv/change_state.hpp"
