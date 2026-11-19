@@ -15,12 +15,12 @@
 #include "raspimouse_ros2_examples/line_follower_component.hpp"
 
 #include <algorithm>
-#include <memory>
 #include <chrono>
 #include <functional>
 #include <iostream>
-#include <utility>
+#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "rclcpp/rclcpp.hpp"
