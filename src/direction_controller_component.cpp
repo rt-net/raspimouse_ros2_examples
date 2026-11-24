@@ -16,7 +16,6 @@
 
 #include <chrono>
 #include <cmath>
-#include <memory>
 #include <numeric>
 #include <utility>
 

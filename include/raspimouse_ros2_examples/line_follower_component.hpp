@@ -16,7 +16,6 @@
 #define RASPIMOUSE_ROS2_EXAMPLES__LINE_FOLLOWER_COMPONENT_HPP_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "geometry_msgs/msg/twist_stamped.hpp"
@@ -28,7 +27,6 @@
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 #include "std_msgs/msg/int16.hpp"
-#include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/set_bool.hpp"
 
 namespace line_follower

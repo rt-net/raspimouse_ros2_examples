@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <memory>
-
 #include "raspimouse/raspimouse_component.hpp"
 #include "raspimouse_ros2_examples/line_follower_component.hpp"
-#include "rclcpp/rclcpp.hpp"
 
 int main(int argc, char * argv[])
 {
