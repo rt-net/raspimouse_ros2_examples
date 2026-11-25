@@ -16,11 +16,8 @@
 
 #include <chrono>
 #include <cmath>
-#include <memory>
 #include <numeric>
 #include <utility>
-
-#include "rclcpp/rclcpp.hpp"
 
 using namespace std::chrono_literals;
 

@@ -17,14 +17,7 @@
 #include <algorithm>
 #include <chrono>
 #include <functional>
-#include <iostream>
-#include <memory>
-#include <string>
 #include <utility>
-#include <vector>
-
-#include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
 
 using namespace std::chrono_literals;
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;

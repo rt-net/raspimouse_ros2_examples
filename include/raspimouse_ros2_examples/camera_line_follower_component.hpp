@@ -19,7 +19,7 @@
 #include <string>
 
 #include "geometry_msgs/msg/twist_stamped.hpp"
-#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/opencv.hpp"
 #include "raspimouse_msgs/msg/switches.hpp"
 #include "raspimouse_ros2_examples/visibility_control.hpp"
 #include "rclcpp/rclcpp.hpp"

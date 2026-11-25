@@ -15,18 +15,10 @@
 #include "raspimouse_ros2_examples/camera_line_follower_component.hpp"
 
 #include <chrono>
-#include <iostream>
-#include <memory>
-#include <string>
 #include <utility>
 #include <vector>
 
 #include "cv_bridge/cv_bridge.hpp"
-#include "geometry_msgs/msg/twist_stamped.hpp"
-#include "lifecycle_msgs/srv/change_state.hpp"
-#include "opencv2/opencv.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
 
 namespace camera_line_follower
 {

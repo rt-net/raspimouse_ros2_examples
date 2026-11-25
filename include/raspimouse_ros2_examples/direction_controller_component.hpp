@@ -15,8 +15,6 @@
 #ifndef RASPIMOUSE_ROS2_EXAMPLES__DIRECTION_CONTROLLER_COMPONENT_HPP_
 #define RASPIMOUSE_ROS2_EXAMPLES__DIRECTION_CONTROLLER_COMPONENT_HPP_
 
-#include <memory>
-#include <string>
 #include <vector>
 
 #include "geometry_msgs/msg/twist_stamped.hpp"
@@ -27,7 +25,6 @@
 #include "sensor_msgs/msg/imu.hpp"
 #include "std_msgs/msg/float64.hpp"
 #include "std_msgs/msg/int16.hpp"
-#include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/set_bool.hpp"
 
 namespace direction_controller
